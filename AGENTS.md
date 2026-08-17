@@ -306,20 +306,43 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
+## 9. Components & Styling Best Practices
+
+### 1. Colocation Principle
+- Letakkan komponen, helper fungsi, tipe data, dan state sedekat mungkin dengan tempat komponen tersebut digunakan (`src/features/<feature>/components/`).
+- Mengurangi *redundant re-renders* pada update state dan mempermudah pemeliharaan kode.
+
+### 2. Avoid Monolithic Components & Nested Render Functions
+- Dilarang membuat fungsi *inline render* bersarang (seperti `function renderItems() { ... }`) di dalam komponen besar.
+- Ekstrak setiap bagian UI yang berdiri sendiri menjadi komponen terpisah dengan *Single Responsibility Principle*.
+
+### 3. Limit Component Props & Favor Composition
+- Hindari komponen yang menerima terlalu banyak *props*. Gunakan teknik komposisi via *children prop* atau *slots* untuk menyusun UI secara fleksibel dan modular.
+
+### 4. Shared UI Abstractions (shadcn/ui Model)
+- Letakkan komponen UI bersama di [`src/components/ui/`](file:///d:/Projects/tookoo/src/components/ui) dengan pendekatan *code ownership* ala shadcn/ui.
+- Bungkus (*wrapper*) pustaka pihak ketiga untuk menyesuaikan kebutuhan aplikasi kasir.
+
+### 5. Zero-Runtime Styling (Tailwind CSS)
+- Wajib menggunakan utility classes Tailwind CSS murni (build-time generated) untuk performa rendering optimal tanpa overhead CSS runtime.
+- Gunakan helper `cn()` (`clsx` + `tailwind-merge`) di [`src/lib/utils.ts`](file:///d:/Projects/tookoo/src/lib/utils.ts) untuk penggabungan class dinamis.
+
+---
+
 # Part 4 — Security & Access Control
 
-## 9. Authentication & Store Identity
+## 10. Authentication & Store Identity
 - **Self-Sovereign Store Pairing:** Tookoo tidak mengandalkan server auth terpusat. Identitas dan akses toko diamankan melalui Store Secret Key yang dihasilkan saat inisialisasi toko dan dibagikan secara aman via QR Code atau 12 Kata Passphrase (BIP-39 mnemonic).
 - **Session & Key Storage:** Kunci toko disimpan di IndexedDB/Dexie table `settings` (bukan di plain `localStorage` yang rentan XSS) dan di-load ke memory state saat aplikasi aktif.
 
-## 10. Authorization (RBAC & PBAC)
+## 11. Authorization (RBAC & PBAC)
 - **Role-Based Access Control (RBAC):**
   - `OWNER`: Akses penuh ke pengaturan toko, generate QR pairing, rekap laporan omzet, export data, dan reset toko.
   - `CASHIER` / `STAFF`: Dibatasi pada operasional kasir (katalog produk, keranjang belanja, proses pembayaran, cetak struk).
 - **Permission-Based Access Control (PBAC):**
   - Fitur sensitif seperti penghapusan produk atau pembatalan transaksi diproteksi berdasarkan hak akses peran aktif.
 
-## 11. Client-Side Security & XSS Mitigation
+## 12. Client-Side Security & XSS Mitigation
 - **Input Sanitization & Schema Validation:** Seluruh input pengguna (nama produk, kategori, harga, nama kasir) WAJIB divalidasi ketat menggunakan skema Zod sebelum diproses ke database.
 - **No Sensitive Data in URLs:** Secret key atau data sensitif dilarang ditaruh di query params URL (`useSearchParams`).
 - **Safe Rendering:** Dilarang menggunakan `dangerouslySetInnerHTML` tanpa sanitasi HTML yang teruji.
@@ -328,18 +351,18 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 # Part 5 — Performance & Optimization Standards
 
-## 12. Route-Level Code Splitting
+## 13. Route-Level Code Splitting
 - Wajib menggunakan `React.lazy()` di level rute ([`src/app/router.tsx`](file:///d:/Projects/tookoo/src/app/router.tsx)) untuk mengisolasi ukuran bundle awal (*initial bundle size*).
 - Hindari *over-splitting* pada level komponen kecil agar tidak menyebabkan *request waterfall*.
 
-## 13. Component & State Optimizations
+## 14. Component & State Optimizations
 - **State Locality:** Tempatkan state sedekat mungkin dengan komponen yang mengonsumsinya. Jangan letakkan semua state di global store.
 - **Lazy State Initialization:** Gunakan callback initializer `useState(() => expensiveComputation())` untuk menghindari eksekusi ulang pada setiap siklus re-render.
 - **Atomic Selectors (Zustand):** Selalu gunakan selector presisi (contoh: `useCartStore(state => state.items)`) agar komponen hanya re-render saat data spesifik tersebut berubah.
 - **Children Prop Pattern (Virtual DOM Isolation):** Terapkan pola `children` pada komponen wrapper (seperti layout & modal container) untuk mengisolasi sub-tree Virtual DOM dari re-render parent.
 - **Zero-Runtime CSS:** Gunakan Tailwind CSS murni (build-time generated) untuk menghilangkan kalkulasi CSS runtime.
 
-## 14. Data Prefetching & Media Optimizations
+## 15. Data Prefetching & Media Optimizations
 - **Data Prefetching:** Gunakan `queryClient.prefetchQuery()` saat user melakukan hover pada navigasi atau tombol penting untuk mempercepat transisi halaman.
 - **Image & Icon Optimization:**
   - Gunakan format vektor SVG atau format modern WebP.
@@ -350,23 +373,23 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 # Part 6 — Error Handling & Resilience
 
-## 15. Local DB & Query Error Management
+## 16. Local DB & Query Error Management
 - **Centralized Query Error Handling:** Konfigurasi `QueryCache` dan `MutationCache` di [`src/lib/query-client.ts`](file:///d:/Projects/tookoo/src/lib/query-client.ts) dengan global error handler untuk menampilkan Toast Notifikasi otomatis saat terjadi kegagalan operasi Dexie atau WebRTC.
 - **Graceful Mutation Rollback:** Mutasi transaksi kasir yang gagal wajib ditangani dengan pemulihan state yang aman tanpa menyebabkan inkonsistensi data lokal.
 
-## 16. Multi-Level Error Boundaries
+## 17. Multi-Level Error Boundaries
 - **Localized Error Boundaries:** Pasang `react-error-boundary` bertingkat:
   - *Route Level:* Menjaga agar error di satu halaman (misal: Laporan/Riwayat) tidak merusak alur transaksi kasir utama.
   - *Widget Level:* Mengisolasi komponen rentan (seperti pemindai kamera QR Code atau widget WebRTC) dengan UI fallback ramah pengguna ([`src/components/error-fallback.tsx`](file:///d:/Projects/tookoo/src/components/error-fallback.tsx)).
 
-## 17. Error Logging & Observability
+## 18. Error Logging & Observability
 - Seluruh *uncaught errors* dicatat secara terstruktur dengan metadata konteks (nama komponen, operasi yang gagal) tanpa mengekspos data kredensial toko atau passphrase mnemonic.
 
 ---
 
 # Part 7 — Testing Standards
 
-## 18. Testing Strategy & Execution
+## 19. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
    - Letak: Berdampingan di folder `__tests__/` atau di `src/utils/__tests__/`.
