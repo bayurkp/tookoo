@@ -35,9 +35,10 @@ export class P2PClient {
 
   private peerConnections = new Map<
     string,
-    { pc: RTCPeerConnection; channel: RTCDataChannel | null; deviceName: string; lastSeen: number }
+    { pc: RTCPeerConnection; channel: RTCDataChannel | null; deviceName: string }
   >();
   private activePeersLastSeen = new Map<string, { lastSeen: number; deviceName: string }>();
+  private connectedPeersSet = new Set<string>();
   private pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private isProcessingAnswer = new Set<string>();
   private isCreatingOffer = new Set<string>();
@@ -77,15 +78,15 @@ export class P2PClient {
       });
     }
 
-    // 3. Continuous Standby Heartbeat (Broadcast every 3 seconds)
+    // 3. Continuous Standby Heartbeat (Every 4 seconds)
     this.heartbeatTimer = setInterval(() => {
       this.sendHeartbeat();
-    }, 3000);
+    }, 4000);
 
-    // 4. Prune Stale Disconnected Peers (Check every 4 seconds)
+    // 4. Prune Stale Disconnected Peers (Check every 5 seconds)
     this.pruneTimer = setInterval(() => {
       this.pruneStalePeers();
-    }, 4000);
+    }, 5000);
 
     // 5. Clean teardown on page close
     if (typeof window !== 'undefined') {
@@ -111,6 +112,25 @@ export class P2PClient {
     }
   }
 
+  private notifyPeerConnected(peerId: string, deviceName: string) {
+    const isFirstTime = !this.connectedPeersSet.has(peerId);
+    this.connectedPeersSet.add(peerId);
+
+    this.onStatusCallback?.(peerId, 'CONNECTED', deviceName);
+
+    // Only fire initial sync on first new connection, not recurring heartbeats
+    if (isFirstTime) {
+      this.onConnectCallback?.();
+    }
+  }
+
+  private notifyPeerDisconnected(peerId: string) {
+    if (this.connectedPeersSet.has(peerId)) {
+      this.connectedPeersSet.delete(peerId);
+      this.onStatusCallback?.(peerId, 'DISCONNECTED');
+    }
+  }
+
   private sendHeartbeat() {
     if (!this.passphrase || !this.deviceId) return;
     this.sendSignal({
@@ -132,13 +152,13 @@ export class P2PClient {
 
   private pruneStalePeers() {
     const now = Date.now();
-    const TIMEOUT_MS = 10000;
+    const TIMEOUT_MS = 12000;
 
     this.activePeersLastSeen.forEach((info, peerId) => {
       if (now - info.lastSeen > TIMEOUT_MS) {
         this.activePeersLastSeen.delete(peerId);
         this.closePeer(peerId);
-        this.onStatusCallback?.(peerId, 'DISCONNECTED');
+        this.notifyPeerDisconnected(peerId);
       }
     });
   }
@@ -175,7 +195,7 @@ export class P2PClient {
 
     switch (signal.type) {
       case 'HEARTBEAT': {
-        this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
+        this.notifyPeerConnected(peerId, peerDeviceName);
 
         // Reply with ACK so the sender also knows we are alive
         this.sendSignal({
@@ -186,7 +206,7 @@ export class P2PClient {
           deviceName: this.deviceName,
         });
 
-        // If WebRTC connection not established yet, higher ID initiates
+        // Initiator logic: Higher deviceId starts WebRTC channel if not existing
         const existing = this.peerConnections.get(peerId);
         if (
           !existing &&
@@ -200,15 +220,13 @@ export class P2PClient {
 
       case 'HEARTBEAT_ACK': {
         if (signal.targetId === this.deviceId) {
-          this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
-          this.onConnectCallback?.();
+          this.notifyPeerConnected(peerId, peerDeviceName);
         }
         break;
       }
 
       case 'JOIN': {
-        this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
-        this.onConnectCallback?.();
+        this.notifyPeerConnected(peerId, peerDeviceName);
 
         const existing = this.peerConnections.get(peerId);
         if (
@@ -244,7 +262,7 @@ export class P2PClient {
 
       case 'SYNC_DATA': {
         if (signal.message) {
-          this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
+          this.notifyPeerConnected(peerId, peerDeviceName);
           this.onMessageCallback?.(signal.message);
         }
         break;
@@ -253,7 +271,7 @@ export class P2PClient {
       case 'LEAVE': {
         this.activePeersLastSeen.delete(peerId);
         this.closePeer(peerId);
-        this.onStatusCallback?.(peerId, 'DISCONNECTED');
+        this.notifyPeerDisconnected(peerId);
         break;
       }
     }
@@ -273,7 +291,6 @@ export class P2PClient {
         pc,
         channel,
         deviceName: peerDeviceName,
-        lastSeen: Date.now(),
       });
       this.setupDataChannel(peerId, peerDeviceName, channel);
       this.setupConnectionListeners(peerId, peerDeviceName, pc);
@@ -311,7 +328,6 @@ export class P2PClient {
         pc,
         channel: null,
         deviceName: peerDeviceName,
-        lastSeen: Date.now(),
       });
 
       pc.ondatachannel = (event) => {
@@ -338,8 +354,7 @@ export class P2PClient {
           sdp: answer,
         });
 
-        this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
-        this.onConnectCallback?.();
+        this.notifyPeerConnected(peerId, peerDeviceName);
       }
     } catch (err) {
       console.warn('[WebRTC] Failed to handle offer:', err);
@@ -354,7 +369,6 @@ export class P2PClient {
     const entry = this.peerConnections.get(peerId);
     if (!entry) return;
 
-    // Guard: Only apply answer if state is 'have-local-offer' and not already processing
     if (entry.pc.signalingState !== 'have-local-offer' || this.isProcessingAnswer.has(peerId)) {
       return;
     }
@@ -364,11 +378,10 @@ export class P2PClient {
       if (typeof RTCSessionDescription !== 'undefined') {
         await entry.pc.setRemoteDescription(new RTCSessionDescription(sdp));
         this.flushPendingCandidates(peerId, entry.pc);
-        this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
-        this.onConnectCallback?.();
+        this.notifyPeerConnected(peerId, peerDeviceName);
       }
     } catch {
-      // Ignored: connection might have already settled
+      // Ignored
     } finally {
       this.isProcessingAnswer.delete(peerId);
     }
@@ -423,23 +436,21 @@ export class P2PClient {
 
     pc.onconnectionstatechange = () => {
       if (pc.connectionState === 'connected') {
-        this.onStatusCallback?.(peerId, 'CONNECTED', deviceName);
-        this.onConnectCallback?.();
+        this.notifyPeerConnected(peerId, deviceName);
       } else if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
         this.closePeer(peerId);
-        this.onStatusCallback?.(peerId, 'DISCONNECTED');
+        this.notifyPeerDisconnected(peerId);
       }
     };
   }
 
   private setupDataChannel(peerId: string, deviceName: string, channel: RTCDataChannel) {
     channel.onopen = () => {
-      this.onStatusCallback?.(peerId, 'CONNECTED', deviceName);
-      this.onConnectCallback?.();
+      this.notifyPeerConnected(peerId, deviceName);
     };
 
     channel.onclose = () => {
-      this.onStatusCallback?.(peerId, 'DISCONNECTED');
+      this.notifyPeerDisconnected(peerId);
     };
 
     channel.onmessage = (event) => {
@@ -518,6 +529,7 @@ export class P2PClient {
     });
     this.peerConnections.clear();
     this.activePeersLastSeen.clear();
+    this.connectedPeersSet.clear();
     this.pendingCandidates.clear();
     this.isProcessingAnswer.clear();
     this.isCreatingOffer.clear();
