@@ -51,6 +51,7 @@ interface ProductFormDialogProps {
 }
 
 const QUICK_CATEGORIES = ['Minuman', 'Makanan', 'Retail', 'Pakaian', 'Elektronik', 'Jasa / Servis'];
+const QUICK_UNITS = ['pcs', 'porsi', 'cup', 'box', 'botol', 'pack', 'kg', 'liter', 'sesi'];
 
 export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
   open,
@@ -75,6 +76,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     defaultValues: {
       name: '',
       category: '',
+      unit: 'pcs',
       productType: 'RETAIL',
       subType: '',
       price: 0,
@@ -127,6 +129,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         reset({
           name: productToEdit.name,
           category: productToEdit.category || '',
+          unit: productToEdit.unit || 'pcs',
           productType: productToEdit.productType || 'RETAIL',
           subType: productToEdit.subType || '',
           price: productToEdit.price,
@@ -145,6 +148,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         reset({
           name: '',
           category: '',
+          unit: 'pcs',
           productType: 'RETAIL',
           subType: '',
           price: 0,
@@ -271,6 +275,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         ...(productToEdit ? { id: productToEdit.id } : {}),
         name: data.name.trim(),
         category: data.category.trim(),
+        unit: data.unit?.trim() || 'pcs',
         productType: data.productType as ProductType,
         subType: data.subType?.trim() || undefined,
         price: Number(data.price),
@@ -486,7 +491,42 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                   ))}
                 </div>
 
-                {/* 4. Foto Produk (WebP Upload) */}
+                {/* 4. Satuan Unit Produk (Unit of Measure / UOM) */}
+                <div className="space-y-1.5 pt-1">
+                  <Field data-invalid={Boolean(errors.unit)}>
+                    <FieldLabel htmlFor="product-unit" className="text-xs font-bold flex items-center justify-between">
+                      <span>Satuan Unit Produk (UOM) *</span>
+                      <span className="text-[10px] text-muted-foreground font-normal">Contoh: pcs, porsi, cup, box, kg</span>
+                    </FieldLabel>
+                    <Input
+                      id="product-unit"
+                      placeholder="pcs"
+                      {...register('unit')}
+                      className="h-9 text-sm"
+                    />
+                  </Field>
+
+                  {/* Quick Unit Presets */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <span className="text-[11px] text-muted-foreground mr-1">Satuan Cepat:</span>
+                    {QUICK_UNITS.map((u) => (
+                      <button
+                        key={u}
+                        type="button"
+                        onClick={() => setValue('unit', u, { shouldValidate: true })}
+                        className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-colors cursor-pointer ${
+                          watch('unit') === u
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border-border/80'
+                        }`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 5. Foto Produk (WebP Upload) */}
                 <Field>
                   <FieldLabel className="text-xs font-bold">Foto Produk (WebP Otomatis)</FieldLabel>
                   <input

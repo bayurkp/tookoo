@@ -28,6 +28,7 @@ export const modifierGroupSchema = z.object({
 export const productFormSchema = z.object({
   name: z.string().min(1, 'Nama produk wajib diisi'),
   category: z.string().min(1, 'Kategori produk wajib diisi'),
+  unit: z.string().default('pcs').optional(),
   productType: z.enum(['FNB', 'RETAIL', 'SERVICE']).default('FNB'),
   subType: z.string().optional(),
   price: z.coerce.number().min(0, 'Harga jual tidak boleh negatif'),

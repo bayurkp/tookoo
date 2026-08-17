@@ -65,4 +65,53 @@ describe('OrdersPage', () => {
     // Verify receipt dialog opens
     expect(screen.getByText('Rincian Struk Transaksi')).toBeInTheDocument();
   });
+
+  it('filters pending vs paid orders correctly', async () => {
+    await db.orders.bulkPut([
+      {
+        id: 'ord-paid',
+        orderNumber: 'TK-PAID-001',
+        status: 'PAID',
+        items: [{ productId: 'p-1', name: 'Kopi', price: 10000, qty: 1, subtotal: 10000 }],
+        subtotal: 10000,
+        discount: 0,
+        totalAmount: 10000,
+        paymentMethod: 'CASH',
+        amountPaid: 10000,
+        changeDue: 0,
+        cashierName: 'Kasir',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        deletedAt: null,
+      },
+      {
+        id: 'ord-pending',
+        orderNumber: 'TK-PENDING-002',
+        status: 'PENDING',
+        customerName: 'Meja 09',
+        items: [{ productId: 'p-2', name: 'Roti', price: 15000, qty: 1, subtotal: 15000 }],
+        subtotal: 15000,
+        discount: 0,
+        totalAmount: 15000,
+        paymentMethod: 'CASH',
+        amountPaid: 0,
+        changeDue: 0,
+        cashierName: 'Kasir',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        deletedAt: null,
+      },
+    ]);
+
+    render(<OrdersPage />, { wrapper: createWrapper() });
+
+    expect(await screen.findByText('TK-PAID-001')).toBeInTheDocument();
+    expect(screen.getByText('TK-PENDING-002')).toBeInTheDocument();
+
+    const pendingFilterBtn = screen.getByText(/^Tertunda \(/i);
+    fireEvent.click(pendingFilterBtn);
+
+    expect(screen.getByText('TK-PENDING-002')).toBeInTheDocument();
+    expect(screen.queryByText('TK-PAID-001')).not.toBeInTheDocument();
+  });
 });

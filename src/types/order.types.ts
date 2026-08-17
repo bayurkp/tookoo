@@ -1,8 +1,11 @@
 export type PaymentMethod = 'CASH' | 'QRIS' | 'TRANSFER';
 
+export type OrderStatus = 'PAID' | 'PENDING' | 'CANCELLED';
+
 export interface OrderItem {
   productId: string; // UUID Product
   name: string;
+  unit?: string; // e.g. "pcs", "cup", "porsi", "box"
   variantName?: string; // e.g. "Large", "Size XL", "Warna Hitam"
   modifiersDescription?: string; // e.g. "+ Ekstra Boba, Less Sugar"
   price: number; // Unit price with variant & modifiers
@@ -13,6 +16,10 @@ export interface OrderItem {
 export interface Order {
   id: string; // UUID v4
   orderNumber: string; // e.g. "TK-20260817-001"
+  status?: OrderStatus; // 'PAID' (default) or 'PENDING' (tunda bayar / open bills)
+  customerName?: string; // e.g. "Meja 4 - Pak Budi", "Antrean #12"
+  tableNumber?: string; // e.g. "04"
+  notes?: string;
   items: OrderItem[];
   subtotal: number;
   discount: number;

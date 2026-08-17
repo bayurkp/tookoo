@@ -23,16 +23,20 @@ import { sounds } from '@/utils/audio';
 import type { PaymentMethod } from '../types/cart.types';
 import type { Order } from '@/types/order.types';
 
+import { useUpsertOrder } from '@/features/orders/hooks/use-orders';
+
 interface PaymentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onPaymentSuccess: (order: Order) => void;
+  pendingOrder?: Order | null;
 }
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({
   open,
   onOpenChange,
   onPaymentSuccess,
+  pendingOrder,
 }) => {
   const { t } = useTranslation();
   const { settings } = useP2pSync();
@@ -42,10 +46,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const getTotal = useCartStore((state) => state.getTotal);
 
   const checkoutMutation = useCashierCheckout();
+  const upsertOrderMutation = useUpsertOrder();
 
-  const subtotal = getSubtotal();
-  const discountAmount = getDiscountAmount();
-  const total = getTotal();
+  const subtotal = pendingOrder ? pendingOrder.subtotal : getSubtotal();
+  const discountAmount = pendingOrder ? pendingOrder.discount : getDiscountAmount();
+  const total = pendingOrder ? pendingOrder.totalAmount : getTotal();
+  const itemCount = pendingOrder ? pendingOrder.items.length : items.length;
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [cashTendered, setCashTendered] = useState<number>(0);
@@ -89,7 +95,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   }, [total, currencyConfig, settings?.currency]);
 
   const handleProcessPayment = async () => {
-    if (items.length === 0) return;
+    if (!pendingOrder && items.length === 0) return;
 
     if (paymentMethod === 'CASH' && cashTendered < total) {
       setErrorMessage('Nominal uang diterima kurang dari total tagihan.');
@@ -97,32 +103,48 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
 
     try {
-      const orderItems = items.map((item) => ({
-        productId: item.product.id,
-        name: item.product.name,
-        variantName: item.selectedVariant ? item.selectedVariant.name : undefined,
-        modifiersDescription:
-          item.selectedModifiers && item.selectedModifiers.length > 0
-            ? item.selectedModifiers.map((m) => m.name).join(', ')
-            : undefined,
-        price: item.unitPrice,
-        qty: item.quantity,
-        subtotal: item.unitPrice * item.quantity,
-      }));
-
       const finalAmountPaid = paymentMethod === 'CASH' ? cashTendered : total;
       const finalChangeDue = paymentMethod === 'CASH' ? changeDue : 0;
 
-      const order = await checkoutMutation.mutateAsync({
-        items: orderItems,
-        subtotal,
-        discount: discountAmount,
-        totalAmount: total,
-        paymentMethod,
-        amountPaid: finalAmountPaid,
-        changeDue: finalChangeDue,
-        cashierName: 'Kasir',
-      });
+      let order: Order;
+
+      if (pendingOrder) {
+        order = {
+          ...pendingOrder,
+          status: 'PAID',
+          paymentMethod,
+          amountPaid: finalAmountPaid,
+          changeDue: finalChangeDue,
+          updatedAt: Date.now(),
+        };
+        await upsertOrderMutation.mutateAsync(order);
+      } else {
+        const orderItems = items.map((item) => ({
+          productId: item.product.id,
+          name: item.product.name,
+          unit: item.product.unit || 'pcs',
+          variantName: item.selectedVariant ? item.selectedVariant.name : undefined,
+          modifiersDescription:
+            item.selectedModifiers && item.selectedModifiers.length > 0
+              ? item.selectedModifiers.map((m) => m.name).join(', ')
+              : undefined,
+          price: item.unitPrice,
+          qty: item.quantity,
+          subtotal: item.unitPrice * item.quantity,
+        }));
+
+        order = await checkoutMutation.mutateAsync({
+          items: orderItems,
+          subtotal,
+          discount: discountAmount,
+          totalAmount: total,
+          paymentMethod,
+          amountPaid: finalAmountPaid,
+          changeDue: finalChangeDue,
+          cashierName: 'Kasir',
+          status: 'PAID',
+        });
+      }
 
       sounds.playSuccess();
       onOpenChange(false);
@@ -156,7 +178,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </p>
           </div>
           <Badge variant="outline" className="bg-background text-xs">
-            {t('cashier.payment.itemTypes', { count: items.length })}
+            {t('cashier.payment.itemTypes', { count: itemCount })}
           </Badge>
         </div>
 

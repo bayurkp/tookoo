@@ -81,14 +81,14 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
               </Badge>
             ) : isLowStock ? (
               <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 font-semibold text-[10px] backdrop-blur-xs">
-                Sisa {product.stock}
+                Sisa {product.stock} {product.unit || 'pcs'}
               </Badge>
             ) : (
               <Badge
                 variant="outline"
                 className="bg-background/90 text-[10px] font-medium py-0.5 backdrop-blur-xs"
               >
-                Stok: {product.stock}
+                Stok: {product.stock} {product.unit || 'pcs'}
               </Badge>
             )}
           </div>

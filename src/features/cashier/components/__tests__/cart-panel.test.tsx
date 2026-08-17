@@ -60,4 +60,15 @@ describe('CartPanel', () => {
 
     expect(handlePay).toHaveBeenCalledTimes(1);
   });
+
+  it('opens Tunda Bayar modal when clicking Tunda Bayar button', () => {
+    useCartStore.getState().addItem(mockProduct, 1);
+
+    render(<CartPanel onProceedToPayment={() => {}} />, { wrapper: createWrapper() });
+
+    const holdBtn = screen.getByRole('button', { name: /Tunda Bayar/i });
+    fireEvent.click(holdBtn);
+
+    expect(screen.getByText(/Tunda Bayar \/ Simpan Pesanan/i)).toBeInTheDocument();
+  });
 });

@@ -54,8 +54,9 @@ export const useDashboardStats = () => {
       productCostMap.set(p.id, p.costPrice || 0);
     });
 
-    // 1. Filter today's orders
-    const todayOrders = orders.filter((o) => o.createdAt >= todayStart);
+    // 1. Filter today's completed orders
+    const completedOrders = orders.filter((o) => o.status !== 'PENDING');
+    const todayOrders = completedOrders.filter((o) => o.createdAt >= todayStart);
     const todayOrderCount = todayOrders.length;
     const todayRevenue = todayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
     const todayAov = todayOrderCount > 0 ? Math.round(todayRevenue / todayOrderCount) : 0;

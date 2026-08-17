@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Printer, Receipt, Calendar, CreditCard, User } from 'lucide-react';
+import { Printer, Receipt, Calendar, CreditCard, User, UtensilsCrossed, Clock } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,8 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
 
   if (!order) return null;
 
+  const isPending = order.status === 'PENDING';
+
   const handlePrint = () => {
     window.print();
   };
@@ -37,18 +39,32 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="flex flex-row items-center gap-2 space-y-0">
-          <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+          <div
+            className={`h-9 w-9 rounded-lg flex items-center justify-center ${
+              isPending ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-primary/10 text-primary'
+            }`}
+          >
             <Receipt className="h-5 w-5" />
           </div>
           <div>
             <DialogTitle className="text-lg font-bold">
-              {t('orders.receipt.title', 'Rincian Struk Transaksi')}
+              {isPending
+                ? t('orders.receipt.billTitle', 'Tagihan Sementara (Open Bill)')
+                : t('orders.receipt.title', 'Rincian Struk Transaksi')}
             </DialogTitle>
             <DialogDescription className="font-mono text-xs text-foreground font-semibold">
               {order.orderNumber}
             </DialogDescription>
           </div>
         </DialogHeader>
+
+        {/* Customer / Table Banner if present */}
+        {order.customerName && (
+          <div className="p-2.5 rounded-lg bg-muted/60 border flex items-center gap-2 text-xs font-bold text-foreground">
+            <UtensilsCrossed className="h-4 w-4 text-primary shrink-0" />
+            <span className="truncate">{order.customerName}</span>
+          </div>
+        )}
 
         {/* Transaction Metadata */}
         <div className="grid grid-cols-2 gap-2 text-xs bg-muted/40 p-3 rounded-lg border">
@@ -67,7 +83,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
           <div className="flex items-center justify-end gap-1.5 text-muted-foreground">
             <CreditCard className="h-3.5 w-3.5" />
             <Badge variant="outline" className="text-xs py-0">
-              {order.paymentMethod}
+              {isPending ? 'BELUM BAYAR' : order.paymentMethod}
             </Badge>
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -77,9 +93,22 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-end">
-            <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0 font-semibold">
-              {t('orders.receipt.completed', 'SELESAI')}
-            </Badge>
+            {isPending ? (
+              <Badge
+                variant="outline"
+                className="text-amber-600 dark:text-amber-400 border-amber-500/40 bg-amber-500/10 text-xs py-0 font-bold"
+              >
+                <Clock className="h-3 w-3 mr-1" />
+                TUNDA BAYAR
+              </Badge>
+            ) : (
+              <Badge
+                variant="outline"
+                className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0 font-semibold"
+              >
+                {t('orders.receipt.completed', 'LUNAS / SELESAI')}
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -104,7 +133,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
                     </p>
                   )}
                   <p className="text-muted-foreground text-[11px]">
-                    {item.qty}x @ {formatCurrency(item.price)}
+                    {item.qty} {item.unit || 'pcs'} @ {formatCurrency(item.price)}
                   </p>
                 </div>
                 <p className="font-bold text-foreground shrink-0">{formatCurrency(item.subtotal)}</p>
@@ -129,7 +158,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             <span>{t('orders.receipt.total', 'Total Tagihan')}</span>
             <span className="text-primary font-black">{formatCurrency(order.totalAmount)}</span>
           </div>
-          {order.paymentMethod === 'CASH' && (
+          {!isPending && order.paymentMethod === 'CASH' && (
             <>
               <div className="flex justify-between text-muted-foreground pt-1">
                 <span>{t('cashier.payment.amountReceived', 'Uang Diterima')}</span>
@@ -158,10 +187,16 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             className="w-full sm:w-auto gap-1.5 font-bold cursor-pointer"
           >
             <Printer className="h-4 w-4" />
-            <span>{t('orders.receipt.reprint', 'Cetak Ulang Struk')}</span>
+            <span>
+              {isPending
+                ? t('orders.receipt.printBill', 'Cetak Tagihan Sementara')
+                : t('orders.receipt.reprint', 'Cetak Ulang Struk')}
+            </span>
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
+
+export default OrderReceiptDialog;

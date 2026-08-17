@@ -62,4 +62,18 @@ describe('ProductFormDialog', () => {
       expect(screen.getByText(/Kategori.*wajib diisi/i)).toBeInTheDocument();
     });
   });
+
+  it('renders Unit of Measure field and quick unit presets', () => {
+    render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
+      wrapper: createWrapper(),
+    });
+
+    const unitInput = screen.getByLabelText(/Satuan Unit Produk/i);
+    expect(unitInput).toHaveValue('pcs');
+
+    const cupBtn = screen.getByRole('button', { name: 'cup' });
+    fireEvent.click(cupBtn);
+
+    expect(unitInput).toHaveValue('cup');
+  });
 });

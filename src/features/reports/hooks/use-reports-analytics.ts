@@ -79,8 +79,9 @@ export const useReportsAnalytics = (timeRange: TimeRangeFilter) => {
       startTime = today.getTime() - 29 * 24 * 60 * 60 * 1000;
     }
 
-    // Filter orders by time range
-    const filteredOrders = orders.filter((o) => o.createdAt >= startTime);
+    // Filter completed orders by time range
+    const completedOrders = orders.filter((o) => o.status !== 'PENDING');
+    const filteredOrders = completedOrders.filter((o) => o.createdAt >= startTime);
 
     // Map products for fast HPP / costPrice lookup
     const productCostMap = new Map<string, number>();

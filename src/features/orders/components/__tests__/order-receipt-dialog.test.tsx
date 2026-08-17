@@ -35,9 +35,9 @@ describe('OrderReceiptDialog', () => {
 
     expect(screen.getByText('TK-20260817-0099')).toBeInTheDocument();
     expect(screen.getByText('Caramel Macchiato')).toBeInTheDocument();
-    expect(screen.getByText('Cetak Struk')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Cetak.*Struk/i })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Cetak Struk'));
+    fireEvent.click(screen.getByRole('button', { name: /Cetak.*Struk/i }));
     expect(printSpy).toHaveBeenCalledTimes(1);
 
     printSpy.mockRestore();

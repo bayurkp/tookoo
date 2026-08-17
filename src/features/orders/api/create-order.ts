@@ -11,6 +11,10 @@ export interface CreateOrderInput {
   amountPaid: number;
   changeDue: number;
   cashierName?: string;
+  status?: Order['status'];
+  customerName?: string;
+  tableNumber?: string;
+  notes?: string;
 }
 
 export const generateOrderNumber = (): string => {
@@ -28,6 +32,10 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
   const newOrder: Order = {
     id: orderId,
     orderNumber,
+    status: input.status || 'PAID',
+    customerName: input.customerName,
+    tableNumber: input.tableNumber,
+    notes: input.notes,
     items: input.items,
     subtotal: input.subtotal,
     discount: input.discount,

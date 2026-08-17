@@ -20,10 +20,14 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
     const endOfToday = startOfToday + 86400000;
     const startOfYesterday = startOfToday - 86400000;
 
-    const todayOrders = orders.filter(
+    const completedOrders = orders.filter(
+      (o) => o.status !== 'PENDING' && o.deletedAt === null
+    );
+
+    const todayOrders = completedOrders.filter(
       (order) => order.createdAt >= startOfToday && order.createdAt < endOfToday
     );
-    const yesterdayOrders = orders.filter(
+    const yesterdayOrders = completedOrders.filter(
       (order) => order.createdAt >= startOfYesterday && order.createdAt < startOfToday
     );
 

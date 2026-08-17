@@ -30,6 +30,7 @@ export interface Product {
   id: string; // UUID v4
   name: string;
   category: string;
+  unit?: string; // Unit of measure, e.g. "pcs", "cup", "porsi", "box", "kg" (default "pcs")
   productType?: ProductType;
   subType?: string; // Sub-category e.g. "Kopi Susu", "Snack", "Aksesoris"
   price: number; // Base selling price

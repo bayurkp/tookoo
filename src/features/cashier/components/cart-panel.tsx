@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Trash2, Plus, Minus, Tag, Percent } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, Tag, Percent, BookmarkPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
+import { HoldOrderDialog } from './hold-order-dialog';
 import { useCartStore } from '../stores/cart-store';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
@@ -24,9 +25,10 @@ import { formatCurrency } from '@/utils/format-currency';
 
 interface CartPanelProps {
   onProceedToPayment: () => void;
+  onHoldSuccess?: (orderNumber: string) => void;
 }
 
-export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
+export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHoldSuccess }) => {
   const { t } = useTranslation();
   const { settings } = useP2pSync();
   const currencyConfig = getCurrencyConfig(settings?.currency);
@@ -47,6 +49,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
   const [discountValue, setDiscountValue] = useState('');
   const [discountType, setDiscountType] = useState<'PERCENTAGE' | 'FIXED'>('PERCENTAGE');
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+  const [isHoldDialogOpen, setIsHoldDialogOpen] = useState(false);
 
   const subtotal = getSubtotal();
   const discountAmount = getDiscountAmount();
@@ -205,7 +208,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
         )}
       </CardContent>
 
-      {/* Cart Summary & Checkout Action */}
+      {/* Cart Summary & Checkout Actions */}
       <CardFooter className="p-4 border-t flex flex-col gap-3 bg-muted/20">
         {/* Discount Section */}
         {items.length > 0 && (
@@ -321,16 +324,39 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
           </div>
         </div>
 
-        {/* Proceed Action Button */}
-        <Button
-          className="w-full h-11 text-sm font-bold gap-2 cursor-pointer shadow-sm"
-          disabled={items.length === 0}
-          onClick={onProceedToPayment}
-        >
-          <span>{t('cashier.cart.pay', 'Bayar Sekarang')}</span>
-          <span className="font-mono">({formatCurrency(total, settings?.currency)})</span>
-        </Button>
+        {/* Action Buttons: Hold Order & Pay Now */}
+        <div className="w-full flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={items.length === 0}
+            onClick={() => setIsHoldDialogOpen(true)}
+            className="h-11 px-3 border-amber-500/40 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-xs gap-1.5 cursor-pointer shrink-0"
+            title="Simpan pesanan untuk dibayar nanti"
+          >
+            <BookmarkPlus className="h-4 w-4" />
+            <span className="hidden sm:inline">Tunda Bayar</span>
+          </Button>
+
+          <Button
+            className="flex-1 h-11 text-sm font-bold gap-2 cursor-pointer shadow-sm"
+            disabled={items.length === 0}
+            onClick={onProceedToPayment}
+          >
+            <span>{t('cashier.cart.pay', 'Bayar Sekarang')}</span>
+            <span className="font-mono">({formatCurrency(total, settings?.currency)})</span>
+          </Button>
+        </div>
       </CardFooter>
+
+      {/* Hold Order Dialog */}
+      <HoldOrderDialog
+        open={isHoldDialogOpen}
+        onOpenChange={setIsHoldDialogOpen}
+        onHoldSuccess={(orderNum) => {
+          onHoldSuccess?.(orderNum);
+        }}
+      />
     </Card>
   );
 };

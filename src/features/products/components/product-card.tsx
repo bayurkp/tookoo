@@ -61,14 +61,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
               </Badge>
             ) : isLowStock ? (
               <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 backdrop-blur-xs text-[10px] font-semibold">
-                Sisa {product.stock}
+                Sisa {product.stock} {product.unit || 'pcs'}
               </Badge>
             ) : (
               <Badge
                 variant="outline"
                 className="bg-background/90 backdrop-blur-xs text-[10px] font-medium py-0.5"
               >
-                Stok: {product.stock}
+                Stok: {product.stock} {product.unit || 'pcs'}
               </Badge>
             )}
           </div>

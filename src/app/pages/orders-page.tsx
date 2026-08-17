@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Receipt, ArrowUpDown, Eye, Lock, ShieldCheck } from 'lucide-react';
+import { Search, Receipt, ArrowUpDown, Eye, Lock, ShieldCheck, Clock } from 'lucide-react';
 import { useOrders } from '@/features/orders/hooks/use-orders';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useAuthStore } from '@/stores/auth-store';
@@ -29,7 +29,7 @@ export const OrdersPage: React.FC = () => {
   const { hasPermission } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'PENDING'>('ALL');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
 
@@ -37,13 +37,23 @@ export const OrdersPage: React.FC = () => {
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
+      const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
-        order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.cashierName.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesPayment = paymentFilter === 'ALL' || order.paymentMethod === paymentFilter;
-      return matchesSearch && matchesPayment;
+        !q ||
+        order.orderNumber.toLowerCase().includes(q) ||
+        order.cashierName.toLowerCase().includes(q) ||
+        (order.customerName && order.customerName.toLowerCase().includes(q)) ||
+        (order.tableNumber && order.tableNumber.toLowerCase().includes(q));
+
+      const isOrderPending = order.status === 'PENDING';
+      const matchesStatus =
+        statusFilter === 'ALL' ||
+        (statusFilter === 'PENDING' && isOrderPending) ||
+        (statusFilter === 'PAID' && !isOrderPending);
+
+      return matchesSearch && matchesStatus;
     });
-  }, [orders, searchQuery, paymentFilter]);
+  }, [orders, searchQuery, statusFilter]);
 
   return (
     <div className="space-y-6">
@@ -98,7 +108,7 @@ export const OrdersPage: React.FC = () => {
               <span>Daftar Transaksi Kasir</span>
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground mt-0.5">
-              Semua transaksi belanja yang telah selesai diproses di toko.
+              Semua transaksi belanja yang tercatat di toko.
             </CardDescription>
           </div>
 
@@ -107,29 +117,37 @@ export const OrdersPage: React.FC = () => {
             <div className="relative min-w-[200px] sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder={t('orders.searchPlaceholder', 'Cari nomor struk atau kasir...')}
+                placeholder={t('orders.searchPlaceholder', 'Cari nomor struk, meja, atau kasir...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-8 h-8 text-xs bg-background"
               />
             </div>
 
-            {/* Payment Method Filter Pills */}
+            {/* Status Filter Pills */}
             <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-              {['ALL', 'CASH', 'QRIS', 'TRANSFER'].map((method) => (
-                <Badge
-                  key={method}
-                  variant={paymentFilter === method ? 'default' : 'outline'}
-                  className="cursor-pointer px-2.5 py-1 text-[11px] font-semibold"
-                  onClick={() => setPaymentFilter(method)}
-                >
-                  {method === 'ALL'
-                    ? `${t('products.allCategories', 'Semua')} (${orders.length})`
-                    : method === 'CASH'
-                      ? t('cashier.payment.cash', 'Tunai')
-                      : method}
-                </Badge>
-              ))}
+              <Badge
+                variant={statusFilter === 'ALL' ? 'default' : 'outline'}
+                className="cursor-pointer px-2.5 py-1 text-[11px] font-semibold"
+                onClick={() => setStatusFilter('ALL')}
+              >
+                {t('products.allCategories', 'Semua')} ({orders.length})
+              </Badge>
+              <Badge
+                variant={statusFilter === 'PAID' ? 'default' : 'outline'}
+                className="cursor-pointer px-2.5 py-1 text-[11px] font-semibold"
+                onClick={() => setStatusFilter('PAID')}
+              >
+                Lunas ({orders.filter((o) => o.status !== 'PENDING').length})
+              </Badge>
+              <Badge
+                variant={statusFilter === 'PENDING' ? 'default' : 'outline'}
+                className="cursor-pointer px-2.5 py-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 border-amber-500/40"
+                onClick={() => setStatusFilter('PENDING')}
+              >
+                <Clock className="h-3 w-3 mr-1" />
+                Tertunda ({orders.filter((o) => o.status === 'PENDING').length})
+              </Badge>
             </div>
           </div>
         </CardHeader>
@@ -145,7 +163,7 @@ export const OrdersPage: React.FC = () => {
             <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
               <Receipt className="h-12 w-12 text-muted-foreground/30 mb-3" />
               <p className="font-semibold text-sm text-foreground">
-                {searchQuery || paymentFilter !== 'ALL'
+                {searchQuery || statusFilter !== 'ALL'
                   ? t('orders.emptyFilter', 'Tidak ada transaksi yang cocok dengan filter.')
                   : t('orders.empty', 'Belum ada transaksi hari ini.')}
               </p>
@@ -164,7 +182,7 @@ export const OrdersPage: React.FC = () => {
                     <TableHead className="w-[180px] text-xs font-semibold">No. Struk</TableHead>
                     <TableHead className="text-xs font-semibold">Waktu & Kasir</TableHead>
                     <TableHead className="text-xs font-semibold">Item Belanja</TableHead>
-                    <TableHead className="text-xs font-semibold">Metode</TableHead>
+                    <TableHead className="text-xs font-semibold">Status / Metode</TableHead>
                     <TableHead className="text-right text-xs font-semibold">
                       <div className="flex items-center justify-end gap-1">
                         <span>Total Tagihan</span>
@@ -177,72 +195,91 @@ export const OrdersPage: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredOrders.map((order) => (
-                    <TableRow
-                      key={order.id}
-                      onClick={() => setSelectedOrder(order)}
-                      className="cursor-pointer hover:bg-muted/40 transition-colors"
-                    >
-                      <TableCell className="font-mono font-bold text-xs">
-                        {order.orderNumber}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {new Date(order.createdAt).toLocaleTimeString('id-ID', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
-                          <p className="text-[11px]">{order.cashierName}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        <span className="font-medium text-foreground">
-                          {order.items.reduce((s, it) => s + it.qty, 0)} item
-                        </span>
-                        <span className="text-muted-foreground text-[11px] ml-1.5 block sm:inline">
-                          (
-                          {order.items
-                            .map((it) => it.name)
-                            .slice(0, 2)
-                            .join(', ')}
-                          {order.items.length > 2 ? '...' : ''})
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            order.paymentMethod === 'CASH'
-                              ? 'secondary'
-                              : order.paymentMethod === 'QRIS'
-                                ? 'default'
-                                : 'outline'
-                          }
-                          className="text-[11px] font-semibold py-0 px-2"
-                        >
-                          {order.paymentMethod}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-bold text-sm text-primary tabular-nums">
-                        {formatCurrency(order.totalAmount)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedOrder(order);
-                          }}
-                          className="h-7 w-7 p-0 rounded-md hover:bg-primary/10 hover:text-primary cursor-pointer"
-                          title="Lihat Struk"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {filteredOrders.map((order) => {
+                    const isPending = order.status === 'PENDING';
+
+                    return (
+                      <TableRow
+                        key={order.id}
+                        onClick={() => setSelectedOrder(order)}
+                        className="cursor-pointer hover:bg-muted/40 transition-colors"
+                      >
+                        <TableCell className="font-mono font-bold text-xs">
+                          <p>{order.orderNumber}</p>
+                          {order.customerName && (
+                            <p className="text-[11px] font-sans font-medium text-primary truncate max-w-[140px]">
+                              {order.customerName}
+                            </p>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          <div>
+                            <p className="font-medium text-foreground">
+                              {new Date(order.createdAt).toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
+                            <p className="text-[11px]">{order.cashierName}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          <span className="font-medium text-foreground">
+                            {order.items.reduce((s, it) => s + it.qty, 0)} item
+                          </span>
+                          <span className="text-muted-foreground text-[11px] ml-1.5 block sm:inline">
+                            (
+                            {order.items
+                              .map((it) => it.name)
+                              .slice(0, 2)
+                              .join(', ')}
+                            {order.items.length > 2 ? '...' : ''})
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {isPending ? (
+                            <Badge
+                              variant="outline"
+                              className="text-amber-600 dark:text-amber-400 border-amber-500/40 bg-amber-500/10 text-[10px] font-bold py-0.5 px-2 gap-1"
+                            >
+                              <Clock className="h-2.5 w-2.5" />
+                              <span>Tertunda</span>
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant={
+                                order.paymentMethod === 'CASH'
+                                  ? 'secondary'
+                                  : order.paymentMethod === 'QRIS'
+                                    ? 'default'
+                                    : 'outline'
+                              }
+                              className="text-[11px] font-semibold py-0 px-2"
+                            >
+                              {order.paymentMethod}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right font-bold text-sm text-primary tabular-nums">
+                          {formatCurrency(order.totalAmount)}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedOrder(order);
+                            }}
+                            className="h-7 w-7 p-0 rounded-md hover:bg-primary/10 hover:text-primary cursor-pointer"
+                            title="Lihat Struk"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
