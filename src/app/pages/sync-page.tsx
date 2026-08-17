@@ -1,61 +1,70 @@
-import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { QrCode, Key, Camera } from 'lucide-react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { StoreIdentityCard } from '@/features/sync/components/store-identity-card';
+import { QrPairingCard } from '@/features/sync/components/qr-pairing-card';
+import { QrScannerModal } from '@/features/sync/components/qr-scanner-modal';
+import { ConnectedPeersCard } from '@/features/sync/components/connected-peers-card';
+import { BackupExportCard } from '@/features/sync/components/backup-export-card';
+import type { StorePairingPayload } from '@/types/sync.types';
 
 export const SyncPage: React.FC = () => {
+  const { t } = useTranslation();
+  const {
+    settings,
+    peers,
+    updateStoreName,
+    regeneratePassphrase,
+    exportBackup,
+    importBackup,
+  } = useP2pSync();
+
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+
+  const handlePairSuccess = (payload: StorePairingPayload) => {
+    updateStoreName(payload.storeName);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">P2P Sync & Sambung Kasir</h2>
+        <h2 className="text-2xl font-bold tracking-tight">
+          {t('sync.title', 'Sinkronisasi & Kunci Toko')}
+        </h2>
         <p className="text-muted-foreground text-sm">
-          Hubungkan perangkat kasir baru dengan Scan QR Code atau ketik 12 Kata Passphrase (BIP-39).
+          Pairing multi-perangkat kasir peer-to-peer (WebRTC) tanpa server terpusat.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5" />
-              QR Code Toko Saya
-            </CardTitle>
-            <CardDescription>
-              Tunjukkan QR Code ini kepada kasir lain yang ingin bergabung ke toko Anda.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center p-8">
-            <div className="h-48 w-48 bg-muted rounded-xl flex items-center justify-center border-2 border-dashed">
-              <QrCode className="h-16 w-16 text-muted-foreground/50" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-4 text-center">
-              Scan menggunakan kamera HP kasir baru.
-            </p>
-          </CardContent>
-        </Card>
+      {/* Grid Cards Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Identity & QR Code */}
+        <div className="space-y-6 flex flex-col">
+          <StoreIdentityCard
+            settings={settings}
+            onUpdateStoreName={updateStoreName}
+            onRegeneratePassphrase={regeneratePassphrase}
+          />
+          <QrPairingCard
+            settings={settings}
+            onOpenScanner={() => setIsScannerOpen(true)}
+          />
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Camera className="h-5 w-5" />
-              Gabung ke Toko Lain
-            </CardTitle>
-            <CardDescription>
-              Scan QR Code atau masukkan 12 kata passphrase milik toko utama.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button className="w-full gap-2">
-              <Camera className="h-4 w-4" />
-              Buka Kamera untuk Scan QR
-            </Button>
-            <Button variant="outline" className="w-full gap-2">
-              <Key className="h-4 w-4" />
-              Ketik 12 Kata Passphrase
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Right Column: Peers & Backup */}
+        <div className="space-y-6 flex flex-col">
+          <ConnectedPeersCard peers={peers} />
+          <BackupExportCard onExport={exportBackup} onImport={importBackup} />
+        </div>
       </div>
+
+      {/* Scanner & Manual Pairing Modal */}
+      <QrScannerModal
+        open={isScannerOpen}
+        onOpenChange={setIsScannerOpen}
+        onPairSuccess={handlePairSuccess}
+      />
     </div>
   );
 };
