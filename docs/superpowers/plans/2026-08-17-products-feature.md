@@ -902,25 +902,25 @@ git commit -m "feat(products): add product card and form dialog with zod validat
 
 ---
 
-### Task 6: Route Composition & Full Feature Integration (`products-route.tsx`)
+#### Task 6: Page Composition & Full Feature Integration (`products-page.tsx`)
 
 **Files:**
-- Modify: `src/app/routes/products-route.tsx`
-- Create: `src/app/routes/__tests__/products-route.test.tsx`
+- Modify: `src/app/pages/products-page.tsx`
+- Create: `src/app/pages/__tests__/products-page.test.tsx`
 
 **Interfaces:**
 - Connects `useProducts`, `useDeleteProduct`, category filters, and `<ProductFormDialog />`.
 
-- [ ] **Step 1: Write Route Integration Test**
+- [ ] **Step 1: Write Page Integration Test**
 
-Create `src/app/routes/__tests__/products-route.test.tsx`:
+Create `src/app/pages/__tests__/products-page.test.tsx`:
 ```typescript
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { db } from '@/lib/db';
-import { ProductsRoute } from '@/app/routes/products-route';
+import { ProductsPage } from '@/app/pages/products-page';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -931,13 +931,13 @@ const createWrapper = () => {
   );
 };
 
-describe('ProductsRoute', () => {
+describe('ProductsPage', () => {
   beforeEach(async () => {
     await db.products.clear();
   });
 
   it('shows empty state when no products exist and opens form dialog', async () => {
-    render(<ProductsRoute />, { wrapper: createWrapper() });
+    render(<ProductsPage />, { wrapper: createWrapper() });
 
     expect(screen.getByText(/Kelola Produk/i)).toBeInTheDocument();
     await waitFor(() => {
@@ -952,21 +952,21 @@ describe('ProductsRoute', () => {
 });
 ```
 
-- [ ] **Step 2: Implement `src/app/routes/products-route.tsx`**
+- [ ] **Step 2: Implement full ProductsPage component**
 
-Modify `src/app/routes/products-route.tsx`:
+Update `src/app/pages/products-page.tsx`:
 ```typescript
 import React, { useState, useMemo } from 'react';
 import { Plus, Search, PackageOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Product } from '@/types/product.types';
 import { useProducts, useDeleteProduct } from '@/features/products/hooks/use-products';
 import { ProductCard } from '@/features/products/components/product-card';
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog';
+import type { Product } from '@/types/product.types';
 
-export const ProductsRoute: React.FC = () => {
+export const ProductsPage: React.FC = () => {
   const { data: products = [], isLoading } = useProducts();
   const deleteMutation = useDeleteProduct();
 
@@ -986,7 +986,8 @@ export const ProductsRoute: React.FC = () => {
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'ALL' || p.category === selectedCategory;
+      const matchesCategory =
+        selectedCategory === 'ALL' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [products, searchQuery, selectedCategory]);
@@ -1102,6 +1103,8 @@ export const ProductsRoute: React.FC = () => {
     </div>
   );
 };
+
+export default ProductsPage;
 ```
 
 - [ ] **Step 3: Run all tests to verify full suite passes**
@@ -1112,6 +1115,6 @@ Expected: All tests pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/app/routes/products-route.tsx src/app/routes/__tests__/products-route.test.tsx
-git commit -m "feat(products): integrate products management route with catalog grid and dialogs"
+git add src/app/pages/products-page.tsx src/app/pages/__tests__/products-page.test.tsx
+git commit -m "feat(products): integrate products management page with catalog grid and dialogs"
 ```

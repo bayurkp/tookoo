@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
 
-export const CashierRoute: React.FC = () => {
+export const CashierPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -45,4 +45,4 @@ export const CashierRoute: React.FC = () => {
   );
 };
 
-export default CashierRoute;
+export default CashierPage;

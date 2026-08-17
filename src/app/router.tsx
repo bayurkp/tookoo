@@ -2,10 +2,10 @@ import { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from '@/components/main-layout';
 
-const CashierRoute = lazy(() => import('@/app/routes/cashier-route'));
-const ProductsRoute = lazy(() => import('@/app/routes/products-route'));
-const OrdersRoute = lazy(() => import('@/app/routes/orders-route'));
-const SyncRoute = lazy(() => import('@/app/routes/sync-route'));
+const CashierPage = lazy(() => import('@/app/pages/cashier-page'));
+const ProductsPage = lazy(() => import('@/app/pages/products-page'));
+const OrdersPage = lazy(() => import('@/app/pages/orders-page'));
+const SyncPage = lazy(() => import('@/app/pages/sync-page'));
 
 const SuspenseFallback = () => (
   <div className="flex h-full w-full items-center justify-center p-8">
@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
         index: true,
         element: (
           <Suspense fallback={<SuspenseFallback />}>
-            <CashierRoute />
+            <CashierPage />
           </Suspense>
         ),
       },
@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
         path: 'products',
         element: (
           <Suspense fallback={<SuspenseFallback />}>
-            <ProductsRoute />
+            <ProductsPage />
           </Suspense>
         ),
       },
@@ -38,7 +38,7 @@ export const router = createBrowserRouter([
         path: 'orders',
         element: (
           <Suspense fallback={<SuspenseFallback />}>
-            <OrdersRoute />
+            <OrdersPage />
           </Suspense>
         ),
       },
@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
         path: 'sync',
         element: (
           <Suspense fallback={<SuspenseFallback />}>
-            <SyncRoute />
+            <SyncPage />
           </Suspense>
         ),
       },

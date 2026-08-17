@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Plus, Package } from 'lucide-react';
 
-export const ProductsRoute: React.FC = () => {
+export const ProductsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -37,4 +37,4 @@ export const ProductsRoute: React.FC = () => {
   );
 };
 
-export default ProductsRoute;
+export default ProductsPage;

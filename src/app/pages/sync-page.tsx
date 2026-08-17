@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { QrCode, Key, Camera } from 'lucide-react';
 
-export const SyncRoute: React.FC = () => {
+export const SyncPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
@@ -60,4 +60,4 @@ export const SyncRoute: React.FC = () => {
   );
 };
 
-export default SyncRoute;
+export default SyncPage;

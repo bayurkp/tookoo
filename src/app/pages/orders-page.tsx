@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Receipt } from 'lucide-react';
 
-export const OrdersRoute: React.FC = () => {
+export const OrdersPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
@@ -50,4 +50,4 @@ export const OrdersRoute: React.FC = () => {
   );
 };
 
-export default OrdersRoute;
+export default OrdersPage;

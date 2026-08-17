@@ -17,10 +17,10 @@ Before writing any code, read:
 
 ## 1. Unidirectional Codebase & Architecture
 
-Dependencies flow **inward only**: `App Routes → Features → Shared Modules (Components, Hooks, Lib, Types, Utils)`.
+Dependencies flow **inward only**: `App Pages → Features → Shared Modules (Components, Hooks, Lib, Types, Utils)`.
 
 ```text
-User interaction in UI Route
+User interaction in UI Page
   ↓ triggers action   →  Zustand Store (UI state) or TanStack Mutation Hook
   ↓ calls API layer   →  Dexie.js Repository (Local DB Mutation)
   ↓ broadcasts event  →  WebRTC P2P DataChannel (SyncMessage to connected peers)
@@ -31,7 +31,7 @@ User interaction in UI Route
 
 ### Hard Rules:
 
-- **No Cross-Feature Imports:** Code in `src/features/orders` MUST NEVER import from `src/features/products`. Cross-feature composition is strictly done at the application level (`src/app/routes/`).
+- **No Cross-Feature Imports:** Code in `src/features/orders` MUST NEVER import from `src/features/products`. Cross-feature composition is strictly done at the application level (`src/app/pages/`).
 - **Shared Isolation:** Modules in `src/components`, `src/lib`, `src/types`, `src/utils`, `src/hooks`, and `src/stores` are FORBIDDEN from importing from `src/features` or `src/app`.
 - **No Barrel Files:** Avoid `index.ts` barrel files to maximize _tree-shaking_ and Vite bundling performance. Import directly from specific files (e.g., `import { Button } from '@/components/ui/button';`).
 - **No Raw Data Mutation:** Data mutations strictly follow `get`, `upsert`, and `delete`.
@@ -108,13 +108,13 @@ src/features/<feature-name>/
 │
 ├── src/
 │   ├── app/                          // Application Layer
-│   │   ├── routes/                   // Route & Page compositions (Lazy Loaded)
-│   │   │   ├── __tests__/            // Route integration tests
-│   │   │   │   └── cashier-route.test.tsx
-│   │   │   ├── cashier-route.tsx     // Cashier terminal & cart layout composition
-│   │   │   ├── products-route.tsx    // Product catalog management screen
-│   │   │   ├── orders-route.tsx      // Receipts history & daily sales report
-│   │   │   └── sync-route.tsx        // P2P pairing & synchronization screen
+│   │   ├── pages/                    // Page compositions (Lazy Loaded)
+│   │   │   ├── __tests__/            // Page integration tests
+│   │   │   │   └── cashier-page.test.tsx
+│   │   │   ├── cashier-page.tsx      // Cashier terminal & cart layout composition
+│   │   │   ├── products-page.tsx     // Product catalog management screen
+│   │   │   ├── orders-page.tsx       // Receipts history & daily sales report
+│   │   │   └── sync-page.tsx         // P2P pairing & synchronization screen
 │   │   ├── app.tsx                   // Root App component with ErrorBoundary & MainLayout
 │   │   ├── provider.tsx              // Global Providers (QueryClientProvider, ErrorBoundary, Toaster)
 │   │   └── router.tsx                // Router configuration with React.lazy & localized ErrorBoundaries
