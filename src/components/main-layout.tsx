@@ -111,13 +111,13 @@ export const MainLayout: React.FC = () => {
           </aside>
 
           {/* Dynamic Page Router Outlet */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 md:pb-6 bg-background">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 md:pb-6 bg-background">
             <Outlet />
           </main>
         </div>
 
-        {/* Mobile Bottom Navigation Bar (Visible only on mobile screens) */}
-        <nav className="md:hidden border-t bg-card/90 backdrop-blur z-20 flex items-center justify-around py-2 px-1 shrink-0">
+        {/* Mobile Bottom Navigation Bar (Fixed sticky on mobile with safe-area support) */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur-md flex items-center justify-around py-2 px-1 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-lg">
           <NavLink
             to="/"
             className={({ isActive }) =>

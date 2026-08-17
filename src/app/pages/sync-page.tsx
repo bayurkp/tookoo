@@ -33,7 +33,13 @@ export const SyncPage: React.FC = () => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const handlePairSuccess = (payload: StorePairingPayload) => {
-    updateStoreName(payload.storeName);
+    updateSettings({
+      storeName: payload.storeName,
+      passphrase: payload.passphrase,
+    });
+    setTimeout(() => {
+      syncAllDataNow();
+    }, 500);
   };
 
   const handleUpdateRole = (role: UserRole) => {

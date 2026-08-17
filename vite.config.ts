@@ -67,7 +67,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: ['.loca.lt', '.ngrok-free.app', '.trycloudflare.com'],
+    allowedHosts: ['.loca.lt', '.ngrok-free.app', '.pinggy.net'],
   },
   test: {
     globals: true,
