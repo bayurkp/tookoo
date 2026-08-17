@@ -1,9 +1,18 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { ShoppingCart, Package, Receipt, QrCode } from 'lucide-react';
+import { ShoppingCart, Package, Receipt, QrCode, Languages } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
+import { Button } from '@/components/ui/button';
 
 export const MainLayout: React.FC = () => {
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === 'id' ? 'en' : 'id';
+    i18n.changeLanguage(nextLang);
+  };
+
   return (
     <div className="flex h-screen w-full flex-col bg-background overflow-hidden">
       {/* Top Header */}
@@ -14,7 +23,7 @@ export const MainLayout: React.FC = () => {
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-1.5">
-              Tookoo
+              {t('common.appName')}
               <span className="text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                 Local-First
               </span>
@@ -22,7 +31,17 @@ export const MainLayout: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLanguage}
+            className="h-8 px-2.5 text-xs font-medium gap-1.5 text-muted-foreground hover:text-foreground"
+            title="Ganti Bahasa / Switch Language"
+          >
+            <Languages className="h-3.5 w-3.5" />
+            <span className="uppercase">{i18n.language?.startsWith('en') ? 'EN' : 'ID'}</span>
+          </Button>
           <HeaderStatusBadge isOnline={navigator.onLine} peerCount={0} />
         </div>
       </header>
@@ -43,7 +62,7 @@ export const MainLayout: React.FC = () => {
               }
             >
               <ShoppingCart className="h-4 w-4" />
-              Kasir
+              {t('nav.cashier')}
             </NavLink>
 
             <NavLink
@@ -57,7 +76,7 @@ export const MainLayout: React.FC = () => {
               }
             >
               <Package className="h-4 w-4" />
-              Produk & Stok
+              {t('nav.products')}
             </NavLink>
 
             <NavLink
@@ -71,7 +90,7 @@ export const MainLayout: React.FC = () => {
               }
             >
               <Receipt className="h-4 w-4" />
-              Riwayat Transaksi
+              {t('nav.orders')}
             </NavLink>
 
             <NavLink
@@ -85,7 +104,7 @@ export const MainLayout: React.FC = () => {
               }
             >
               <QrCode className="h-4 w-4" />
-              P2P Sync & Pairing
+              {t('nav.sync')}
             </NavLink>
           </nav>
 

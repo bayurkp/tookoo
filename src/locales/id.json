@@ -1,0 +1,123 @@
+{
+  "common": {
+    "appName": "Tookoo",
+    "tagline": "Solusi Kasir Cerdas & Mandiri",
+    "actions": {
+      "add": "Tambah",
+      "edit": "Edit",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "confirm": "Konfirmasi",
+      "pay": "Bayar Sekarang",
+      "print": "Cetak Struk",
+      "search": "Cari...",
+      "filter": "Filter",
+      "retry": "Coba Lagi"
+    },
+    "states": {
+      "loading": "Memuat...",
+      "saving": "Menyimpan...",
+      "saved": "Berhasil Disimpan",
+      "failed": "Gagal. Coba lagi",
+      "empty": "Belum ada data",
+      "noResults": "Tidak ada hasil ditemukan"
+    }
+  },
+  "nav": {
+    "cashier": "Kasir",
+    "products": "Produk",
+    "orders": "Riwayat",
+    "sync": "Sinkronisasi"
+  },
+  "status": {
+    "p2pConnected": "P2P Terhubung ({{count}})",
+    "localMode": "Mode Lokal (Siap)",
+    "offline": "Offline (Tersimpan Lokal)"
+  },
+  "cashier": {
+    "title": "Terminal Kasir",
+    "searchPlaceholder": "Cari nama atau barcode produk...",
+    "allCategories": "Semua",
+    "cart": {
+      "title": "Keranjang Belanja",
+      "empty": "Keranjang masih kosong",
+      "emptyHint": "Pilih produk dari katalog untuk memulai transaksi.",
+      "subtotal": "Subtotal",
+      "discount": "Diskon",
+      "total": "Total Bayar",
+      "itemCount": "{{count}} item"
+    },
+    "payment": {
+      "title": "Pembayaran",
+      "method": "Metode Pembayaran",
+      "cash": "Tunai",
+      "qris": "QRIS",
+      "transfer": "Transfer Bank",
+      "amountReceived": "Uang Diterima",
+      "changeDue": "Kembalian",
+      "exactAmount": "Uang Pas",
+      "successTitle": "Pembayaran Berhasil",
+      "changeDueNotice": "Kembalian: {{amount}}"
+    }
+  },
+  "products": {
+    "title": "Kelola Produk",
+    "subtitle": "Daftar master data produk, inventaris stok, dan kategori tokomu.",
+    "addProduct": "Tambah Produk",
+    "editProduct": "Edit Produk",
+    "searchPlaceholder": "Cari produk berdasarkan nama...",
+    "allCategories": "Semua",
+    "stock": "Stok: {{count}}",
+    "outOfStock": "Stok Habis",
+    "lowStock": "Sisa {{count}}",
+    "empty": "Belum ada produk",
+    "emptyHint": "Tambahkan produk pertama tokomu untuk mulai melayani transaksi kasir.",
+    "emptyFilter": "Tidak ada produk yang cocok dengan pencarian atau filter yang dipilih.",
+    "form": {
+      "createTitle": "Tambah Produk Baru",
+      "editTitle": "Edit Produk",
+      "createDesc": "Masukkan rincian produk baru ke dalam katalog tokomu.",
+      "editDesc": "Perbarui rincian harga, stok, atau nama produk.",
+      "nameLabel": "Nama Produk *",
+      "namePlaceholder": "Contoh: Kopi Americano",
+      "categoryLabel": "Kategori *",
+      "categoryPlaceholder": "Contoh: Minuman / Makanan",
+      "priceLabel": "Harga (Rp) *",
+      "stockLabel": "Jumlah Stok *",
+      "imageLabel": "URL Foto Produk (Opsional)",
+      "imagePlaceholder": "https://...",
+      "saveBtn": "Simpan Perubahan",
+      "addBtn": "Tambah Produk",
+      "savingBtn": "Menyimpan..."
+    },
+    "deleteConfirm": "Hapus produk ini?"
+  },
+  "orders": {
+    "title": "Riwayat Transaksi",
+    "subtitle": "Pantau seluruh struk transaksi dan rekap omzet penjualan harian.",
+    "todayRevenue": "Omzet Hari Ini",
+    "totalOrders": "Total Transaksi",
+    "averageReceipt": "Rata-rata Struk",
+    "empty": "Belum ada transaksi hari ini",
+    "receipt": {
+      "title": "Rincian Struk",
+      "orderNumber": "No. Struk",
+      "date": "Waktu",
+      "cashier": "Kasir",
+      "items": "Daftar Belanja",
+      "paymentMethod": "Metode Pembayaran",
+      "total": "Total Transaksi"
+    }
+  },
+  "sync": {
+    "title": "Sinkronisasi P2P",
+    "subtitle": "Hubungkan perangkat kasir dan HP pemilik secara langsung tanpa server cloud.",
+    "statusCard": "Status Koneksi",
+    "connectedDevices": "Perangkat Terhubung: {{count}}",
+    "storeKeyTitle": "Kunci Toko & QR Pairing",
+    "scanQr": "Scan QR Perangkat",
+    "enterPassphrase": "Input 12 Kata Passphrase",
+    "passphraseHelper": "Gunakan passphrase 12 kata untuk menghubungkan perangkat tanpa kamera."
+  }
+}

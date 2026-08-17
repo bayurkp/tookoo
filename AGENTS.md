@@ -473,14 +473,24 @@ Always use consistent **Verb + Noun** patterns across all modules:
 
 ---
 
+## 17. Internationalization (i18n) & Multi-Language Support
+
+- **Default Language:** **Bahasa Indonesia (`id`)** is the primary default language for Tookoo, with English (`en`) supported out of the box.
+- **Library & Setup:** Powered by `i18next` and `react-i18next` configured in [`src/lib/i18n.ts`](file:///d:/Projects/tookoo/src/lib/i18n.ts).
+- **Locale Dictionaries:** All user-facing strings are maintained in [`src/locales/id.json`](file:///d:/Projects/tookoo/src/locales/id.json) and [`src/locales/en.json`](file:///d:/Projects/tookoo/src/locales/en.json) grouped by feature namespaces (`common`, `nav`, `status`, `cashier`, `products`, `orders`, `sync`).
+- **No Hardcoded UI Strings:** All components MUST use `const { t } = useTranslation()` for labels, placeholders, dialogs, button texts, and error alerts.
+- **Dynamic Language Switching:** Language state can be switched dynamically (e.g., via the header language button) without full page reload.
+
+---
+
 # Part 6 — Performance & Optimization Standards
 
-## 17. Route-Level Code Splitting
+## 18. Route-Level Code Splitting
 
 - Always use `React.lazy()` at the route level ([`src/app/router.tsx`](file:///d:/Projects/tookoo/src/app/router.tsx)) to minimize initial JavaScript bundle size.
 - Avoid micro-splitting small UI components to prevent network request waterfalls.
 
-## 18. Component & State Optimizations
+## 19. Component & State Optimizations
 
 - **State Locality:** Colocate state as close as possible to the consuming component. Avoid single monolithic global stores.
 - **Lazy State Initialization:** Use callback initializers `useState(() => expensiveComputation())` to prevent redundant computations on re-render.
@@ -488,7 +498,7 @@ Always use consistent **Verb + Noun** patterns across all modules:
 - **Children Prop Pattern (Virtual DOM Isolation):** Use the `children` pattern on container wrappers to isolate sub-tree Virtual DOM re-renders.
 - **Zero-Runtime CSS:** Build-time generated Tailwind CSS eliminates runtime CSS overhead.
 
-## 19. Data Prefetching & Media Optimizations
+## 20. Data Prefetching & Media Optimizations
 
 - **Data Prefetching:** Use `queryClient.prefetchQuery()` on navigation hover to make page transitions feel instantaneous.
 - **Image & Icon Optimization:**
@@ -500,18 +510,18 @@ Always use consistent **Verb + Noun** patterns across all modules:
 
 # Part 7 — Error Handling & Resilience
 
-## 20. Local DB & Query Error Management
+## 21. Local DB & Query Error Management
 
 - **Centralized Query Error Handling:** Configure `QueryCache` and `MutationCache` in [`src/lib/query-client.ts`](file:///d:/Projects/tookoo/src/lib/query-client.ts) with global error listeners that trigger toast notifications (`notification-store.ts`) on IndexedDB or WebRTC failures.
 - **Graceful Mutation Rollback:** Failed cashier transactions must safely recover state without causing local database corruption.
 
-## 21. Multi-Level Error Boundaries
+## 22. Multi-Level Error Boundaries
 
 - **Localized Error Boundaries:** Apply `react-error-boundary` across multiple levels:
   - _Route Level:_ Prevents an error in reports or history from crashing the main cashier terminal.
   - _Widget Level:_ Isolates sensitive components (e.g., QR Camera scanner or WebRTC connection widget) with cashier-friendly fallback views ([`src/components/error-fallback.tsx`](file:///d:/Projects/tookoo/src/components/error-fallback.tsx)).
 
-## 22. Error Logging & Observability
+## 23. Error Logging & Observability
 
 - All uncaught runtime errors are logged with contextual metadata (component name, failed action) without exposing private store credentials or BIP-39 mnemonic passphrases.
 
@@ -519,7 +529,7 @@ Always use consistent **Verb + Noun** patterns across all modules:
 
 # Part 8 — Testing Standards
 
-## 23. Testing Strategy & Execution
+## 24. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
    - Location: Colocated in `__tests__/` or `src/utils/__tests__/`.

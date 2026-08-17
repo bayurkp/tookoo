@@ -1,0 +1,123 @@
+{
+  "common": {
+    "appName": "Tookoo",
+    "tagline": "Smart & Self-Sovereign POS Solution",
+    "actions": {
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "pay": "Pay Now",
+      "print": "Print Receipt",
+      "search": "Search...",
+      "filter": "Filter",
+      "retry": "Retry"
+    },
+    "states": {
+      "loading": "Loading...",
+      "saving": "Saving...",
+      "saved": "Saved",
+      "failed": "Failed. Try again",
+      "empty": "No data available",
+      "noResults": "No results found"
+    }
+  },
+  "nav": {
+    "cashier": "Cashier",
+    "products": "Products",
+    "orders": "History",
+    "sync": "Sync"
+  },
+  "status": {
+    "p2pConnected": "P2P Connected ({{count}})",
+    "localMode": "Local Mode (Ready)",
+    "offline": "Offline (Stored Locally)"
+  },
+  "cashier": {
+    "title": "Cashier Terminal",
+    "searchPlaceholder": "Search product name or barcode...",
+    "allCategories": "All",
+    "cart": {
+      "title": "Shopping Cart",
+      "empty": "Cart is empty",
+      "emptyHint": "Select products from catalog to start transaction.",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "Total Due",
+      "itemCount": "{{count}} items"
+    },
+    "payment": {
+      "title": "Payment",
+      "method": "Payment Method",
+      "cash": "Cash",
+      "qris": "QRIS",
+      "transfer": "Bank Transfer",
+      "amountReceived": "Amount Received",
+      "changeDue": "Change Due",
+      "exactAmount": "Exact Amount",
+      "successTitle": "Payment Successful",
+      "changeDueNotice": "Change Due: {{amount}}"
+    }
+  },
+  "products": {
+    "title": "Manage Products",
+    "subtitle": "Product master catalog, stock inventory, and store categories.",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "searchPlaceholder": "Search products by name...",
+    "allCategories": "All",
+    "stock": "Stock: {{count}}",
+    "outOfStock": "Out of Stock",
+    "lowStock": "{{count}} left",
+    "empty": "No products yet",
+    "emptyHint": "Add your first product to start serving cashier sales.",
+    "emptyFilter": "No products match the search query or selected filter.",
+    "form": {
+      "createTitle": "Add New Product",
+      "editTitle": "Edit Product",
+      "createDesc": "Enter new product details into your store catalog.",
+      "editDesc": "Update price, stock, or product name.",
+      "nameLabel": "Product Name *",
+      "namePlaceholder": "e.g. Americano Coffee",
+      "categoryLabel": "Category *",
+      "categoryPlaceholder": "e.g. Beverages / Food",
+      "priceLabel": "Price (Rp) *",
+      "stockLabel": "Stock Count *",
+      "imageLabel": "Product Image URL (Optional)",
+      "imagePlaceholder": "https://...",
+      "saveBtn": "Save Changes",
+      "addBtn": "Add Product",
+      "savingBtn": "Saving..."
+    },
+    "deleteConfirm": "Delete this product?"
+  },
+  "orders": {
+    "title": "Transaction History",
+    "subtitle": "Track all receipts and monitor daily sales revenue.",
+    "todayRevenue": "Today's Revenue",
+    "totalOrders": "Total Transactions",
+    "averageReceipt": "Average Receipt",
+    "empty": "No transactions recorded today",
+    "receipt": {
+      "title": "Receipt Details",
+      "orderNumber": "Receipt No.",
+      "date": "Time",
+      "cashier": "Cashier",
+      "items": "Items Purchased",
+      "paymentMethod": "Payment Method",
+      "total": "Total Amount"
+    }
+  },
+  "sync": {
+    "title": "P2P Synchronization",
+    "subtitle": "Connect cashier terminals and owner devices directly without cloud servers.",
+    "statusCard": "Connection Status",
+    "connectedDevices": "Connected Devices: {{count}}",
+    "storeKeyTitle": "Store Key & QR Pairing",
+    "scanQr": "Scan Device QR",
+    "enterPassphrase": "Enter 12-Word Passphrase",
+    "passphraseHelper": "Use 12-word passphrase to connect devices without cameras."
+  }
+}
