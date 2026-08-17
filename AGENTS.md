@@ -159,9 +159,14 @@ src/features/<feature-name>/
 │   ├── lib/                          // Preconfigured Reusable Libraries
 │   │   ├── cn.ts                     // Class merging helper (clsx + tailwind-merge)
 │   │   ├── db.ts                     // Dexie.js DB instance (products, orders, settings tables)
-│   │   ├── webrtc.ts                 // WebRTC DataChannel P2P Client Engine
+│   │   ├── i18n.ts                   // Internationalization (i18next) configuration
 │   │   ├── passphrase.ts             // BIP-39 12-word mnemonic helper
-│   │   └── query-client.ts           // TanStack QueryClient setup with global error handlers
+│   │   ├── query-client.ts           // TanStack QueryClient setup with global error handlers
+│   │   └── webrtc.ts                 // WebRTC DataChannel P2P Client Engine
+│   │
+│   ├── locales/                      // i18n Translation Dictionaries
+│   │   ├── en.json                   // English dictionary
+│   │   └── id.json                   // Bahasa Indonesia dictionary (Default)
 │   │
 │   ├── stores/                       // Global Application State (Zustand)
 │   │   └── notification-store.ts     // Global Toast Notification Store
