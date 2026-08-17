@@ -6,24 +6,13 @@ import {
   Receipt,
   QrCode,
   Settings,
-  Languages,
-  Moon,
-  Sun,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useTheme } from '@/hooks/use-theme';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export const MainLayout: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const { isDark, toggleTheme } = useTheme();
-
-  const toggleLanguage = () => {
-    const nextLang = i18n.language === 'id' ? 'en' : 'id';
-    i18n.changeLanguage(nextLang);
-  };
+  const { t } = useTranslation();
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -44,70 +33,7 @@ export const MainLayout: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Language Switcher */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleLanguage}
-                  className="h-8 px-2.5 text-xs font-medium gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <Languages className="h-3.5 w-3.5" />
-                  <span className="uppercase">{i18n.language?.startsWith('en') ? 'EN' : 'ID'}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                {i18n.language?.startsWith('en')
-                  ? 'Ganti ke Bahasa Indonesia'
-                  : 'Switch to English'}
-              </TooltipContent>
-            </Tooltip>
-
-            {/* Dark / Light Theme Toggle */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleTheme}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                  aria-label="Toggle theme"
-                >
-                  {isDark ? (
-                    <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200" />
-                  ) : (
-                    <Moon className="h-4 w-4 text-slate-600 transition-transform duration-200" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                {isDark ? 'Mode Terang' : 'Mode Gelap'}
-              </TooltipContent>
-            </Tooltip>
-
-            {/* Settings Quick Link */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <NavLink to="/settings">
-                  {({ isActive }) => (
-                    <Button
-                      variant={isActive ? 'secondary' : 'ghost'}
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                      aria-label="Settings"
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  )}
-                </NavLink>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                {t('nav.settings', 'Pengaturan')}
-              </TooltipContent>
-            </Tooltip>
-
+          <div className="flex items-center gap-2">
             <HeaderStatusBadge isOnline={navigator.onLine} peerCount={0} />
           </div>
         </header>
