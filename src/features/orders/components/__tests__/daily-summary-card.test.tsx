@@ -4,7 +4,7 @@ import { DailySummaryCard } from '../daily-summary-card';
 import type { Order } from '@/types/order.types';
 
 describe('DailySummaryCard', () => {
-  it('calculates total revenue and order count for today', () => {
+  it('calculates total revenue and order count for today with insightful microcopy', () => {
     const today = Date.now();
     const mockOrders: Order[] = [
       {
@@ -43,6 +43,6 @@ describe('DailySummaryCard', () => {
 
     expect(screen.getByText('Omzet Hari Ini')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('Transaksi')).toBeInTheDocument();
+    expect(screen.getByText('Total Transaksi')).toBeInTheDocument();
   });
 });
