@@ -1,14 +1,10 @@
 import React from 'react';
+import type { FallbackProps } from 'react-error-boundary';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 
-interface ErrorFallbackProps {
-  error?: Error | null;
-  resetErrorBoundary?: () => void;
-}
-
-export const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
+export const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
   const handleReload = () => {
     if (resetErrorBoundary) {
       resetErrorBoundary();
@@ -16,6 +12,9 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorB
       window.location.reload();
     }
   };
+
+  const errorMessage =
+    error instanceof Error ? error.message : typeof error === 'string' ? error : error ? JSON.stringify(error) : null;
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-background text-foreground">
@@ -30,10 +29,10 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorB
           </CardDescription>
         </CardHeader>
 
-        {error && (
+        {errorMessage && (
           <CardContent className="pt-2">
             <div className="p-3 rounded-lg bg-muted/50 border text-[11px] font-mono text-muted-foreground overflow-x-auto max-h-32">
-              {error.message || String(error)}
+              {errorMessage}
             </div>
           </CardContent>
         )}
