@@ -12,6 +12,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '../stores/cart-store';
 import { useCashierCheckout } from '../hooks/use-cashier-checkout';
@@ -160,14 +161,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Cash Tab Content */}
           <TabsContent value="CASH" className="space-y-3 pt-2">
-            <div className="space-y-1">
-              <label htmlFor="cashTendered" className="text-xs font-semibold text-foreground">
+            <Field data-invalid={Boolean(errorMessage || (cashTendered && Number(cashTendered) < total))}>
+              <FieldLabel htmlFor="cashTendered">
                 {t('cashier.payment.amountReceivedLabel', 'Uang Diterima (Rp) *')}
-              </label>
+              </FieldLabel>
               <Input
                 id="cashTendered"
                 type="number"
                 value={cashTendered}
+                aria-invalid={Boolean(errorMessage || (cashTendered && Number(cashTendered) < total))}
                 onChange={(e) => {
                   setCashTendered(e.target.value);
                   setErrorMessage(null);
@@ -175,7 +177,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 className="text-lg font-bold"
                 placeholder="0"
               />
-            </div>
+            </Field>
 
             {/* Quick Cash Buttons */}
             <div className="flex flex-wrap gap-1.5">

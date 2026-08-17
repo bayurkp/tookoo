@@ -201,45 +201,49 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
               </div>
             </Field>
 
-            <Field>
+            <Field data-invalid={Boolean(errors.name)}>
               <FieldLabel htmlFor="name">Nama Produk *</FieldLabel>
               <Input
                 id="name"
                 placeholder="Contoh: Kopi Americano"
+                aria-invalid={Boolean(errors.name)}
                 {...register('name')}
               />
               <FieldError errors={[{ message: errors.name?.message }]} />
             </Field>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field>
+              <Field data-invalid={Boolean(errors.category)}>
                 <FieldLabel htmlFor="category">Kategori *</FieldLabel>
                 <Input
                   id="category"
                   placeholder="Contoh: Minuman"
+                  aria-invalid={Boolean(errors.category)}
                   {...register('category')}
                 />
                 <FieldError errors={[{ message: errors.category?.message }]} />
               </Field>
 
-              <Field>
+              <Field data-invalid={Boolean(errors.price)}>
                 <FieldLabel htmlFor="price">Harga (Rp) *</FieldLabel>
                 <Input
                   id="price"
                   type="number"
                   placeholder="0"
+                  aria-invalid={Boolean(errors.price)}
                   {...register('price')}
                 />
                 <FieldError errors={[{ message: errors.price?.message }]} />
               </Field>
             </div>
 
-            <Field>
+            <Field data-invalid={Boolean(errors.stock)}>
               <FieldLabel htmlFor="stock">Jumlah Stok *</FieldLabel>
               <Input
                 id="stock"
                 type="number"
                 placeholder="0"
+                aria-invalid={Boolean(errors.stock)}
                 {...register('stock')}
               />
               <FieldError errors={[{ message: errors.stock?.message }]} />
