@@ -3,28 +3,28 @@
     "appName": "Tookoo",
     "tagline": "Smart & Self-Sovereign POS Solution",
     "actions": {
-      "add": "Add",
-      "edit": "Edit",
-      "delete": "Delete",
-      "save": "Save",
+      "add": "Add Product",
+      "edit": "Edit Product",
+      "delete": "Delete Product",
+      "save": "Save Product",
       "cancel": "Cancel",
-      "confirm": "Confirm",
+      "confirm": "Confirm Payment",
       "pay": "Pay Now",
       "print": "Print Receipt",
-      "search": "Search...",
+      "search": "Search items or receipts...",
       "filter": "Filter",
       "retry": "Retry",
-      "close": "Close",
-      "apply": "Apply",
-      "view": "View"
+      "close": "Cancel",
+      "apply": "Apply Discount",
+      "view": "View Receipt"
     },
     "states": {
       "loading": "Loading...",
       "saving": "Saving...",
-      "saved": "Saved",
-      "failed": "Failed. Try again",
-      "empty": "No data available",
-      "noResults": "No results found"
+      "saved": "Data Saved",
+      "failed": "Failed to save. Try again.",
+      "empty": "No data available.",
+      "noResults": "No results found."
     }
   },
   "nav": {
@@ -36,7 +36,7 @@
   "status": {
     "p2pConnected": "P2P Connected ({{count}})",
     "localMode": "Local Mode (Ready)",
-    "offline": "Offline (Stored Locally)"
+    "offline": "Local Store Mode (Offline). Data safely stored on device."
   },
   "cashier": {
     "title": "Cashier Terminal",
@@ -46,14 +46,14 @@
     "newTransaction": "New Transaction",
     "cart": {
       "title": "Shopping Cart",
-      "empty": "Cart is empty",
+      "empty": "Cart is empty.",
       "emptyHint": "Select products from catalog to start cashier transaction.",
       "subtotal": "Subtotal",
       "discount": "Discount",
       "total": "Total Due",
       "itemCount": "{{count}} items",
-      "clear": "Clear",
-      "addDiscount": "Add Order Discount"
+      "clear": "Clear Cart",
+      "addDiscount": "Add Discount"
     },
     "payment": {
       "title": "Payment",
@@ -78,9 +78,9 @@
       "transferDesc": "Verify bank transfer receipt of {{amount}} before completing.",
       "confirm": "Confirm Payment",
       "processing": "Processing Transaction...",
-      "successTitle": "Payment Successful",
+      "successTitle": "Payment Successful.",
       "successDesc": "Transaction saved to local cashier storage.",
-      "changeDueNotice": "Change Due: {{amount}}"
+      "changeDueNotice": "Change Due: {{amount}}."
     }
   },
   "products": {
@@ -92,10 +92,10 @@
     "allCategories": "All",
     "stock": "Stock: {{count}}",
     "outOfStock": "Out of Stock",
-    "lowStock": "{{count}} left",
+    "lowStock": "{{count}} left in stock",
     "empty": "No products registered yet.",
     "emptyHint": "Add your first product to start serving cashier sales.",
-    "emptyFilter": "No products match the selected filter.",
+    "emptyFilter": "No products match the search filter.",
     "form": {
       "createTitle": "Add New Product",
       "editTitle": "Edit Product",
@@ -109,9 +109,9 @@
       "stockLabel": "Stock Count *",
       "imageLabel": "Product Image URL (Optional)",
       "imagePlaceholder": "https://...",
-      "saveBtn": "Save Changes",
+      "saveBtn": "Save Product",
       "addBtn": "Add Product",
-      "savingBtn": "Saving..."
+      "savingBtn": "Saving Product..."
     },
     "deleteConfirm": "Delete this product?"
   },
@@ -121,22 +121,22 @@
     "searchPlaceholder": "Search receipt number or cashier...",
     "todayRevenue": "Today's Revenue",
     "totalOrders": "Total Transactions",
-    "averageReceipt": "Average Ticket",
+    "averageReceipt": "Average Receipt",
     "nonCashRevenue": "QRIS / Non-Cash",
     "transactionsUnit": "Transactions",
-    "empty": "No transaction history yet.",
-    "emptyFilter": "No transactions match the selected filter.",
+    "empty": "No transactions recorded today.",
+    "emptyFilter": "No transactions match the search filter.",
     "emptyHint": "Completed cashier sales will appear here automatically.",
     "receipt": {
       "title": "Receipt Details",
       "orderNumber": "Receipt No.",
       "date": "Transaction Time",
       "cashier": "Cashier",
-      "items": "Items Sold",
+      "items": "Items Purchased",
       "paymentMethod": "Payment Method",
       "total": "Total Amount",
       "completed": "COMPLETED",
-      "reprint": "Reprint Receipt"
+      "reprint": "Print Receipt"
     }
   },
   "sync": {
@@ -146,10 +146,11 @@
       "title": "Store Identity & Secret Key",
       "desc": "Local credentials for serverless peer cashier pairing.",
       "nameLabel": "Store Name",
+      "saveBtn": "Save Name",
       "passphraseLabel": "12-Word Secret Passphrase (BIP-39)",
-      "regenerate": "Regenerate",
+      "regenerate": "Regenerate Key",
       "copy": "Copy 12-Word Passphrase",
-      "copied": "Copied to Clipboard!"
+      "copied": "Copied to clipboard."
     },
     "qrCard": {
       "title": "Store Pairing QR Code",
@@ -167,7 +168,7 @@
       "cameraDesc": "Ensure camera permissions are allowed on browser to scan directly.",
       "storeNameLabel": "Store Name (Optional)",
       "passphraseLabel": "12-Word Store Passphrase *",
-      "connectBtn": "Connect Store"
+      "connectBtn": "Connect Terminal"
     },
     "peers": {
       "title": "Connected Terminals",
@@ -180,8 +181,8 @@
       "title": "Data Backup & Recovery (Offline Backup)",
       "desc": "Save catalog products and sales history to local storage.",
       "exportBtn": "Export Backup (JSON)",
-      "importBtn": "Restore from File",
-      "successMsg": "Successfully restored {{products}} products and {{orders}} orders.",
+      "importBtn": "Restore Backup",
+      "successMsg": "Data restored: {{products}} products, {{orders}} orders.",
       "errorMsg": "Failed to read backup file. Invalid JSON format."
     }
   }

@@ -3,28 +3,28 @@
     "appName": "Tookoo",
     "tagline": "Solusi Kasir Cerdas & Mandiri",
     "actions": {
-      "add": "Tambah",
-      "edit": "Edit",
-      "delete": "Hapus",
-      "save": "Simpan",
+      "add": "Tambah Produk",
+      "edit": "Edit Produk",
+      "delete": "Hapus Produk",
+      "save": "Simpan Produk",
       "cancel": "Batal",
-      "confirm": "Konfirmasi",
+      "confirm": "Konfirmasi Pembayaran",
       "pay": "Bayar Sekarang",
       "print": "Cetak Struk",
-      "search": "Cari...",
+      "search": "Cari produk atau struk...",
       "filter": "Filter",
       "retry": "Coba Lagi",
-      "close": "Tutup",
-      "apply": "Pasang",
-      "view": "Lihat"
+      "close": "Batal",
+      "apply": "Pasang Diskon",
+      "view": "Lihat Struk"
     },
     "states": {
       "loading": "Memuat...",
       "saving": "Menyimpan...",
-      "saved": "Berhasil Disimpan",
-      "failed": "Gagal. Coba lagi",
-      "empty": "Belum ada data",
-      "noResults": "Tidak ada hasil ditemukan"
+      "saved": "Data Berhasil Disimpan",
+      "failed": "Gagal menyimpan. Coba lagi.",
+      "empty": "Belum ada data.",
+      "noResults": "Tidak ada hasil ditemukan."
     }
   },
   "nav": {
@@ -36,7 +36,7 @@
   "status": {
     "p2pConnected": "P2P Terhubung ({{count}})",
     "localMode": "Mode Lokal (Siap)",
-    "offline": "Offline (Tersimpan Lokal)"
+    "offline": "Mode Lokal (Offline). Data aman tersimpan."
   },
   "cashier": {
     "title": "Terminal Kasir",
@@ -46,14 +46,14 @@
     "newTransaction": "Transaksi Baru",
     "cart": {
       "title": "Keranjang Belanja",
-      "empty": "Keranjang masih kosong",
+      "empty": "Keranjang masih kosong.",
       "emptyHint": "Pilih produk dari katalog untuk memulai transaksi kasir.",
       "subtotal": "Subtotal",
       "discount": "Diskon",
       "total": "Total Bayar",
       "itemCount": "{{count}} item",
-      "clear": "Kosongkan",
-      "addDiscount": "Tambah Diskon Transaksi"
+      "clear": "Kosongkan Keranjang",
+      "addDiscount": "Tambah Diskon"
     },
     "payment": {
       "title": "Pembayaran",
@@ -67,8 +67,8 @@
       "amountReceived": "Uang Diterima",
       "amountReceivedLabel": "Uang Diterima (Rp) *",
       "changeDue": "Kembalian",
-      "changeDueLabel": "Uang Kembalian:",
-      "changeDueUpper": "UANG KEMBALIAN",
+      "changeDueLabel": "Kembalian:",
+      "changeDueUpper": "KEMBALIAN",
       "exactAmount": "Uang Pas",
       "insufficientCash": "Uang Kurang",
       "qrisTitle": "Scan QRIS Dinamis Toko",
@@ -78,9 +78,9 @@
       "transferDesc": "Verifikasi mutasi rekening masuk sebesar {{amount}} sebelum menyelesaikan transaksi.",
       "confirm": "Konfirmasi Pembayaran",
       "processing": "Memproses Transaksi...",
-      "successTitle": "Pembayaran Berhasil",
+      "successTitle": "Pembayaran Berhasil.",
       "successDesc": "Transaksi tercatat ke memori lokal kasir.",
-      "changeDueNotice": "Kembalian: {{amount}}"
+      "changeDueNotice": "Kembalian: {{amount}}."
     }
   },
   "products": {
@@ -95,7 +95,7 @@
     "lowStock": "Sisa {{count}}",
     "empty": "Belum ada produk terdaftar.",
     "emptyHint": "Tambahkan produk pertama tokomu untuk mulai melayani transaksi kasir.",
-    "emptyFilter": "Tidak ada produk yang cocok dengan filter.",
+    "emptyFilter": "Tidak ada produk yang cocok dengan filter pencarian.",
     "form": {
       "createTitle": "Tambah Produk Baru",
       "editTitle": "Edit Produk",
@@ -109,9 +109,9 @@
       "stockLabel": "Jumlah Stok *",
       "imageLabel": "URL Foto Produk (Opsional)",
       "imagePlaceholder": "https://...",
-      "saveBtn": "Simpan Perubahan",
+      "saveBtn": "Simpan Produk",
       "addBtn": "Tambah Produk",
-      "savingBtn": "Menyimpan..."
+      "savingBtn": "Menyimpan Produk..."
     },
     "deleteConfirm": "Hapus produk ini?"
   },
@@ -121,22 +121,22 @@
     "searchPlaceholder": "Cari nomor struk atau kasir...",
     "todayRevenue": "Omzet Hari Ini",
     "totalOrders": "Total Transaksi",
-    "averageReceipt": "Rata-rata Transaksi",
+    "averageReceipt": "Rata-rata Struk",
     "nonCashRevenue": "QRIS / Non-Tunai",
     "transactionsUnit": "Transaksi",
-    "empty": "Belum ada riwayat transaksi.",
-    "emptyFilter": "Tidak ada transaksi yang cocok dengan filter.",
+    "empty": "Belum ada riwayat transaksi hari ini.",
+    "emptyFilter": "Tidak ada transaksi yang cocok dengan filter pencarian.",
     "emptyHint": "Transaksi yang selesai di kasir akan muncul di sini secara otomatis.",
     "receipt": {
       "title": "Rincian Struk Transaksi",
       "orderNumber": "No. Struk",
       "date": "Waktu Transaksi",
       "cashier": "Kasir",
-      "items": "Menu Terjual",
-      "paymentMethod": "Metode Bayar",
+      "items": "Daftar Belanja",
+      "paymentMethod": "Metode Pembayaran",
       "total": "Total Tagihan",
       "completed": "SELESAI",
-      "reprint": "Cetak Ulang Struk"
+      "reprint": "Cetak Struk"
     }
   },
   "sync": {
@@ -146,10 +146,11 @@
       "title": "Identitas Toko & Kunci Rahasia",
       "desc": "Kredensial lokal untuk pairing antar terminal kasir tanpa server.",
       "nameLabel": "Nama Toko",
+      "saveBtn": "Simpan Nama",
       "passphraseLabel": "12 Kata Kunci Rahasia (BIP-39 Passphrase)",
-      "regenerate": "Acak Ulang",
+      "regenerate": "Acak Ulang Kunci",
       "copy": "Salin 12 Kata Rahasia",
-      "copied": "Tersalin ke Clipboard!"
+      "copied": "Tersalin ke clipboard."
     },
     "qrCard": {
       "title": "QR Code Pairing Toko",
@@ -167,7 +168,7 @@
       "cameraDesc": "Pastikan izin kamera aktif pada browser untuk memindai secara langsung.",
       "storeNameLabel": "Nama Toko (Opsional)",
       "passphraseLabel": "12 Kata Sandi Toko *",
-      "connectBtn": "Hubungkan Toko"
+      "connectBtn": "Hubungkan Terminal"
     },
     "peers": {
       "title": "Terminal Terhubung",
@@ -180,8 +181,8 @@
       "title": "Cadangan & Pemulihan Data (Offline Backup)",
       "desc": "Simpan berkas master produk dan riwayat transaksi ke penyimpanan lokal.",
       "exportBtn": "Ekspor Cadangan (JSON)",
-      "importBtn": "Pulihkan dari File",
-      "successMsg": "Sukses memulihkan {{products}} produk dan {{orders}} transaksi.",
+      "importBtn": "Pulihkan Cadangan",
+      "successMsg": "Data berhasil dipulihkan: {{products}} produk, {{orders}} transaksi.",
       "errorMsg": "Gagal membaca berkas cadangan. Format JSON tidak valid."
     }
   }

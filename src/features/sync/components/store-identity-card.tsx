@@ -76,7 +76,7 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
               onClick={handleSaveName}
               className="h-9 px-3 text-xs cursor-pointer"
             >
-              {t('common.actions.save', 'Simpan')}
+              {t('sync.storeIdentity.saveBtn', 'Simpan Nama')}
             </Button>
           </div>
         </div>
