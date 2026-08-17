@@ -72,7 +72,7 @@ export const CashierPage: React.FC = () => {
           <Button
             onClick={() => setIsMobileCartOpen(true)}
             size="lg"
-            className="h-14 px-5 rounded-full shadow-xl gap-3 font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-background"
+            className="h-14 px-5 rounded-full border-2 border-background gap-3 font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <div className="relative">
               <ShoppingCart className="h-5 w-5" />

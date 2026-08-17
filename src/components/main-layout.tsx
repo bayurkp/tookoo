@@ -22,7 +22,7 @@ export const MainLayout: React.FC = () => {
         {/* Top Header */}
         <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6 bg-card/80 backdrop-blur z-20 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg shadow-xs">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg">
               T
             </div>
             <div>
@@ -92,7 +92,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      ? 'bg-primary text-primary-foreground font-semibold'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -106,7 +106,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      ? 'bg-primary text-primary-foreground font-semibold'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -120,7 +120,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      ? 'bg-primary text-primary-foreground font-semibold'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -134,7 +134,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      ? 'bg-primary text-primary-foreground font-semibold'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }

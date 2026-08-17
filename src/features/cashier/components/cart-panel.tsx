@@ -51,7 +51,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
   };
 
   return (
-    <Card className="flex flex-col h-full border-border/80 shadow-md">
+    <Card className="flex flex-col h-full border-border/80 shadow-none">
       {/* Header */}
       <CardHeader className="p-4 pb-3 border-b flex flex-row items-center justify-between space-y-0">
         <div className="flex items-center gap-2">
@@ -263,7 +263,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
           <Button
             onClick={onProceedToPayment}
             disabled={items.length === 0}
-            className="w-full h-11 text-base font-bold gap-2 shadow-md cursor-pointer"
+            className="w-full h-11 text-base font-bold gap-2 cursor-pointer"
           >
             <span>{t('common.actions.pay', 'Bayar Sekarang')}</span>
             <span>•</span>

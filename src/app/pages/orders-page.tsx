@@ -56,7 +56,7 @@ export const OrdersPage: React.FC = () => {
       <DailySummaryCard orders={orders} />
 
       {/* Recent Transactions Table Card */}
-      <Card className="border-border/80 shadow-xs">
+      <Card className="border-border/80 shadow-none">
         <CardHeader className="p-4 pb-3 border-b flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 space-y-0">
           <div>
             <CardTitle className="text-base font-bold flex items-center gap-2">

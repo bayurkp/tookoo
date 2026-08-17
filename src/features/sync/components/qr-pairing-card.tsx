@@ -32,7 +32,7 @@ export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenSc
   const payloadString = JSON.stringify(pairingPayload);
 
   return (
-    <Card className="border-border/80 shadow-xs flex flex-col justify-between">
+    <Card className="border-border/80 shadow-none flex flex-col justify-between">
       <CardHeader className="p-4 pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenSc
       </CardHeader>
 
       <CardContent className="p-4 flex flex-col items-center justify-center space-y-3">
-        <div className="p-3 bg-white rounded-xl shadow-xs border border-border flex items-center justify-center">
+        <div className="p-3 bg-white rounded-xl shadow-none border border-border flex items-center justify-center">
           <QRCodeSVG value={payloadString} size={168} level="M" includeMargin={false} />
         </div>
         <p className="text-xs text-muted-foreground text-center max-w-xs">

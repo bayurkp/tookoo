@@ -42,7 +42,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 1. Total Omzet */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-primary/5 to-card border-border/80 shadow-xs">
+      <Card className="relative overflow-hidden bg-gradient-to-t from-primary/5 to-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.todayRevenue', 'Omzet Hari Ini')}
@@ -67,7 +67,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       </Card>
 
       {/* 2. Total Transaksi */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-blue-500/5 to-card border-border/80 shadow-xs">
+      <Card className="relative overflow-hidden bg-gradient-to-t from-blue-500/5 to-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.totalOrders', 'Total Transaksi')}
@@ -91,7 +91,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       </Card>
 
       {/* 3. Rata-rata Struk */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-emerald-500/5 to-card border-border/80 shadow-xs">
+      <Card className="relative overflow-hidden bg-gradient-to-t from-emerald-500/5 to-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.averageReceipt', 'Rata-rata Struk')}
@@ -115,7 +115,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       </Card>
 
       {/* 4. Non-Tunai / QRIS */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-purple-500/5 to-card border-border/80 shadow-xs">
+      <Card className="relative overflow-hidden bg-gradient-to-t from-purple-500/5 to-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.nonCashRevenue', 'QRIS / Transfer')}

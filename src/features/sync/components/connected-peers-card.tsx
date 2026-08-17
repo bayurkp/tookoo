@@ -15,7 +15,7 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
   const { t } = useTranslation();
 
   return (
-    <Card className="border-border/80 shadow-xs">
+    <Card className="border-border/80 shadow-none">
       <CardHeader className="p-4 pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

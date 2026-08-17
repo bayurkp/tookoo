@@ -43,7 +43,7 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
   };
 
   return (
-    <Card className="border-border/80 shadow-xs">
+    <Card className="border-border/80 shadow-none">
       <CardHeader className="p-4 pb-2">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
