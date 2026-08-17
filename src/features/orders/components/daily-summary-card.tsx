@@ -42,32 +42,32 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 1. Total Omzet */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-primary/5 to-card border-border/80 shadow-none">
+      <Card className="bg-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.todayRevenue', 'Omzet Hari Ini')}
           </CardDescription>
-          <CardTitle className="text-2xl font-bold tracking-tight text-primary tabular-nums">
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground tabular-nums">
             {formatCurrency(summary.totalRevenue)}
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge
               variant="outline"
-              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 text-muted-foreground"
             >
-              <DollarSign className="h-3 w-3 text-primary" />
+              <DollarSign className="h-3 w-3" />
               <span>Hari Ini</span>
             </Badge>
           </div>
         </CardHeader>
         <CardFooter className="p-4 pt-1 text-xs text-muted-foreground flex items-center gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+          <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
           <span>Total pemasukan kasir hari ini</span>
         </CardFooter>
       </Card>
 
       {/* 2. Total Transaksi */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-blue-500/5 to-card border-border/80 shadow-none">
+      <Card className="bg-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.totalOrders', 'Total Transaksi')}
@@ -78,9 +78,9 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
           <div className="absolute right-4 top-4">
             <Badge
               variant="outline"
-              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 text-muted-foreground"
             >
-              <ShoppingBag className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+              <ShoppingBag className="h-3 w-3" />
               <span>{t('orders.transactionsUnit', 'Transaksi')}</span>
             </Badge>
           </div>
@@ -91,7 +91,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       </Card>
 
       {/* 3. Rata-rata Struk */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-emerald-500/5 to-card border-border/80 shadow-none">
+      <Card className="bg-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.averageReceipt', 'Rata-rata Struk')}
@@ -102,9 +102,9 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
           <div className="absolute right-4 top-4">
             <Badge
               variant="outline"
-              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 text-muted-foreground"
             >
-              <TrendingUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+              <TrendingUp className="h-3 w-3" />
               <span>Per Struk</span>
             </Badge>
           </div>
@@ -115,7 +115,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       </Card>
 
       {/* 4. Non-Tunai / QRIS */}
-      <Card className="relative overflow-hidden bg-gradient-to-t from-purple-500/5 to-card border-border/80 shadow-none">
+      <Card className="bg-card border-border/80 shadow-none">
         <CardHeader className="p-4 pb-2 relative">
           <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {t('orders.nonCashRevenue', 'QRIS / Transfer')}
@@ -126,9 +126,9 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
           <div className="absolute right-4 top-4">
             <Badge
               variant="outline"
-              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 text-muted-foreground"
             >
-              <CreditCard className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+              <CreditCard className="h-3 w-3" />
               <span>Non-Tunai</span>
             </Badge>
           </div>
