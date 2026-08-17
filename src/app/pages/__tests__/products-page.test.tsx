@@ -6,12 +6,16 @@ import { db } from '@/lib/db';
 import { ProductsPage } from '../products-page';
 import { useAuthStore } from '@/stores/auth-store';
 
+import { MemoryRouter } from 'react-router-dom';
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{children}</MemoryRouter>
+    </QueryClientProvider>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -55,7 +56,10 @@ export const ProductsPage: React.FC = () => {
   const { hasPermission } = useAuthStore();
   const deleteMutation = useDeleteProduct();
 
-  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'variants' | 'modifiers'>('products');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get('tab') as 'products' | 'categories' | 'variants' | 'modifiers') || 'products';
+  const setActiveTab = (tab: string) => setSearchParams({ tab });
+
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -183,6 +187,7 @@ export const ProductsPage: React.FC = () => {
       {/* Main Tabs Hub */}
       <Tabs
         value={activeTab}
+        defaultValue="products"
         onValueChange={(val) => setActiveTab(val as any)}
         className="space-y-4"
       >
