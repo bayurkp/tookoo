@@ -349,20 +349,109 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 5 — Performance & Optimization Standards
+# Part 5 — Voice, Tone & POS UI Copy Standards
 
-## 13. Route-Level Code Splitting
+## 13. Tookoo's Brand Voice (POS Operator Mindset)
+
+Tookoo berbicara seperti **asisten kasir yang tangkas, ringkas, dan dapat diandalkan (*Smart, Fast & Trustworthy POS Partner*)**.
+Pengguna aplikasi adalah pelaku UMKM dan kasir yang melayani antrean pembeli secara langsung. Seluruh teks antarmuka (UI copy) wajib dapat dipahami seketika dalam $\le 1$ detik tanpa beban kognitif berlebih.
+
+### Voice Qualities
+
+| Quality | Meaning in POS Context | What it is NOT |
+| :--- | :--- | :--- |
+| **Fast & Direct (Ringkas)** | Langsung ke inti aksi. Kalimat pendek, kata kerja aktif, hilangkan kata basa-basi. | Dingin, kasar, membingungkan |
+| **Reliable & Reassuring (Pasti)** | Memberikan kepastian status (offline, tersimpan, kembalian, tersambung) secara akurat. | Meragukan, lambat, ambigu |
+| **Pragmatic (Praktis & Solutif)** | Menggunakan istilah bisnis/kasir umum (Omzet, Stok, Kembalian, Struk) tanpa jargon rumit. | Teoretis, berbelit-belit |
+| **Professional (Profesional)** | Menjaga alur kerja kasir tetap tertata, tenang, dan cepat bahkan saat antrean padat. | Kaku, penuh teks hukum panjang |
+
+---
+
+## 14. Voice by Moment (POS Scenarios)
+
+### 1. Transaksi Kasir & Pembayaran Sukses
+- **Tone:** Tegas, cepat, langsung menampilkan angka kunci (Kembalian & Total).
+- **✅ Contoh:** `"Pembayaran Berhasil. Kembalian: Rp 15.000."`, `"Transaksi Selesai."`
+- **❌ Hindari:** `"Hore! Pembayaran dari pelanggan berhasil diproses ke dalam sistem!"`
+
+### 2. Status Stok & Inventaris
+- **Tone:** Informatif, preventif, tidak mendramatisir.
+- **✅ Contoh:** `"Stok tersisa 3"`, `"Stok habis"`, `"Produk berhasil ditambahkan ke katalog."`
+- **❌ Hindari:** `"Gawat! Anda kehabisan stok barang ini!"`
+
+### 3. Koneksi P2P & Status Offline
+- **Tone:** Transparan dan menenangkan (memberi jaminan data tetap aman 100%).
+- **✅ Contoh:** `"Mode Toko Lokal (Offline). Data tersimpan aman di perangkat."`, `"Tersambung ke 2 perangkat kasir."`
+- **❌ Hindari:** `"Koneksi internet terputus! Aplikasi tidak dapat berjalan."`
+
+### 4. Konfirmasi Aksi Destruktif (Hapus & Batal)
+- **Tone:** Lugas, langsung berupa pertanyaan pendek berorientasi tindakan.
+- **✅ Contoh:** `"Hapus produk ini?"`, `"Batalkan transaksi ini?"`
+- **❌ Hindari:** `"Apakah Anda benar-benar yakin ingin menghapus data produk ini secara permanen dari basis data?"`
+
+### 5. Empty States (Layar Kosong)
+- **Tone:** Mengundang aksi langsung dengan tombol CTA yang jelas.
+- **✅ Contoh:** `"Belum ada produk. Tambahkan produk pertamamu untuk mulai transaksi."`, `"Belum ada transaksi hari ini."`
+- **❌ Hindari:** `"Oops! Tidak ada data apa pun yang ditemukan di sini."`
+
+### 6. Error & Gangguan Teknis
+- **Tone:** Jujur, tenang, langsung memberikan solusi atau retry otomatis.
+- **✅ Contoh:** `"Gagal memindai QR. Pastikan kamera memiliki izin dan coba lagi."`, `"Gagal menyimpan data lokal. Mencoba kembali..."`
+- **❌ Hindari:** `"Error 500: Uncaught Exception"`, `"Oopsie! Ada kesalahan teknis! 😅"`
+
+---
+
+## 15. What Tookoo UI Copy Never Does
+
+- **Never uses filler or over-cheerful exclamation marks.** Maksimum 0–1 tanda seru (`!`), hindari kata basa-basi seperti "Hore", "Aduh", "Oops".
+- **Never blames the cashier or store owner.** Fokus pada apa yang terjadi dan tombol aksi pemulihannya.
+- **Never uses unicode emojis in UI copy.** Gunakan semantic vector icons dari `lucide-react` (misal: `<Receipt />`, `<Package />`, `<Trash2 />`).
+- **Never uses cryptic developer errors.** Jangan tampilkan trace kode atau JSON error mentah di antarmuka kasir.
+
+---
+
+## 16. UI Copy Consistency & Microcopy Rules
+
+### 1. Label Tombol & Aksi (Format: Kata Kerja + Objek)
+Selalu gunakan format **Verb + Noun** yang konsisten di seluruh modul:
+
+| Aksi | Tombol yang Benar | Hindari (Tidak Konsisten) |
+| :--- | :--- | :--- |
+| Tambah data baru | **Tambah Produk**, **Tambah Item** | "Buat Baru", "Add", "Input" |
+| Simpan form/edit | **Simpan Produk**, **Simpan Pengaturan** | "Submit", "Simpan", "Save" |
+| Proses transaksi | **Bayar Sekarang**, **Proses Bayar** | "OK", "Lanjut", "Checkout" |
+| Cetak fisik | **Cetak Struk** | "Print", "Keluarkan Nota" |
+| Hapus data | **Hapus Produk**, **Hapus Item** | "Delete", "Buang" |
+| Pembatalan modal | **Batal** | "Keluar", "Tutup Saja" |
+
+### 2. Loading State Pattern (3 Tahap: Idle → Loading → Result)
+| State | Pattern | Contoh |
+| :--- | :--- | :--- |
+| **Idle** | Verb + Noun | `"Simpan Produk"` |
+| **Loading** | Verb + `...` | `"Menyimpan..."` |
+| **Success** | Past / Done | `"Produk Disimpan"` |
+| **Error** | Gagal + Solusi | `"Gagal menyimpan. Coba lagi"` |
+
+### 3. Format Mata Uang & Angka
+- Seluruh angka nominal rupiah WAJIB diformat menggunakan helper [`formatCurrency()`](file:///d:/Projects/tookoo/src/utils/format-currency.ts) (contoh: `Rp 25.000`, bukan `25000` atau `IDR 25000.00`).
+- Tanggal dan jam transaksi menggunakan format lokal Indonesia yang ringkas (contoh: `17 Agu 2026, 20:30`).
+
+---
+
+# Part 6 — Performance & Optimization Standards
+
+## 17. Route-Level Code Splitting
 - Wajib menggunakan `React.lazy()` di level rute ([`src/app/router.tsx`](file:///d:/Projects/tookoo/src/app/router.tsx)) untuk mengisolasi ukuran bundle awal (*initial bundle size*).
 - Hindari *over-splitting* pada level komponen kecil agar tidak menyebabkan *request waterfall*.
 
-## 14. Component & State Optimizations
+## 18. Component & State Optimizations
 - **State Locality:** Tempatkan state sedekat mungkin dengan komponen yang mengonsumsinya. Jangan letakkan semua state di global store.
 - **Lazy State Initialization:** Gunakan callback initializer `useState(() => expensiveComputation())` untuk menghindari eksekusi ulang pada setiap siklus re-render.
 - **Atomic Selectors (Zustand):** Selalu gunakan selector presisi (contoh: `useCartStore(state => state.items)`) agar komponen hanya re-render saat data spesifik tersebut berubah.
 - **Children Prop Pattern (Virtual DOM Isolation):** Terapkan pola `children` pada komponen wrapper (seperti layout & modal container) untuk mengisolasi sub-tree Virtual DOM dari re-render parent.
 - **Zero-Runtime CSS:** Gunakan Tailwind CSS murni (build-time generated) untuk menghilangkan kalkulasi CSS runtime.
 
-## 15. Data Prefetching & Media Optimizations
+## 19. Data Prefetching & Media Optimizations
 - **Data Prefetching:** Gunakan `queryClient.prefetchQuery()` saat user melakukan hover pada navigasi atau tombol penting untuk mempercepat transisi halaman.
 - **Image & Icon Optimization:**
   - Gunakan format vektor SVG atau format modern WebP.
@@ -371,25 +460,25 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 6 — Error Handling & Resilience
+# Part 7 — Error Handling & Resilience
 
-## 16. Local DB & Query Error Management
+## 20. Local DB & Query Error Management
 - **Centralized Query Error Handling:** Konfigurasi `QueryCache` dan `MutationCache` di [`src/lib/query-client.ts`](file:///d:/Projects/tookoo/src/lib/query-client.ts) dengan global error handler untuk menampilkan Toast Notifikasi otomatis saat terjadi kegagalan operasi Dexie atau WebRTC.
 - **Graceful Mutation Rollback:** Mutasi transaksi kasir yang gagal wajib ditangani dengan pemulihan state yang aman tanpa menyebabkan inkonsistensi data lokal.
 
-## 17. Multi-Level Error Boundaries
+## 21. Multi-Level Error Boundaries
 - **Localized Error Boundaries:** Pasang `react-error-boundary` bertingkat:
   - *Route Level:* Menjaga agar error di satu halaman (misal: Laporan/Riwayat) tidak merusak alur transaksi kasir utama.
   - *Widget Level:* Mengisolasi komponen rentan (seperti pemindai kamera QR Code atau widget WebRTC) dengan UI fallback ramah pengguna ([`src/components/error-fallback.tsx`](file:///d:/Projects/tookoo/src/components/error-fallback.tsx)).
 
-## 18. Error Logging & Observability
+## 22. Error Logging & Observability
 - Seluruh *uncaught errors* dicatat secara terstruktur dengan metadata konteks (nama komponen, operasi yang gagal) tanpa mengekspos data kredensial toko atau passphrase mnemonic.
 
 ---
 
-# Part 7 — Testing Standards
+# Part 8 — Testing Standards
 
-## 19. Testing Strategy & Execution
+## 23. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
    - Letak: Berdampingan di folder `__tests__/` atau di `src/utils/__tests__/`.
@@ -403,7 +492,7 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 8 — The Golden Do's & Don'ts
+# Part 9 — The Golden Do's & Don'ts
 
 ### ✅ DO'S
 - Selalu gunakan `crypto.randomUUID()` untuk ID entitas baru.
