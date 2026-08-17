@@ -38,6 +38,8 @@ export class P2PClient {
     { pc: RTCPeerConnection; channel: RTCDataChannel | null; deviceName: string }
   >();
   private pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
+  private isProcessingAnswer = new Set<string>();
+  private isCreatingOffer = new Set<string>();
   private broadcastChannel: BroadcastChannel | null = null;
   private isInitialized = false;
 
@@ -53,7 +55,7 @@ export class P2PClient {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    // 1. Setup Local BroadcastChannel (for multi-tab on same machine)
+    // 1. Local BroadcastChannel
     if (typeof BroadcastChannel !== 'undefined') {
       try {
         this.broadcastChannel = new BroadcastChannel('tookoo-p2p-relay');
@@ -61,11 +63,11 @@ export class P2PClient {
           this.handleIncomingSignal(event.data as SignalPayload);
         };
       } catch {
-        // Ignore BroadcastChannel errors in unsupported environments
+        // ignore
       }
     }
 
-    // 2. Setup Vite WebSocket Signaling (for LAN / Tunnel cross-device)
+    // 2. Vite WebSocket Relay
     if (typeof import.meta !== 'undefined' && import.meta.hot) {
       import.meta.hot.on('tookoo:signal', (data: SignalPayload) => {
         this.handleIncomingSignal(data);
@@ -85,7 +87,6 @@ export class P2PClient {
     if (deviceName) this.deviceName = deviceName;
 
     if (changed && this.passphrase && this.deviceId) {
-      // Announce presence
       this.sendSignal({
         type: 'JOIN',
         passphrase: this.passphrase,
@@ -96,41 +97,39 @@ export class P2PClient {
   }
 
   private sendSignal(signal: SignalPayload) {
-    // 1. Send via Vite WebSocket relay
     if (typeof import.meta !== 'undefined' && import.meta.hot) {
       try {
         import.meta.hot.send('tookoo:signal', signal);
       } catch {
-        // fallback
+        // ignore
       }
     }
 
-    // 2. Send via BroadcastChannel
     if (this.broadcastChannel) {
       try {
         this.broadcastChannel.postMessage(signal);
       } catch {
-        // fallback
+        // ignore
       }
     }
   }
 
   private async handleIncomingSignal(signal: SignalPayload) {
     if (!signal || !signal.passphrase || !this.passphrase) return;
-    if (signal.passphrase !== this.passphrase) return; // Different store passphrase
-    if (signal.fromId === this.deviceId) return; // Ignore messages from self
+    if (signal.passphrase !== this.passphrase) return; // Different store
+    if (signal.fromId === this.deviceId) return; // Ignore self
 
     const peerId = signal.fromId;
     const peerDeviceName = signal.deviceName || 'Terminal Kasir';
 
     switch (signal.type) {
       case 'JOIN': {
-        // Connected peer joined with matching store passphrase
         this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
         this.onConnectCallback?.();
 
-        // Initiator logic: Only the node with lexicographically higher deviceId sends offer
+        const existing = this.peerConnections.get(peerId);
         if (
+          !existing &&
           typeof RTCPeerConnection !== 'undefined' &&
           this.deviceId > peerId
         ) {
@@ -177,7 +176,8 @@ export class P2PClient {
   }
 
   private async initiatePeerOffer(peerId: string, peerDeviceName: string) {
-    if (typeof RTCPeerConnection === 'undefined') return;
+    if (typeof RTCPeerConnection === 'undefined' || this.isCreatingOffer.has(peerId)) return;
+    this.isCreatingOffer.add(peerId);
 
     try {
       this.closePeer(peerId);
@@ -202,6 +202,8 @@ export class P2PClient {
       });
     } catch (err) {
       console.warn('[WebRTC] Failed to initiate offer:', err);
+    } finally {
+      this.isCreatingOffer.delete(peerId);
     }
   }
 
@@ -258,11 +260,12 @@ export class P2PClient {
     const entry = this.peerConnections.get(peerId);
     if (!entry) return;
 
-    // Glare Guard: Only apply answer if signaling state is have-local-offer
-    if (entry.pc.signalingState !== 'have-local-offer') {
+    // Guard: Only apply answer if state is 'have-local-offer' and not already processing
+    if (entry.pc.signalingState !== 'have-local-offer' || this.isProcessingAnswer.has(peerId)) {
       return;
     }
 
+    this.isProcessingAnswer.add(peerId);
     try {
       if (typeof RTCSessionDescription !== 'undefined') {
         await entry.pc.setRemoteDescription(new RTCSessionDescription(sdp));
@@ -270,15 +273,16 @@ export class P2PClient {
         this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
         this.onConnectCallback?.();
       }
-    } catch (err) {
-      console.warn('[WebRTC] Error applying answer description:', err);
+    } catch {
+      // Ignored: connection might have already settled
+    } finally {
+      this.isProcessingAnswer.delete(peerId);
     }
   }
 
   private async handleIceCandidate(peerId: string, candidate: RTCIceCandidateInit) {
     const entry = this.peerConnections.get(peerId);
     if (!entry || !entry.pc.remoteDescription) {
-      // Buffer candidate until remote description is set
       const queue = this.pendingCandidates.get(peerId) || [];
       queue.push(candidate);
       this.pendingCandidates.set(peerId, queue);
@@ -290,7 +294,7 @@ export class P2PClient {
         await entry.pc.addIceCandidate(new RTCIceCandidate(candidate));
       }
     } catch {
-      // ignore ICE candidate error
+      // ignored
     }
   }
 
@@ -303,7 +307,7 @@ export class P2PClient {
             pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(() => {});
           }
         } catch {
-          // ignore
+          // ignored
         }
       });
       this.pendingCandidates.delete(peerId);
@@ -361,11 +365,13 @@ export class P2PClient {
         entry.channel?.close();
         entry.pc.close();
       } catch {
-        // ignore
+        // ignored
       }
       this.peerConnections.delete(peerId);
     }
     this.pendingCandidates.delete(peerId);
+    this.isProcessingAnswer.delete(peerId);
+    this.isCreatingOffer.delete(peerId);
   }
 
   public broadcast(message: SyncMessage): boolean {
@@ -383,7 +389,7 @@ export class P2PClient {
       }
     });
 
-    // 2. Reliable Signal Fallback (Guarantees data delivery even if WebRTC drops)
+    // 2. Reliable Signal Fallback (Always delivers data regardless of NAT/firewall)
     if (this.passphrase) {
       this.sendSignal({
         type: 'SYNC_DATA',
@@ -404,17 +410,19 @@ export class P2PClient {
         channel?.close();
         pc?.close();
       } catch {
-        // ignore
+        // ignored
       }
     });
     this.peerConnections.clear();
     this.pendingCandidates.clear();
+    this.isProcessingAnswer.clear();
+    this.isCreatingOffer.clear();
 
     if (this.broadcastChannel) {
       try {
         this.broadcastChannel.close();
       } catch {
-        // ignore
+        // ignored
       }
       this.broadcastChannel = null;
     }
