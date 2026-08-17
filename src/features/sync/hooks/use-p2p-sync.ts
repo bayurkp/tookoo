@@ -37,6 +37,14 @@ export const useP2pSync = () => {
   // Handle incoming P2P message
   const handleIncomingMessage = useCallback(
     async (msg: SyncMessage) => {
+      // 1. Check blacklist: Ignore all messages from blacklisted devices
+      const currentBlacklist = settingsRef.current?.blacklistedDeviceIds || [];
+      if (currentBlacklist.includes(msg.deviceId)) {
+        console.warn(`[P2P] Ignored message from blacklisted device: ${msg.deviceId}`);
+        return;
+      }
+
+      // 2. Handle Handshake
       if (msg.action === 'HANDSHAKE') {
         const peerData = msg.data as { deviceName?: string };
         const deviceName = peerData?.deviceName || 'Terminal Kasir';
@@ -61,6 +69,7 @@ export const useP2pSync = () => {
         return;
       }
 
+      // 3. Apply normal sync mutation
       const applied = await applySyncMessage(msg);
       if (applied) {
         queryClient.invalidateQueries({ queryKey: [msg.collection] });
@@ -71,6 +80,12 @@ export const useP2pSync = () => {
 
   // Handle peer connection state change
   const handlePeerStatus = useCallback((peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => {
+    // Check blacklist before accepting connection
+    const currentBlacklist = settingsRef.current?.blacklistedDeviceIds || [];
+    if (currentBlacklist.includes(peerId)) {
+      return;
+    }
+
     setPeers((prev) => {
       if (status === 'CONNECTED') {
         // Send our handshake back to the peer with our device name
@@ -119,6 +134,21 @@ export const useP2pSync = () => {
     updateSettingsMutation.mutate({ deviceName: name });
   };
 
+  const blacklistDevice = (deviceId: string) => {
+    const current = settings?.blacklistedDeviceIds || [];
+    if (!current.includes(deviceId)) {
+      const updated = [...current, deviceId];
+      updateSettingsMutation.mutate({ blacklistedDeviceIds: updated });
+      setPeers((prev) => prev.filter((p) => p.peerId !== deviceId));
+    }
+  };
+
+  const unblacklistDevice = (deviceId: string) => {
+    const current = settings?.blacklistedDeviceIds || [];
+    const updated = current.filter((id) => id !== deviceId);
+    updateSettingsMutation.mutate({ blacklistedDeviceIds: updated });
+  };
+
   const regeneratePassphrase = () => {
     updateSettingsMutation.mutate({ passphrase: generatePassphrase(12) });
   };
@@ -155,6 +185,8 @@ export const useP2pSync = () => {
     peers,
     updateStoreName,
     updateDeviceName,
+    blacklistDevice,
+    unblacklistDevice,
     regeneratePassphrase,
     updateSettings,
     exportBackup,

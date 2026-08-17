@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Receipt, ArrowUpDown, Eye } from 'lucide-react';
+import { Search, Receipt, ArrowUpDown, Eye, Lock, ShieldCheck } from 'lucide-react';
 import { useOrders } from '@/features/orders/hooks/use-orders';
+import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { useAuthStore } from '@/stores/auth-store';
 import { DailySummaryCard } from '@/features/orders/components/daily-summary-card';
 import { OrderReceiptDialog } from '@/features/orders/components/order-receipt-dialog';
+import { PinModal } from '@/components/pin-modal';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,10 +25,15 @@ import type { Order } from '@/types/order.types';
 export const OrdersPage: React.FC = () => {
   const { t } = useTranslation();
   const { data: orders = [], isLoading } = useOrders();
+  const { settings } = useP2pSync();
+  const { hasPermission } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+
+  const canViewRevenue = hasPermission('VIEW_REVENUE_REPORTS', Boolean(settings?.ownerPin));
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
@@ -52,8 +60,34 @@ export const OrdersPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Daily Summary Cards (dashboard-01 style) */}
-      <DailySummaryCard orders={orders} />
+      {/* Daily Summary Cards with RBAC Check */}
+      {canViewRevenue ? (
+        <DailySummaryCard orders={orders} />
+      ) : (
+        <Card className="border-border/80 bg-muted/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-foreground">Ringkasan Omzet Terkunci</p>
+              <p className="text-xs text-muted-foreground">
+                Terminal sedang dalam Mode Kasir. Masukkan PIN Pemilik untuk melihat nominal omzet.
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsPinModalOpen(true)}
+            className="text-xs gap-1.5 cursor-pointer shrink-0"
+          >
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            <span>Buka Otorisasi PIN</span>
+          </Button>
+        </Card>
+      )}
 
       {/* Recent Transactions Table Card */}
       <Card className="border-border/80 shadow-none">
@@ -223,6 +257,16 @@ export const OrdersPage: React.FC = () => {
         onOpenChange={(open) => {
           if (!open) setSelectedOrder(null);
         }}
+      />
+
+      {/* Owner PIN Verification Modal */}
+      <PinModal
+        open={isPinModalOpen}
+        onOpenChange={setIsPinModalOpen}
+        correctPin={settings?.ownerPin}
+        title="Otorisasi Laporan Omzet"
+        description="Masukkan PIN Pemilik Toko untuk membuka laporan pendapatan."
+        onSuccess={() => {}}
       />
     </div>
   );

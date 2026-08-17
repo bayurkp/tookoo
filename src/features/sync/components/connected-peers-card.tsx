@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Wifi, Smartphone, Laptop, RefreshCw } from 'lucide-react';
+import { Wifi, Smartphone, Laptop, RefreshCw, ShieldBan, ShieldCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,10 +8,19 @@ import type { PeerConnectionInfo } from '@/types/sync.types';
 
 interface ConnectedPeersCardProps {
   peers: PeerConnectionInfo[];
+  blacklistedDeviceIds?: string[];
   onManualSync?: () => void;
+  onBlacklistDevice?: (deviceId: string) => void;
+  onUnblacklistDevice?: (deviceId: string) => void;
 }
 
-export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, onManualSync }) => {
+export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
+  peers,
+  blacklistedDeviceIds = [],
+  onManualSync,
+  onBlacklistDevice,
+  onUnblacklistDevice,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -45,7 +54,7 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 pt-2">
+      <CardContent className="p-4 pt-2 space-y-4">
         {peers.length === 0 ? (
           <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center flex flex-col items-center justify-center space-y-2">
             <Wifi className="h-8 w-8 text-muted-foreground/40" />
@@ -82,14 +91,66 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
                   </div>
                 </div>
 
-                <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0">
-                  {t('sync.connected', 'Terhubung')}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0">
+                    {t('sync.connected', 'Terhubung')}
+                  </Badge>
+
+                  {onBlacklistDevice && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onBlacklistDevice(peer.peerId)}
+                      className="h-7 px-2 text-destructive hover:bg-destructive/10 text-[11px] gap-1 cursor-pointer"
+                      title="Blokir Akses Perangkat Ini"
+                    >
+                      <ShieldBan className="h-3.5 w-3.5" />
+                      <span>Blokir</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Blacklisted Devices Section */}
+        {blacklistedDeviceIds.length > 0 && (
+          <div className="pt-2 border-t space-y-2">
+            <p className="text-xs font-semibold text-destructive flex items-center gap-1.5">
+              <ShieldBan className="h-3.5 w-3.5" />
+              <span>Perangkat Diblokir ({blacklistedDeviceIds.length})</span>
+            </p>
+            <div className="space-y-1.5">
+              {blacklistedDeviceIds.map((deviceId) => (
+                <div
+                  key={deviceId}
+                  className="flex items-center justify-between p-2.5 rounded-lg border border-destructive/20 bg-destructive/5 text-xs"
+                >
+                  <span className="font-mono text-muted-foreground text-[11px] truncate max-w-[200px]">
+                    ID: {deviceId}
+                  </span>
+                  {onUnblacklistDevice && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onUnblacklistDevice(deviceId)}
+                      className="h-6 px-2 text-[11px] gap-1 cursor-pointer"
+                    >
+                      <ShieldCheck className="h-3 w-3 text-emerald-600" />
+                      <span>Buka Blokir</span>
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>
     </Card>
   );
 };
+
+export default ConnectedPeersCard;

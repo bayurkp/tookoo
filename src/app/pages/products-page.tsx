@@ -13,13 +13,18 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { useProducts, useDeleteProduct } from '@/features/products/hooks/use-products';
+import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { useAuthStore } from '@/stores/auth-store';
 import { ProductCard } from '@/features/products/components/product-card';
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog';
+import { PinModal } from '@/components/pin-modal';
 import type { Product } from '@/types/product.types';
 
 export const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
   const { data: products = [], isLoading } = useProducts();
+  const { settings } = useP2pSync();
+  const { hasPermission } = useAuthStore();
   const deleteMutation = useDeleteProduct();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +32,10 @@ export const ProductsPage: React.FC = () => {
   const [stockFilter, setStockFilter] = useState<'ALL' | 'LOW' | 'OUT'>('ALL');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
+  const canManageProducts = hasPermission('MANAGE_PRODUCTS', Boolean(settings?.ownerPin));
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -52,19 +61,41 @@ export const ProductsPage: React.FC = () => {
     });
   }, [products, searchQuery, selectedCategory, stockFilter]);
 
+  const executeProtectedAction = (action: () => void) => {
+    if (canManageProducts) {
+      action();
+    } else {
+      setPendingAction(() => action);
+      setIsPinModalOpen(true);
+    }
+  };
+
   const handleOpenCreate = () => {
-    setProductToEdit(null);
-    setIsDialogOpen(true);
+    executeProtectedAction(() => {
+      setProductToEdit(null);
+      setIsDialogOpen(true);
+    });
   };
 
   const handleOpenEdit = (product: Product) => {
-    setProductToEdit(product);
-    setIsDialogOpen(true);
+    executeProtectedAction(() => {
+      setProductToEdit(product);
+      setIsDialogOpen(true);
+    });
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm(t('products.deleteConfirm', 'Hapus produk ini?'))) {
-      await deleteMutation.mutateAsync(id);
+    executeProtectedAction(async () => {
+      if (window.confirm(t('products.deleteConfirm', 'Hapus produk ini?'))) {
+        await deleteMutation.mutateAsync(id);
+      }
+    });
+  };
+
+  const handlePinSuccess = () => {
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
     }
   };
 
@@ -219,6 +250,16 @@ export const ProductsPage: React.FC = () => {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         productToEdit={productToEdit}
+      />
+
+      {/* Owner PIN Verification Modal */}
+      <PinModal
+        open={isPinModalOpen}
+        onOpenChange={setIsPinModalOpen}
+        correctPin={settings?.ownerPin}
+        title="Otorisasi Kelola Produk"
+        description="Masukkan PIN Pemilik Toko untuk menambah, mengubah, atau menghapus produk katalog."
+        onSuccess={handlePinSuccess}
       />
     </div>
   );

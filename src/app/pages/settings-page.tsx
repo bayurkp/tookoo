@@ -5,6 +5,7 @@ import {
   Palette,
   Languages,
   Smartphone,
+  Shield,
   Sun,
   Moon,
   Laptop,
@@ -14,6 +15,9 @@ import {
   HardDrive,
   CheckCircle2,
   Volume1,
+  UserCheck,
+  User,
+  KeyRound,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,12 +30,15 @@ import {
 } from '@/components/ui/field';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
+import { useAuthStore } from '@/stores/auth-store';
 import { sounds } from '@/utils/audio';
+import type { UserRole } from '@/types/store.types';
 
 export const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { settings, isSettingsLoading, updateSettings } = useP2pSync();
   const { theme, setTheme } = useTheme();
+  const { currentRole, setRole } = useAuthStore();
 
   // Form local state
   const [storeName, setStoreName] = useState('');
@@ -39,6 +46,8 @@ export const SettingsPage: React.FC = () => {
   const [storeAddress, setStoreAddress] = useState('');
   const [receiptFooter, setReceiptFooter] = useState('');
   const [defaultCashier, setDefaultCashier] = useState('');
+  const [ownerPin, setOwnerPin] = useState('');
+  const [isSettingPin, setIsSettingPin] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoPrint, setAutoPrint] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -50,10 +59,14 @@ export const SettingsPage: React.FC = () => {
       setStoreAddress(settings.storeAddress || '');
       setReceiptFooter(settings.receiptFooter || '');
       setDefaultCashier(settings.defaultCashier || '');
+      setOwnerPin(settings.ownerPin || '');
       setSoundEnabled(settings.soundEnabled !== false);
       setAutoPrint(Boolean(settings.autoPrint));
+      if (settings.activeRole) {
+        setRole(settings.activeRole);
+      }
     }
-  }, [settings]);
+  }, [settings, setRole]);
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +84,19 @@ export const SettingsPage: React.FC = () => {
 
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleSavePin = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateSettings({ ownerPin: ownerPin.trim() || undefined });
+    setIsSettingPin(false);
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleSwitchRole = (newRole: UserRole) => {
+    setRole(newRole);
+    updateSettings({ activeRole: newRole });
   };
 
   const handleToggleSound = () => {
@@ -104,7 +130,7 @@ export const SettingsPage: React.FC = () => {
         <p className="text-muted-foreground text-sm">
           {t(
             'settings.subtitle',
-            'Kelola profil tokomu, tema visual, bahasa, dan opsi perangkat kasir.'
+            'Kelola profil tokomu, keamanan hak akses (RBAC), tema, bahasa, dan opsi perangkat kasir.'
           )}
         </p>
       </div>
@@ -235,7 +261,132 @@ export const SettingsPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* 2. Tema & Tampilan */}
+        {/* 2. Keamanan & Peran Kasir (RBAC & PIN) */}
+        <Card className="border-border/80 shadow-none md:col-span-2">
+          <CardHeader className="p-5 pb-3 border-b">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <Shield className="h-4 w-4" />
+              </div>
+              <div>
+                <CardTitle className="text-base font-bold">
+                  Keamanan & Peran Terminal (RBAC)
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Role Selector Card */}
+              <div className="p-4 rounded-lg border border-border/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">
+                    Peran Terminal Ini
+                  </span>
+                  <Badge variant={currentRole === 'OWNER' ? 'default' : 'secondary'} className="text-xs">
+                    {currentRole === 'OWNER' ? 'Pemilik (Owner)' : 'Kasir (Staff)'}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchRole('OWNER')}
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                      currentRole === 'OWNER'
+                        ? 'border-primary bg-primary/5 text-primary font-bold'
+                        : 'border-border hover:bg-muted/40 text-muted-foreground'
+                    }`}
+                  >
+                    <UserCheck className="h-4 w-4" />
+                    <span className="text-xs">Pemilik Toko</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchRole('CASHIER')}
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                      currentRole === 'CASHIER'
+                        ? 'border-primary bg-primary/5 text-primary font-bold'
+                        : 'border-border hover:bg-muted/40 text-muted-foreground'
+                    }`}
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="text-xs">Kasir / Staf</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Mode Kasir membatasi akses ke menu laporan pendapatan dan kunci sinkronisasi.
+                </p>
+              </div>
+
+              {/* Owner PIN Management */}
+              <div className="p-4 rounded-lg border border-border/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <KeyRound className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold text-foreground">
+                      PIN Keamanan Pemilik
+                    </span>
+                  </div>
+                  <Badge variant={settings?.ownerPin ? 'outline' : 'secondary'} className="text-xs">
+                    {settings?.ownerPin ? 'PIN Aktif' : 'Belum Ada PIN'}
+                  </Badge>
+                </div>
+
+                {isSettingPin ? (
+                  <form onSubmit={handleSavePin} className="space-y-2">
+                    <Input
+                      type="password"
+                      maxLength={6}
+                      value={ownerPin}
+                      onChange={(e) => setOwnerPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Masukkan 4-6 digit PIN"
+                      className="text-center font-bold tracking-widest h-9 text-sm"
+                      autoFocus
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsSettingPin(false)}
+                        className="h-7 text-xs"
+                      >
+                        Batal
+                      </Button>
+                      <Button type="submit" size="sm" className="h-7 text-xs" disabled={ownerPin.length < 4}>
+                        Simpan PIN
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-[11px] text-muted-foreground">
+                      {settings?.ownerPin
+                        ? 'PIN digunakan untuk membuka otorisasi saat terminal dalam mode kasir.'
+                        : 'Belum ada PIN master. Pasang PIN untuk melindungi menu toko Anda.'}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsSettingPin(true)}
+                      className="h-7 text-xs w-full cursor-pointer"
+                    >
+                      {settings?.ownerPin ? 'Ubah PIN Pemilik' : 'Pasang PIN Pemilik'}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 3. Tema & Tampilan */}
         <Card className="border-border/80 shadow-none">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">
@@ -303,7 +454,7 @@ export const SettingsPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* 3. Bahasa Aplikasi */}
+        {/* 4. Bahasa Aplikasi */}
         <Card className="border-border/80 shadow-none">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">
@@ -371,7 +522,7 @@ export const SettingsPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* 4. Perangkat & Operasional Kasir */}
+        {/* 5. Perangkat & Operasional Kasir */}
         <Card className="border-border/80 shadow-none md:col-span-2">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">

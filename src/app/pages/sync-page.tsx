@@ -15,6 +15,8 @@ export const SyncPage: React.FC = () => {
     peers,
     updateStoreName,
     updateDeviceName,
+    blacklistDevice,
+    unblacklistDevice,
     regeneratePassphrase,
     exportBackup,
     importBackup,
@@ -56,7 +58,12 @@ export const SyncPage: React.FC = () => {
 
         {/* Right Column: Peers & Backup */}
         <div className="space-y-6 flex flex-col">
-          <ConnectedPeersCard peers={peers} />
+          <ConnectedPeersCard
+            peers={peers}
+            blacklistedDeviceIds={settings?.blacklistedDeviceIds}
+            onBlacklistDevice={blacklistDevice}
+            onUnblacklistDevice={unblacklistDevice}
+          />
           <BackupExportCard onExport={exportBackup} onImport={importBackup} />
         </div>
       </div>
