@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="128" fill="#0f172a"/>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(106, 106) scale(0.5859375)">
+    <!-- Shopping bag / POS Terminal Icon -->
+    <path fill="url(#grad)" d="M448 128H384V96C384 42.98 341.02 0 288 0H224C170.98 0 128 42.98 128 96V128H64C28.65 128 0 156.65 0 192V448C0 483.35 28.65 512 64 512H448C483.35 512 512 483.35 512 448V192C512 156.65 483.35 128 448 128ZM176 96C176 69.49 197.49 48 224 48H288C314.51 48 336 69.49 336 96V128H176V96ZM464 448C464 456.82 456.82 464 448 464H64C55.18 464 48 456.82 48 448V192C48 183.18 55.18 176 64 176H448C456.82 176 464 183.18 464 192V448Z"/>
+    <circle cx="256" cy="320" r="48" fill="#ffffff"/>
+  </g>
+</svg>
