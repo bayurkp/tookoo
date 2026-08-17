@@ -12,6 +12,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 import { useProducts, useDeleteProduct } from '@/features/products/hooks/use-products';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useAuthStore } from '@/stores/auth-store';
@@ -34,6 +44,8 @@ export const ProductsPage: React.FC = () => {
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const canManageProducts = hasPermission('MANAGE_PRODUCTS', Boolean(settings?.ownerPin));
 
@@ -84,12 +96,19 @@ export const ProductsPage: React.FC = () => {
     });
   };
 
-  const handleDelete = async (id: string) => {
-    executeProtectedAction(async () => {
-      if (window.confirm(t('products.deleteConfirm', 'Hapus produk ini?'))) {
-        await deleteMutation.mutateAsync(id);
-      }
+  const handleDelete = (id: string) => {
+    executeProtectedAction(() => {
+      setDeleteProductId(id);
+      setIsDeleteDialogOpen(true);
     });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteProductId) {
+      await deleteMutation.mutateAsync(deleteProductId);
+      setDeleteProductId(null);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const handlePinSuccess = () => {
@@ -261,6 +280,29 @@ export const ProductsPage: React.FC = () => {
         description="Masukkan PIN Pemilik Toko untuk menambah, mengubah, atau menghapus produk katalog."
         onSuccess={handlePinSuccess}
       />
+
+      {/* Delete Product Confirmation Alert Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Produk Ini?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Produk akan dihapus dari katalog penjualan dan transaksi kasir.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
+            >
+              Ya, Hapus Produk
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

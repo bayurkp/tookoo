@@ -19,13 +19,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 import { useAuthStore } from '@/stores/auth-store';
 import type { StoreSettings } from '@/types/store.types';
 import type { StorePairingPayload } from '@/types/sync.types';
@@ -319,42 +321,38 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
       </Card>
 
       {/* Confirmation Modal Alert for Regenerating Passphrase */}
-      <Dialog open={confirmRegenerateOpen} onOpenChange={setConfirmRegenerateOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader className="flex flex-row items-start gap-3 space-y-0">
+      <AlertDialog open={confirmRegenerateOpen} onOpenChange={setConfirmRegenerateOpen}>
+        <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader className="flex flex-row items-start gap-3 space-y-0">
             <div className="h-10 w-10 rounded-full bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <DialogTitle className="text-base font-bold">
+              <AlertDialogTitle className="text-base font-bold">
                 Ganti Kunci Keamanan Toko?
-              </DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground mt-1">
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-xs text-muted-foreground mt-1">
                 Mengganti 12 kata kunci akan <strong>memutuskan sambungan seluruh perangkat kasir lain</strong> yang saat ini terhubung. Semua perangkat kasir harus dihubungkan ulang dengan kunci baru.
-              </DialogDescription>
+              </AlertDialogDescription>
             </div>
-          </DialogHeader>
+          </AlertDialogHeader>
 
-          <DialogFooter className="gap-2 sm:gap-0 mt-2">
-            <Button
-              type="button"
-              variant="outline"
+          <AlertDialogFooter className="gap-2 sm:gap-0 mt-2">
+            <AlertDialogCancel
               onClick={() => setConfirmRegenerateOpen(false)}
               className="cursor-pointer"
             >
               Batal
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleConfirmRegenerate}
-              className="font-bold cursor-pointer"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold cursor-pointer"
             >
               Ya, Ganti Kunci Baru
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
