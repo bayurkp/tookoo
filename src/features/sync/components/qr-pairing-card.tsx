@@ -19,10 +19,7 @@ interface QrPairingCardProps {
   onOpenScanner: () => void;
 }
 
-export const QrPairingCard: React.FC<QrPairingCardProps> = ({
-  settings,
-  onOpenScanner,
-}) => {
+export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenScanner }) => {
   const pairingPayload: StorePairingPayload = {
     storeId: settings?.id || 'default-store',
     storeName: settings?.storeName || 'Toko Saya',
@@ -56,16 +53,11 @@ export const QrPairingCard: React.FC<QrPairingCardProps> = ({
 
       <CardContent className="p-4 flex flex-col items-center justify-center space-y-3">
         <div className="p-3 bg-white rounded-xl shadow-xs border border-border flex items-center justify-center">
-          <QRCodeSVG
-            value={payloadString}
-            size={168}
-            level="M"
-            includeMargin={false}
-          />
+          <QRCodeSVG value={payloadString} size={168} level="M" includeMargin={false} />
         </div>
         <p className="text-xs text-muted-foreground text-center max-w-xs">
-          Arahkan kamera terminal kasir baru ke QR di atas atau masukkan 12 kata sandi
-          secara manual.
+          Arahkan kamera terminal kasir baru ke QR di atas atau masukkan 12 kata sandi secara
+          manual.
         </p>
       </CardContent>
 

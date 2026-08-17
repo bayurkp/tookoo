@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  getOrCreateStoreSettings,
-  updateStoreSettings,
-} from '../api/store-settings-api';
+import { getOrCreateStoreSettings, updateStoreSettings } from '../api/store-settings-api';
 import {
   applySyncMessage,
   exportDatabaseToJson,
@@ -46,29 +43,26 @@ export const useP2pSync = () => {
   );
 
   // Handle peer connection state change
-  const handlePeerStatus = useCallback(
-    (peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => {
-      setPeers((prev) => {
-        if (status === 'CONNECTED') {
-          const existing = prev.find((p) => p.peerId === peerId);
-          if (existing) {
-            return prev.map((p) => (p.peerId === peerId ? { ...p, status } : p));
-          }
-          return [
-            ...prev,
-            {
-              peerId,
-              deviceName: 'Terminal Kasir Peer',
-              connectedAt: Date.now(),
-              status,
-            },
-          ];
+  const handlePeerStatus = useCallback((peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => {
+    setPeers((prev) => {
+      if (status === 'CONNECTED') {
+        const existing = prev.find((p) => p.peerId === peerId);
+        if (existing) {
+          return prev.map((p) => (p.peerId === peerId ? { ...p, status } : p));
         }
-        return prev.filter((p) => p.peerId !== peerId);
-      });
-    },
-    []
-  );
+        return [
+          ...prev,
+          {
+            peerId,
+            deviceName: 'Terminal Kasir Peer',
+            connectedAt: Date.now(),
+            status,
+          },
+        ];
+      }
+      return prev.filter((p) => p.peerId !== peerId);
+    });
+  }, []);
 
   // Initialize P2P Listener
   useEffect(() => {

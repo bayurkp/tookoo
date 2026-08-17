@@ -1,16 +1,10 @@
 import type { SyncMessage } from '@/types/sync.types';
 
 export type MessageHandler = (message: SyncMessage) => void;
-export type PeerStatusHandler = (
-  peerId: string,
-  status: 'CONNECTED' | 'DISCONNECTED'
-) => void;
+export type PeerStatusHandler = (peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => void;
 
 const ICE_SERVERS: RTCConfiguration = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-  ],
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }],
 };
 
 export class P2PClient {
@@ -19,10 +13,7 @@ export class P2PClient {
   private onMessageCallback: MessageHandler | null = null;
   private onStatusCallback: PeerStatusHandler | null = null;
 
-  public initConnection(
-    onMessage: MessageHandler,
-    onStatus: PeerStatusHandler
-  ): RTCPeerConnection {
+  public initConnection(onMessage: MessageHandler, onStatus: PeerStatusHandler): RTCPeerConnection {
     this.onMessageCallback = onMessage;
     this.onStatusCallback = onStatus;
 

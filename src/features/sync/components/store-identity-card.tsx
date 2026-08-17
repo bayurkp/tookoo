@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { Store, Key, Copy, Check, RefreshCw } from 'lucide-react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { StoreSettings } from '@/types/store.types';
@@ -47,9 +41,7 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
             <Store className="h-4 w-4" />
           </div>
           <div>
-            <CardTitle className="text-base font-bold">
-              Identitas Toko & Kunci Rahasia
-            </CardTitle>
+            <CardTitle className="text-base font-bold">Identitas Toko & Kunci Rahasia</CardTitle>
             <CardDescription className="text-xs">
               Kredensial lokal untuk pairing antar terminal kasir tanpa server.
             </CardDescription>

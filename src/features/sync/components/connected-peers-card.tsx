@@ -1,12 +1,6 @@
 import React from 'react';
 import { Wifi, Smartphone, Laptop, RefreshCw } from 'lucide-react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { PeerConnectionInfo } from '@/types/sync.types';
@@ -16,10 +10,7 @@ interface ConnectedPeersCardProps {
   onManualSync?: () => void;
 }
 
-export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
-  peers,
-  onManualSync,
-}) => {
+export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, onManualSync }) => {
   return (
     <Card className="border-border/80 shadow-xs">
       <CardHeader className="p-4 pb-2">
@@ -57,8 +48,8 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
               Mode Lokal Mandiri (1 Perangkat Aktif)
             </p>
             <p className="text-[11px] text-muted-foreground max-w-xs">
-              Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk
-              menambahkan kasir kedua.
+              Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk menambahkan
+              kasir kedua.
             </p>
           </div>
         ) : (

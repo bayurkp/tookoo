@@ -7,12 +7,7 @@ describe('BackupExportCard', () => {
     const handleExport = vi.fn();
     const handleImport = vi.fn().mockResolvedValue({ productsCount: 0, ordersCount: 0 });
 
-    render(
-      <BackupExportCard
-        onExport={handleExport}
-        onImport={handleImport}
-      />
-    );
+    render(<BackupExportCard onExport={handleExport} onImport={handleImport} />);
 
     const exportBtn = screen.getByRole('button', { name: /Ekspor Cadangan/i });
     fireEvent.click(exportBtn);

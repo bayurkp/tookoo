@@ -1,10 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { db } from '@/lib/db';
-import {
-  applySyncMessage,
-  exportDatabaseToJson,
-  importDatabaseFromJson,
-} from '../sync-engine';
+import { applySyncMessage, exportDatabaseToJson, importDatabaseFromJson } from '../sync-engine';
 import { getOrCreateStoreSettings } from '../store-settings-api';
 import type { Product } from '@/types/product.types';
 import type { SyncMessage } from '@/types/sync.types';

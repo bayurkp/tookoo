@@ -82,8 +82,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
               <div>
                 <p className="font-semibold text-sm">Arahkan Kamera ke QR Toko</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-                  Pastikan izin kamera aktif pada browser untuk memindai secara
-                  langsung.
+                  Pastikan izin kamera aktif pada browser untuk memindai secara langsung.
                 </p>
               </div>
             </div>
@@ -92,9 +91,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           {/* Manual Passphrase Tab */}
           <TabsContent value="manual" className="pt-2 space-y-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                Nama Toko (Opsional)
-              </label>
+              <label className="text-xs font-semibold text-foreground">Nama Toko (Opsional)</label>
               <Input
                 value={manualStoreName}
                 onChange={(e) => setManualStoreName(e.target.value)}
@@ -104,9 +101,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                12 Kata Sandi Toko *
-              </label>
+              <label className="text-xs font-semibold text-foreground">12 Kata Sandi Toko *</label>
               <textarea
                 value={manualPassphrase}
                 onChange={(e) => {
@@ -129,11 +124,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         </Tabs>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Batal
           </Button>
           <Button type="button" onClick={handleManualPair} className="font-bold gap-1.5">

@@ -10,14 +10,8 @@ import type { StorePairingPayload } from '@/types/sync.types';
 
 export const SyncPage: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    settings,
-    peers,
-    updateStoreName,
-    regeneratePassphrase,
-    exportBackup,
-    importBackup,
-  } = useP2pSync();
+  const { settings, peers, updateStoreName, regeneratePassphrase, exportBackup, importBackup } =
+    useP2pSync();
 
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
@@ -46,10 +40,7 @@ export const SyncPage: React.FC = () => {
             onUpdateStoreName={updateStoreName}
             onRegeneratePassphrase={regeneratePassphrase}
           />
-          <QrPairingCard
-            settings={settings}
-            onOpenScanner={() => setIsScannerOpen(true)}
-          />
+          <QrPairingCard settings={settings} onOpenScanner={() => setIsScannerOpen(true)} />
         </div>
 
         {/* Right Column: Peers & Backup */}

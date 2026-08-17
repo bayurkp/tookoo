@@ -23,14 +23,10 @@ describe('SyncPage', () => {
     render(<SyncPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Identitas Toko & Kunci Rahasia')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Identitas Toko & Kunci Rahasia')).toBeInTheDocument();
       expect(screen.getByText('QR Code Pairing Toko')).toBeInTheDocument();
       expect(screen.getByText('Terminal Terhubung')).toBeInTheDocument();
-      expect(
-        screen.getByText(/Cadangan & Pemulihan Data/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Cadangan & Pemulihan Data/i)).toBeInTheDocument();
     });
 
     // Open scanner modal

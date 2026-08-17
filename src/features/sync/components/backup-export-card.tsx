@@ -1,26 +1,15 @@
 import React, { useRef, useState } from 'react';
 import { Download, Upload, Database, CheckCircle2 } from 'lucide-react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { DatabaseBackup } from '../api/sync-engine';
 
 interface BackupExportCardProps {
   onExport: () => void;
-  onImport: (
-    backupData: DatabaseBackup
-  ) => Promise<{ productsCount: number; ordersCount: number }>;
+  onImport: (backupData: DatabaseBackup) => Promise<{ productsCount: number; ordersCount: number }>;
 }
 
-export const BackupExportCard: React.FC<BackupExportCardProps> = ({
-  onExport,
-  onImport,
-}) => {
+export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, onImport }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
 
