@@ -1,6 +1,11 @@
 export interface StoreSettings {
   id: string; // UUID v4 (Store ID)
   storeName: string;
+  storeAddress?: string;
+  receiptFooter?: string;
+  defaultCashier?: string;
+  soundEnabled?: boolean;
+  autoPrint?: boolean;
   passphrase: string; // 12 random words (BIP-39 mnemonic)
   storeSecretKey: string; // P2P encryption secret key
   createdAt: number; // Timestamp ms

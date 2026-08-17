@@ -103,12 +103,17 @@ export const useP2pSync = () => {
     return result;
   };
 
+  const updateSettings = (updates: Partial<Omit<StoreSettings, 'id' | 'createdAt'>>) => {
+    updateSettingsMutation.mutate(updates);
+  };
+
   return {
     settings,
     isSettingsLoading,
     peers,
     updateStoreName,
     regeneratePassphrase,
+    updateSettings,
     exportBackup,
     importBackup,
   };

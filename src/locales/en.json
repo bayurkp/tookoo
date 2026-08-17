@@ -31,7 +31,8 @@
     "cashier": "Cashier",
     "products": "Products",
     "orders": "History",
-    "sync": "Connect Devices"
+    "sync": "Connect Devices",
+    "settings": "Settings"
   },
   "status": {
     "p2pConnected": "Connected ({{count}} Devices)",
@@ -181,9 +182,51 @@
       "title": "Store Backup & Restore",
       "desc": "Save a backup copy of your catalog and sales records to keep your store data safe.",
       "exportBtn": "Download Backup File",
-      "importBtn": "Restore from File",
-      "successMsg": "Data restored: {{products}} products and {{orders}} orders.",
-      "errorMsg": "Failed to read backup file. Please ensure you selected a valid Tookoo backup file."
+      "importBtn": "Restore from Backup File",
+      "successMsg": "Successfully restored {{products}} products and {{orders}} transactions.",
+      "errorMsg": "Failed to read backup file. Please ensure you selected a valid Tookoo JSON backup."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage store profile, visual theme, language, and cashier device preferences.",
+    "saved": "Settings Saved",
+    "profile": {
+      "title": "Store & Cashier Profile",
+      "desc": "Store information printed on customer shopping receipts.",
+      "storeName": "Store Name",
+      "storeAddress": "Store Address / Location (Optional)",
+      "storeAddressPlaceholder": "e.g., 45 Sudirman St, Jakarta",
+      "receiptFooter": "Receipt Footer Note (Optional)",
+      "receiptFooterPlaceholder": "e.g., Thank you for shopping with us!",
+      "defaultCashier": "Default Cashier Name",
+      "defaultCashierPlaceholder": "e.g., Cashier 1",
+      "saveBtn": "Save Profile"
+    },
+    "appearance": {
+      "title": "Theme & Appearance",
+      "desc": "Customize display brightness for your daily workflow comfort.",
+      "light": "Light Mode",
+      "dark": "Dark Mode",
+      "system": "System Default",
+      "current": "Active Theme: {{mode}}"
+    },
+    "language": {
+      "title": "App Language",
+      "desc": "Choose interface language for cashier terminals, menus, and reports.",
+      "indonesian": "Bahasa Indonesia (ID)",
+      "english": "English (EN)"
+    },
+    "device": {
+      "title": "Device & Cashier Operations",
+      "desc": "Transaction sound effects and local database status.",
+      "soundEffects": "Cashier Sound Effects (Beep & Success chime)",
+      "soundDesc": "Play audio confirmations when scanning barcodes or completing payment.",
+      "autoPrint": "Auto-Print Receipt",
+      "autoPrintDesc": "Automatically open receipt print dialog after payment confirmation.",
+      "deviceId": "Cashier Terminal ID",
+      "storageStatus": "Local Database Storage",
+      "storageDesc": "100% data safely stored locally in browser (IndexedDB)."
     }
   }
 }

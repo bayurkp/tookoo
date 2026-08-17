@@ -31,7 +31,8 @@
     "cashier": "Kasir",
     "products": "Produk",
     "orders": "Riwayat",
-    "sync": "Sambung Perangkat"
+    "sync": "Sambung Perangkat",
+    "settings": "Pengaturan"
   },
   "status": {
     "p2pConnected": "Tersambung ({{count}} Kasir)",
@@ -184,6 +185,48 @@
       "importBtn": "Pulihkan dari Berkas File",
       "successMsg": "Data berhasil dipulihkan: {{products}} produk dan {{orders}} transaksi.",
       "errorMsg": "Gagal membaca berkas cadangan. Pastikan berkas yang dipilih adalah berkas cadangan Tookoo yang benar."
+    }
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "subtitle": "Kelola profil tokomu, tema visual, bahasa, dan opsi perangkat kasir.",
+    "saved": "Pengaturan Berhasil Disimpan",
+    "profile": {
+      "title": "Profil Toko & Kasir",
+      "desc": "Informasi toko yang akan tercetak pada struk belanja pelanggan.",
+      "storeName": "Nama Toko",
+      "storeAddress": "Alamat / Lokasi Toko (Opsional)",
+      "storeAddressPlaceholder": "Contoh: Jl. Sudirman No. 45, Jakarta",
+      "receiptFooter": "Pesan Kaki Struk (Opsional)",
+      "receiptFooterPlaceholder": "Contoh: Terima kasih atas kunjungan Anda!",
+      "defaultCashier": "Nama Kasir Bawaan",
+      "defaultCashierPlaceholder": "Contoh: Kasir 1",
+      "saveBtn": "Simpan Profil"
+    },
+    "appearance": {
+      "title": "Tema & Tampilan",
+      "desc": "Sesuaikan kecerahan antarmuka agar nyaman saat digunakan bekerja.",
+      "light": "Mode Terang",
+      "dark": "Mode Gelap",
+      "system": "Otomatis Sistem",
+      "current": "Tema Aktif: {{mode}}"
+    },
+    "language": {
+      "title": "Bahasa Aplikasi",
+      "desc": "Pilih bahasa tampilan untuk menu kasir, produk, dan laporan.",
+      "indonesian": "Bahasa Indonesia (ID)",
+      "english": "English (EN)"
+    },
+    "device": {
+      "title": "Perangkat & Operasional Kasir",
+      "desc": "Pengaturan suara transaksi dan status database lokal.",
+      "soundEffects": "Efek Suara Kasir (Beep & Sukses)",
+      "soundDesc": "Memainkan audio konfirmasi saat scan produk atau pembayaran berhasil.",
+      "autoPrint": "Otomatis Cetak Struk",
+      "autoPrintDesc": "Langsung buka jendela cetak struk setelah konfirmasi bayar.",
+      "deviceId": "ID Terminal Kasir",
+      "storageStatus": "Penyimpanan Database Lokal",
+      "storageDesc": "100% data tersimpan aman secara lokal di peramban (IndexedDB)."
     }
   }
 }

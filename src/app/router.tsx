@@ -6,6 +6,7 @@ const CashierPage = lazy(() => import('@/app/pages/cashier-page'));
 const ProductsPage = lazy(() => import('@/app/pages/products-page'));
 const OrdersPage = lazy(() => import('@/app/pages/orders-page'));
 const SyncPage = lazy(() => import('@/app/pages/sync-page'));
+const SettingsPage = lazy(() => import('@/app/pages/settings-page'));
 
 const SuspenseFallback = () => (
   <div className="flex h-full w-full items-center justify-center p-8">
@@ -47,6 +48,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<SuspenseFallback />}>
             <SyncPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'settings',
+        element: (
+          <Suspense fallback={<SuspenseFallback />}>
+            <SettingsPage />
           </Suspense>
         ),
       },

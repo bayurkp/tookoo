@@ -1,6 +1,15 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { ShoppingCart, Package, Receipt, QrCode, Languages, Moon, Sun } from 'lucide-react';
+import {
+  ShoppingCart,
+  Package,
+  Receipt,
+  QrCode,
+  Settings,
+  Languages,
+  Moon,
+  Sun,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
 import { Button } from '@/components/ui/button';
@@ -78,6 +87,27 @@ export const MainLayout: React.FC = () => {
               </TooltipContent>
             </Tooltip>
 
+            {/* Settings Quick Link */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <NavLink to="/settings">
+                  {({ isActive }) => (
+                    <Button
+                      variant={isActive ? 'secondary' : 'ghost'}
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
+                      aria-label="Settings"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  )}
+                </NavLink>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                {t('nav.settings', 'Pengaturan')}
+              </TooltipContent>
+            </Tooltip>
+
             <HeaderStatusBadge isOnline={navigator.onLine} peerCount={0} />
           </div>
         </header>
@@ -142,6 +172,20 @@ export const MainLayout: React.FC = () => {
                 <QrCode className="h-4 w-4" />
                 <span>{t('nav.sync')}</span>
               </NavLink>
+
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground font-semibold'
+                      : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                  }`
+                }
+              >
+                <Settings className="h-4 w-4" />
+                <span>{t('nav.settings', 'Pengaturan')}</span>
+              </NavLink>
             </nav>
 
             <div className="text-xs text-muted-foreground text-center py-2 border-t">
@@ -156,53 +200,65 @@ export const MainLayout: React.FC = () => {
         </div>
 
         {/* Mobile Bottom Navigation Bar (Visible only on mobile screens) */}
-        <nav className="md:hidden border-t bg-card/90 backdrop-blur z-20 flex items-center justify-around py-2 px-2 shrink-0">
+        <nav className="md:hidden border-t bg-card/90 backdrop-blur z-20 flex items-center justify-around py-2 px-1 shrink-0">
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
                 isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
               }`
             }
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-4.5 w-4.5" />
             <span>{t('nav.cashier')}</span>
           </NavLink>
 
           <NavLink
             to="/products"
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
                 isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
               }`
             }
           >
-            <Package className="h-5 w-5" />
+            <Package className="h-4.5 w-4.5" />
             <span>{t('nav.products')}</span>
           </NavLink>
 
           <NavLink
             to="/orders"
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
                 isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
               }`
             }
           >
-            <Receipt className="h-5 w-5" />
+            <Receipt className="h-4.5 w-4.5" />
             <span>{t('nav.orders')}</span>
           </NavLink>
 
           <NavLink
             to="/sync"
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
                 isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
               }`
             }
           >
-            <QrCode className="h-5 w-5" />
+            <QrCode className="h-4.5 w-4.5" />
             <span>{t('nav.sync')}</span>
+          </NavLink>
+
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
+                isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
+              }`
+            }
+          >
+            <Settings className="h-4.5 w-4.5" />
+            <span>{t('nav.settings', 'Pengaturan')}</span>
           </NavLink>
         </nav>
       </div>
