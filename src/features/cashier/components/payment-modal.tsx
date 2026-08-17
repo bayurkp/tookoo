@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '../stores/cart-store';
 import { useCashierCheckout } from '../hooks/use-cashier-checkout';
 import { formatCurrency } from '@/utils/format-currency';
+import { sounds } from '@/utils/audio';
 import type { PaymentMethod } from '../types/cart.types';
 import type { Order } from '@/types/order.types';
 
@@ -97,6 +98,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         cashierName: 'Kasir',
       });
 
+      sounds.playSuccess();
       onOpenChange(false);
       onPaymentSuccess(order);
     } catch (err: any) {

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { CashierProductCard } from './cashier-product-card';
 import { useCartStore } from '../stores/cart-store';
+import { sounds } from '@/utils/audio';
 import type { Product } from '@/types/product.types';
 
 interface ProductGridProps {
@@ -19,6 +20,11 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
 
   const cartItems = useCartStore((state) => state.items);
   const addItem = useCartStore((state) => state.addItem);
+
+  const handleAddToCart = (product: Product) => {
+    addItem(product);
+    sounds.playBeep();
+  };
 
   const cartItemMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -44,6 +50,16 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
     });
   }, [products, searchQuery, selectedCategory]);
 
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && filteredProducts.length === 1) {
+      const product = filteredProducts[0];
+      if (product.stock > (cartItemMap.get(product.id) || 0)) {
+        handleAddToCart(product);
+        setSearchQuery('');
+      }
+    }
+  };
+
   return (
     <div className="space-y-4 flex flex-col h-full">
       {/* Search Bar */}
@@ -53,6 +69,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
           placeholder={t('cashier.searchPlaceholder', 'Cari nama atau barcode produk...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleSearchKeyDown}
           className="pl-9 bg-card"
         />
       </div>
@@ -93,7 +110,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
             <PackageOpen className="h-10 w-10 text-muted-foreground/50 mb-3" />
             <p className="text-sm text-muted-foreground">
               {searchQuery || selectedCategory !== 'ALL'
-                ? t('products.emptyFilter', 'Tidak ada produk yang cocok dengan filter.')
+                ? t('products.emptyFilter', 'Tidak ada produk yang cocok dengan filter pencarian.')
                 : t('products.empty', 'Belum ada produk terdaftar.')}
             </p>
           </div>
@@ -104,7 +121,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
                 key={product.id}
                 product={product}
                 quantityInCart={cartItemMap.get(product.id) || 0}
-                onAddToCart={addItem}
+                onAddToCart={handleAddToCart}
               />
             ))}
           </div>

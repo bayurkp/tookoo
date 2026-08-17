@@ -16,7 +16,7 @@ export const MainLayout: React.FC = () => {
   return (
     <div className="flex h-screen w-full flex-col bg-background overflow-hidden">
       {/* Top Header */}
-      <header className="flex h-16 items-center justify-between border-b px-6 bg-card/60 backdrop-blur">
+      <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6 bg-card/60 backdrop-blur z-20 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg shadow-sm">
             T
@@ -31,7 +31,7 @@ export const MainLayout: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button
             variant="ghost"
             size="sm"
@@ -47,9 +47,9 @@ export const MainLayout: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar Navigation */}
-        <aside className="w-64 border-r bg-card/30 p-4 flex flex-col justify-between hidden md:flex">
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Desktop Sidebar Navigation */}
+        <aside className="w-64 border-r bg-card/30 p-4 flex flex-col justify-between hidden md:flex shrink-0">
           <nav className="space-y-1.5">
             <NavLink
               to="/"
@@ -114,10 +114,61 @@ export const MainLayout: React.FC = () => {
         </aside>
 
         {/* Dynamic Page Router Outlet */}
-        <main className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-zinc-950/50">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 md:pb-6 bg-slate-50/50 dark:bg-zinc-950/50">
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar (Visible only on mobile screens) */}
+      <nav className="md:hidden border-t bg-card/90 backdrop-blur z-20 flex items-center justify-around py-2 px-2 shrink-0">
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
+            }`
+          }
+        >
+          <ShoppingCart className="h-5 w-5" />
+          <span>{t('nav.cashier')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/products"
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
+            }`
+          }
+        >
+          <Package className="h-5 w-5" />
+          <span>{t('nav.products')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/orders"
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
+            }`
+          }
+        >
+          <Receipt className="h-5 w-5" />
+          <span>{t('nav.orders')}</span>
+        </NavLink>
+
+        <NavLink
+          to="/sync"
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
+            }`
+          }
+        >
+          <QrCode className="h-5 w-5" />
+          <span>{t('nav.sync')}</span>
+        </NavLink>
+      </nav>
     </div>
   );
 };
