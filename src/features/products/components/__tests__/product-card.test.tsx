@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import React from 'react';
 import { ProductCard } from '../product-card';
 import type { Product } from '@/types/product.types';
 
