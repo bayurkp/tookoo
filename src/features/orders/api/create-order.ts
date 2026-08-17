@@ -1,0 +1,75 @@
+import { db } from '@/lib/db';
+import { generateUUID } from '@/utils/uuid';
+import type { Order, OrderItem, PaymentMethod } from '@/types/order.types';
+
+export interface CreateOrderInput {
+  items: OrderItem[];
+  subtotal: number;
+  discount: number;
+  totalAmount: number;
+  paymentMethod: PaymentMethod;
+  amountPaid: number;
+  changeDue: number;
+  cashierName?: string;
+}
+
+export const generateOrderNumber = (): string => {
+  const date = new Date();
+  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+  return `TK-${dateStr}-${randomSuffix}`;
+};
+
+export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
+  const now = Date.now();
+  const orderId = generateUUID();
+  const orderNumber = generateOrderNumber();
+
+  const newOrder: Order = {
+    id: orderId,
+    orderNumber,
+    items: input.items,
+    subtotal: input.subtotal,
+    discount: input.discount,
+    totalAmount: input.totalAmount,
+    paymentMethod: input.paymentMethod,
+    amountPaid: input.amountPaid,
+    changeDue: input.changeDue,
+    cashierName: input.cashierName || 'Kasir',
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: null,
+  };
+
+  // Atomic transaction: Check stock, decrement product stock, save order
+  await db.transaction('rw', db.orders, db.products, async () => {
+    // 1. Validate stocks
+    for (const item of input.items) {
+      const product = await db.products.get(item.productId);
+      if (!product || product.deletedAt !== null) {
+        throw new Error(`Produk ${item.name} tidak ditemukan atau telah dihapus`);
+      }
+      if (product.stock < item.qty) {
+        throw new Error(
+          `Stok tidak mencukupi untuk ${item.name}. Tersedia: ${product.stock}, Diminta: ${item.qty}`
+        );
+      }
+    }
+
+    // 2. Decrement stocks
+    for (const item of input.items) {
+      const product = await db.products.get(item.productId);
+      if (product) {
+        await db.products.update(item.productId, {
+          stock: product.stock - item.qty,
+          updatedAt: now,
+        });
+      }
+    }
+
+    // 3. Save order
+    await db.orders.put(newOrder);
+  });
+
+  return newOrder;
+};

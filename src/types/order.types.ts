@@ -10,10 +10,14 @@ export interface OrderItem {
 
 export interface Order {
   id: string; // UUID v4
-  orderNumber: string; // e.g. "TKD-001"
+  orderNumber: string; // e.g. "TK-20260817-001"
   items: OrderItem[];
+  subtotal: number;
+  discount: number;
   totalAmount: number;
   paymentMethod: PaymentMethod;
+  amountPaid: number;
+  changeDue: number;
   cashierName: string;
   createdAt: number; // Timestamp ms
   updatedAt: number; // Timestamp ms
