@@ -76,9 +76,7 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
             {product.name}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-primary font-bold text-sm">
-              {formatCurrency(product.price)}
-            </span>
+            <span className="text-primary font-bold text-sm">{formatCurrency(product.price)}</span>
             <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
               <Plus className="h-3.5 w-3.5" />
             </div>

@@ -46,9 +46,7 @@ export const OrderSuccessDialog: React.FC<OrderSuccessDialogProps> = ({
             <DialogTitle className="text-xl font-bold">
               {t('cashier.payment.successTitle', 'Pembayaran Berhasil')}
             </DialogTitle>
-            <DialogDescription>
-              Transaksi tercatat ke memori lokal kasir.
-            </DialogDescription>
+            <DialogDescription>Transaksi tercatat ke memori lokal kasir.</DialogDescription>
           </DialogHeader>
         </div>
 
@@ -68,9 +66,7 @@ export const OrderSuccessDialog: React.FC<OrderSuccessDialogProps> = ({
         <div className="p-3.5 rounded-xl bg-muted/40 border text-xs space-y-2">
           <div className="flex justify-between items-center text-muted-foreground pb-1.5 border-b border-border/60">
             <span>No. Struk:</span>
-            <span className="font-mono font-bold text-foreground">
-              {order.orderNumber}
-            </span>
+            <span className="font-mono font-bold text-foreground">{order.orderNumber}</span>
           </div>
 
           <div className="flex justify-between items-center text-muted-foreground">
@@ -99,9 +95,7 @@ export const OrderSuccessDialog: React.FC<OrderSuccessDialogProps> = ({
                 <span>
                   {item.qty}x {item.name}
                 </span>
-                <span className="font-medium text-foreground">
-                  {formatCurrency(item.subtotal)}
-                </span>
+                <span className="font-medium text-foreground">{formatCurrency(item.subtotal)}</span>
               </div>
             ))}
           </div>
@@ -115,9 +109,7 @@ export const OrderSuccessDialog: React.FC<OrderSuccessDialogProps> = ({
 
           <div className="flex justify-between font-bold text-sm text-foreground pt-1.5 border-t border-border/80">
             <span>Total Transaksi:</span>
-            <span className="text-primary font-black">
-              {formatCurrency(order.totalAmount)}
-            </span>
+            <span className="text-primary font-black">{formatCurrency(order.totalAmount)}</span>
           </div>
         </div>
 

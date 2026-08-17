@@ -38,14 +38,9 @@ describe('PaymentModal', () => {
   it('renders payment options and defaults to exact cash total', () => {
     useCartStore.getState().addItem(mockProduct, 2); // 30,000
 
-    render(
-      <PaymentModal
-        open={true}
-        onOpenChange={() => {}}
-        onPaymentSuccess={() => {}}
-      />,
-      { wrapper: createWrapper() }
-    );
+    render(<PaymentModal open={true} onOpenChange={() => {}} onPaymentSuccess={() => {}} />, {
+      wrapper: createWrapper(),
+    });
 
     expect(screen.getByText('Pembayaran')).toBeInTheDocument();
     expect(screen.getByDisplayValue('30000')).toBeInTheDocument();

@@ -53,20 +53,19 @@ export const Tabs: React.FC<TabsProps> = ({
   );
 };
 
-export const TabsList = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="tablist"
-    className={cn(
-      'inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground',
-      className
-    )}
-    {...props}
-  />
-));
+export const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      role="tablist"
+      className={cn(
+        'inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground',
+        className
+      )}
+      {...props}
+    />
+  )
+);
 TabsList.displayName = 'TabsList';
 
 export interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

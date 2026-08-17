@@ -220,8 +220,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <Building className="h-12 w-12 text-primary" />
               <p className="font-semibold text-sm">Transfer Bank Manual</p>
               <p className="text-xs text-muted-foreground">
-                Verifikasi mutasi rekening masuk sebesar{' '}
-                <strong>{formatCurrency(total)}</strong> sebelum menyelesaikan transaksi.
+                Verifikasi mutasi rekening masuk sebesar <strong>{formatCurrency(total)}</strong>{' '}
+                sebelum menyelesaikan transaksi.
               </p>
             </div>
           </TabsContent>

@@ -12,10 +12,7 @@ interface ProductGridProps {
   isLoading?: boolean;
 }
 
-export const ProductGrid: React.FC<ProductGridProps> = ({
-  products,
-  isLoading = false,
-}) => {
+export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = false }) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -42,8 +39,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory =
-        selectedCategory === 'ALL' || p.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'ALL' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [products, searchQuery, selectedCategory]);

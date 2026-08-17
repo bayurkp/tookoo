@@ -10,9 +10,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (product.stock <= 0) return;
 
     set((state) => {
-      const existingIndex = state.items.findIndex(
-        (item) => item.product.id === product.id
-      );
+      const existingIndex = state.items.findIndex((item) => item.product.id === product.id);
 
       if (existingIndex > -1) {
         const existingItem = state.items[existingIndex];
