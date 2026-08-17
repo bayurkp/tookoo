@@ -237,7 +237,7 @@
       "desc": "Pengaturan suara transaksi dan status otomatisasi pencetakan struk."
     },
     "security": {
-      "title": "Keamanan & Hak Akses (RBAC)",
+      "title": "Keamanan & Hak Akses",
       "desc": "Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif."
     },
     "device": {

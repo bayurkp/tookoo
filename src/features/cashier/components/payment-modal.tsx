@@ -81,9 +81,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       const orderItems = items.map((item) => ({
         productId: item.product.id,
         name: item.product.name,
-        price: item.product.price,
+        variantName: item.selectedVariant ? item.selectedVariant.name : undefined,
+        modifiersDescription:
+          item.selectedModifiers && item.selectedModifiers.length > 0
+            ? item.selectedModifiers.map((m) => m.name).join(', ')
+            : undefined,
+        price: item.unitPrice,
         qty: item.quantity,
-        subtotal: item.product.price * item.quantity,
+        subtotal: item.unitPrice * item.quantity,
       }));
 
       const finalAmountPaid = paymentMethod === 'CASH' ? numericCashTendered : total;

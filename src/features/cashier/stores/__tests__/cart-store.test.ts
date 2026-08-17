@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCartStore } from '../cart-store';
-import type { Product } from '@/types/product.types';
+import type { Product, ProductVariantOption } from '@/types/product.types';
+import type { SelectedModifier } from '../../types/cart.types';
 
 const mockProductA: Product = {
   id: 'prod-a',
@@ -24,6 +25,21 @@ const mockProductB: Product = {
   deletedAt: null,
 };
 
+const mockVariantLarge: ProductVariantOption = {
+  id: 'var-large',
+  name: 'Ukuran Large',
+  price: 22000,
+  stock: 8,
+};
+
+const mockModifierBoba: SelectedModifier = {
+  groupId: 'grp-topping',
+  groupName: 'Topping',
+  optionId: 'opt-boba',
+  name: 'Boba',
+  price: 3000,
+};
+
 describe('useCartStore', () => {
   beforeEach(() => {
     useCartStore.getState().clearCart();
@@ -41,7 +57,19 @@ describe('useCartStore', () => {
     expect(state.getTotal()).toBe(35000);
   });
 
-  it('increments quantity when adding same product', () => {
+  it('adds items with variants and modifiers and calculates correct subtotal', () => {
+    const store = useCartStore.getState();
+    // Kopi Hitam Large (22.000) + Boba (3.000) = 25.000 x 2 = 50.000
+    store.addItem(mockProductA, 2, mockVariantLarge, [mockModifierBoba]);
+
+    const state = useCartStore.getState();
+    expect(state.items).toHaveLength(1);
+    expect(state.items[0].unitPrice).toBe(25000);
+    expect(state.items[0].quantity).toBe(2);
+    expect(state.getSubtotal()).toBe(50000);
+  });
+
+  it('increments quantity when adding same product with same variant and modifier', () => {
     const store = useCartStore.getState();
     store.addItem(mockProductA, 1);
     store.addItem(mockProductA, 2);
@@ -63,19 +91,21 @@ describe('useCartStore', () => {
   it('updates quantity and removes item when quantity is 0', () => {
     const store = useCartStore.getState();
     store.addItem(mockProductA, 2);
-    store.updateQuantity(mockProductA.id, 5);
+    const itemId = useCartStore.getState().items[0].id;
+    store.updateQuantity(itemId, 5);
 
     expect(useCartStore.getState().items[0].quantity).toBe(5);
 
-    store.updateQuantity(mockProductA.id, 0);
+    store.updateQuantity(itemId, 0);
     expect(useCartStore.getState().items).toHaveLength(0);
   });
 
-  it('removes item by productId', () => {
+  it('removes item by itemId', () => {
     const store = useCartStore.getState();
     store.addItem(mockProductA, 1);
     store.addItem(mockProductB, 1);
-    store.removeItem(mockProductA.id);
+    const itemAId = useCartStore.getState().items[0].id;
+    store.removeItem(itemAId);
 
     const state = useCartStore.getState();
     expect(state.items).toHaveLength(1);

@@ -95,62 +95,83 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
             </p>
           </div>
         ) : (
-          items.map((item) => (
-            <div
-              key={item.product.id}
-              className="flex items-center justify-between gap-3 p-2.5 rounded-lg border border-border/50 bg-card hover:bg-muted/30 transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate" title={item.product.name}>
-                  {item.product.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {formatCurrency(item.product.price)}
-                </p>
-              </div>
+          items.map((item) => {
+            const maxStock = item.selectedVariant ? item.selectedVariant.stock : item.product.stock;
 
-              {/* Quantity Controls */}
-              <div className="flex items-center gap-1.5 bg-muted/60 rounded-md p-0.5 border border-border/40">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                  className="h-6 w-6 p-0 rounded-sm hover:bg-background"
-                  aria-label="Kurangi kuantitas"
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                  disabled={item.quantity >= item.product.stock}
-                  className="h-6 w-6 p-0 rounded-sm hover:bg-background disabled:opacity-30"
-                  aria-label="Tambah kuantitas"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
-
-              {/* Item Subtotal & Delete */}
-              <div className="text-right min-w-[70px]">
-                <p className="font-bold text-sm">
-                  {formatCurrency(item.product.price * item.quantity)}
-                </p>
-              </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => removeItem(item.product.id)}
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                aria-label={`Hapus ${item.product.name}`}
+            return (
+              <div
+                key={item.id}
+                className="flex items-start justify-between gap-3 p-2.5 rounded-lg border border-border/50 bg-card hover:bg-muted/30 transition-colors"
               >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ))
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm truncate" title={item.product.name}>
+                    {item.product.name}
+                  </p>
+
+                  {/* Selected Variant */}
+                  {item.selectedVariant && (
+                    <p className="text-[11px] text-primary font-medium flex items-center gap-1 mt-0.5">
+                      <span className="bg-primary/10 px-1.5 py-0.2 rounded text-[10px]">
+                        {item.selectedVariant.name}
+                      </span>
+                    </p>
+                  )}
+
+                  {/* Selected Modifiers */}
+                  {item.selectedModifiers && item.selectedModifiers.length > 0 && (
+                    <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                      + {item.selectedModifiers.map((m) => m.name).join(', ')}
+                    </p>
+                  )}
+
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {formatCurrency(item.unitPrice)}
+                  </p>
+                </div>
+
+                {/* Quantity Controls */}
+                <div className="flex items-center gap-1.5 bg-muted/60 rounded-md p-0.5 border border-border/40 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="h-6 w-6 p-0 rounded-sm hover:bg-background"
+                    aria-label="Kurangi kuantitas"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    disabled={item.quantity >= maxStock}
+                    className="h-6 w-6 p-0 rounded-sm hover:bg-background disabled:opacity-30"
+                    aria-label="Tambah kuantitas"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+
+                {/* Item Subtotal & Delete */}
+                <div className="text-right min-w-[70px] shrink-0">
+                  <p className="font-bold text-sm">
+                    {formatCurrency(item.unitPrice * item.quantity)}
+                  </p>
+                </div>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeItem(item.id)}
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                  aria-label={`Hapus ${item.product.name}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            );
+          })
         )}
       </CardContent>
 
@@ -274,3 +295,5 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
     </Card>
   );
 };
+
+export default CartPanel;

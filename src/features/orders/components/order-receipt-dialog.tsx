@@ -90,14 +90,24 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
           </p>
           <div className="divide-y divide-border/60 border rounded-lg overflow-hidden bg-card text-xs">
             {order.items.map((item, idx) => (
-              <div key={idx} className="p-2.5 flex justify-between items-center">
-                <div>
-                  <p className="font-semibold text-foreground">{item.name}</p>
-                  <p className="text-muted-foreground">
+              <div key={idx} className="p-2.5 flex justify-between items-start">
+                <div className="min-w-0 flex-1 pr-2">
+                  <p className="font-semibold text-foreground truncate">{item.name}</p>
+                  {item.variantName && (
+                    <p className="text-[10px] text-primary font-medium">
+                      Varian: {item.variantName}
+                    </p>
+                  )}
+                  {item.modifiersDescription && (
+                    <p className="text-[10px] text-muted-foreground">
+                      + {item.modifiersDescription}
+                    </p>
+                  )}
+                  <p className="text-muted-foreground text-[11px]">
                     {item.qty}x @ {formatCurrency(item.price)}
                   </p>
                 </div>
-                <p className="font-bold text-foreground">{formatCurrency(item.subtotal)}</p>
+                <p className="font-bold text-foreground shrink-0">{formatCurrency(item.subtotal)}</p>
               </div>
             ))}
           </div>

@@ -237,7 +237,7 @@
       "desc": "Transaction audio chimes and receipt printing automation."
     },
     "security": {
-      "title": "Security & Access Control (RBAC)",
+      "title": "Security & Access Control",
       "desc": "Configure Owner PIN to lock revenue analytics and sensitive store settings."
     },
     "device": {

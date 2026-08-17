@@ -22,11 +22,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuthStore } from '@/stores/auth-store';
@@ -130,9 +126,7 @@ export const SettingsPage: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Page Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">
-          {t('settings.title', 'Pengaturan')}
-        </h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('settings.title', 'Pengaturan')}</h2>
         <p className="text-muted-foreground text-sm">
           {t(
             'settings.subtitle',
@@ -161,7 +155,10 @@ export const SettingsPage: React.FC = () => {
                   {t('settings.storeProfile.title', 'Profil Toko')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {t('settings.storeProfile.desc', 'Nama, alamat, dan pesan kaki yang akan tercetak di struk belanja pelanggan.')}
+                  {t(
+                    'settings.storeProfile.desc',
+                    'Nama, alamat, dan pesan kaki yang akan tercetak di struk belanja pelanggan.'
+                  )}
                 </CardDescription>
               </div>
             </div>
@@ -245,7 +242,10 @@ export const SettingsPage: React.FC = () => {
                   {t('settings.deviceProfile.title', 'Profil Perangkat & Terminal')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {t('settings.deviceProfile.desc', 'Identitas terminal kasir ini dalam jaringan lokal toko.')}
+                  {t(
+                    'settings.deviceProfile.desc',
+                    'Identitas terminal kasir ini dalam jaringan lokal toko.'
+                  )}
                 </CardDescription>
               </div>
             </div>
@@ -305,14 +305,15 @@ export const SettingsPage: React.FC = () => {
                 {/* Storage Status */}
                 <div className="p-3.5 rounded-lg border border-border/80 flex items-center justify-between gap-3">
                   <div className="space-y-0.5">
-                    <span className="text-xs font-bold text-foreground">
-                      Penyimpanan Offline
-                    </span>
+                    <span className="text-xs font-bold text-foreground">Penyimpanan Offline</span>
                     <p className="text-[11px] text-muted-foreground">
                       IndexedDB Browser Terenkripsi
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0.5 font-semibold">
+                  <Badge
+                    variant="outline"
+                    className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0.5 font-semibold"
+                  >
                     Aman & Lokal
                   </Badge>
                 </div>
@@ -475,7 +476,10 @@ export const SettingsPage: React.FC = () => {
                   {t('settings.sound.title', 'Suara & Operasional Kasir')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {t('settings.sound.desc', 'Pengaturan suara transaksi dan status otomatisasi pencetakan struk.')}
+                  {t(
+                    'settings.sound.desc',
+                    'Pengaturan suara transaksi dan status otomatisasi pencetakan struk.'
+                  )}
                 </CardDescription>
               </div>
             </div>
@@ -539,10 +543,7 @@ export const SettingsPage: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    {t(
-                      'settings.device.autoPrintDesc',
-                      'Buka dialog cetak setelah bayar selesai.'
-                    )}
+                    {t('settings.device.autoPrintDesc', 'Buka dialog cetak setelah bayar selesai.')}
                   </p>
                 </div>
                 <Button
@@ -568,10 +569,13 @@ export const SettingsPage: React.FC = () => {
               </div>
               <div>
                 <CardTitle className="text-base font-bold">
-                  {t('settings.security.title', 'Keamanan & Hak Akses (RBAC)')}
+                  {t('settings.security.title', 'Keamanan & Hak Akses')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {t('settings.security.desc', 'Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif.')}
+                  {t(
+                    'settings.security.desc',
+                    'Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif.'
+                  )}
                 </CardDescription>
               </div>
             </div>
@@ -582,10 +586,11 @@ export const SettingsPage: React.FC = () => {
               {/* Role Selector Card */}
               <div className="p-4 rounded-lg border border-border/80 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground">
-                    Peran Terminal Ini
-                  </span>
-                  <Badge variant={currentRole === 'OWNER' ? 'default' : 'secondary'} className="text-xs">
+                  <span className="text-xs font-bold text-foreground">Peran Terminal Ini</span>
+                  <Badge
+                    variant={currentRole === 'OWNER' ? 'default' : 'secondary'}
+                    className="text-xs"
+                  >
                     {currentRole === 'OWNER' ? 'Pemilik (Owner)' : 'Kasir (Staff)'}
                   </Badge>
                 </div>
@@ -626,9 +631,7 @@ export const SettingsPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <KeyRound className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-bold text-foreground">
-                      PIN Keamanan Pemilik
-                    </span>
+                    <span className="text-xs font-bold text-foreground">PIN Keamanan Pemilik</span>
                   </div>
                   <Badge variant={settings?.ownerPin ? 'outline' : 'secondary'} className="text-xs">
                     {settings?.ownerPin ? 'PIN Aktif' : 'Belum Ada PIN'}
@@ -656,7 +659,12 @@ export const SettingsPage: React.FC = () => {
                       >
                         Batal
                       </Button>
-                      <Button type="submit" size="sm" className="h-7 text-xs" disabled={ownerPin.length < 4}>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className="h-7 text-xs"
+                        disabled={ownerPin.length < 4}
+                      >
                         Simpan PIN
                       </Button>
                     </div>

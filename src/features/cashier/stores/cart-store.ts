@@ -1,20 +1,60 @@
 import { create } from 'zustand';
-import type { CartState, CartDiscount } from '../types/cart.types';
-import type { Product } from '@/types/product.types';
+import type {
+  CartState,
+  CartDiscount,
+  SelectedModifier,
+} from '../types/cart.types';
+import type { Product, ProductVariantOption } from '@/types/product.types';
+
+const generateCartItemId = (
+  productId: string,
+  variant?: ProductVariantOption,
+  modifiers?: SelectedModifier[]
+): string => {
+  const variantPart = variant ? variant.id : 'base';
+  const modPart = modifiers && modifiers.length > 0
+    ? modifiers
+        .map((m) => m.optionId)
+        .sort()
+        .join('_')
+    : 'none';
+  return `${productId}-${variantPart}-${modPart}`;
+};
+
+const calculateUnitPrice = (
+  product: Product,
+  variant?: ProductVariantOption,
+  modifiers?: SelectedModifier[]
+): number => {
+  const baseOrVariantPrice = variant ? variant.price : product.price;
+  const modPrice = modifiers
+    ? modifiers.reduce((acc, mod) => acc + (mod.price || 0), 0)
+    : 0;
+  return baseOrVariantPrice + modPrice;
+};
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   discount: null,
 
-  addItem: (product: Product, quantity = 1) => {
-    if (product.stock <= 0) return;
+  addItem: (
+    product: Product,
+    quantity = 1,
+    selectedVariant?: ProductVariantOption,
+    selectedModifiers?: SelectedModifier[]
+  ) => {
+    const availableStock = selectedVariant ? selectedVariant.stock : product.stock;
+    if (availableStock <= 0) return;
+
+    const itemId = generateCartItemId(product.id, selectedVariant, selectedModifiers);
+    const unitPrice = calculateUnitPrice(product, selectedVariant, selectedModifiers);
 
     set((state) => {
-      const existingIndex = state.items.findIndex((item) => item.product.id === product.id);
+      const existingIndex = state.items.findIndex((item) => item.id === itemId);
 
       if (existingIndex > -1) {
         const existingItem = state.items[existingIndex];
-        const newQuantity = Math.min(existingItem.quantity + quantity, product.stock);
+        const newQuantity = Math.min(existingItem.quantity + quantity, availableStock);
 
         const updatedItems = [...state.items];
         updatedItems[existingIndex] = {
@@ -25,31 +65,44 @@ export const useCartStore = create<CartState>((set, get) => ({
         return { items: updatedItems };
       }
 
-      const initialQuantity = Math.min(quantity, product.stock);
+      const initialQuantity = Math.min(quantity, availableStock);
       return {
-        items: [...state.items, { product, quantity: initialQuantity }],
+        items: [
+          ...state.items,
+          {
+            id: itemId,
+            product,
+            selectedVariant,
+            selectedModifiers,
+            unitPrice,
+            quantity: initialQuantity,
+          },
+        ],
       };
     });
   },
 
-  removeItem: (productId: string) => {
+  removeItem: (itemId: string) => {
     set((state) => ({
-      items: state.items.filter((item) => item.product.id !== productId),
+      items: state.items.filter((item) => item.id !== itemId),
     }));
   },
 
-  updateQuantity: (productId: string, quantity: number) => {
+  updateQuantity: (itemId: string, quantity: number) => {
     set((state) => {
       if (quantity <= 0) {
         return {
-          items: state.items.filter((item) => item.product.id !== productId),
+          items: state.items.filter((item) => item.id !== itemId),
         };
       }
 
       return {
         items: state.items.map((item) => {
-          if (item.product.id === productId) {
-            const cappedQuantity = Math.min(quantity, item.product.stock);
+          if (item.id === itemId) {
+            const availableStock = item.selectedVariant
+              ? item.selectedVariant.stock
+              : item.product.stock;
+            const cappedQuantity = Math.min(quantity, availableStock);
             return { ...item, quantity: cappedQuantity };
           }
           return item;
@@ -68,7 +121,7 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   getSubtotal: () => {
     const { items } = get();
-    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    return items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   },
 
   getDiscountAmount: () => {

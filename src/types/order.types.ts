@@ -3,7 +3,9 @@ export type PaymentMethod = 'CASH' | 'QRIS' | 'TRANSFER';
 export interface OrderItem {
   productId: string; // UUID Product
   name: string;
-  price: number;
+  variantName?: string; // e.g. "Large", "Size XL", "Warna Hitam"
+  modifiersDescription?: string; // e.g. "+ Ekstra Boba, Less Sugar"
+  price: number; // Unit price with variant & modifiers
   qty: number;
   subtotal: number;
 }

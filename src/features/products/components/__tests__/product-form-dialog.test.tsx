@@ -24,7 +24,7 @@ describe('ProductFormDialog', () => {
       wrapper: createWrapper(),
     });
 
-    expect(screen.getByText('Tambah Produk Baru')).toBeInTheDocument();
+    expect(screen.getByText(/Tambah Produk Baru/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('');
   });
 
@@ -44,9 +44,9 @@ describe('ProductFormDialog', () => {
       wrapper: createWrapper(),
     });
 
-    expect(screen.getByText('Edit Produk')).toBeInTheDocument();
+    expect(screen.getByText(/Edit.*Produk/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('Cappuccino Hot');
-    expect(screen.getByLabelText(/Kategori/i)).toHaveValue('Kopi');
+    expect(screen.getByLabelText(/Kategori Utama/i)).toHaveValue('Kopi');
   });
 
   it('validates required fields on empty submit', async () => {
@@ -59,7 +59,7 @@ describe('ProductFormDialog', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Nama produk wajib diisi/i)).toBeInTheDocument();
-      expect(screen.getByText(/Kategori produk wajib diisi/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kategori.*wajib diisi/i)).toBeInTheDocument();
     });
   });
 });

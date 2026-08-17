@@ -4,9 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { CashierProductCard } from './cashier-product-card';
+import { VariantModifierModal } from './variant-modifier-modal';
 import { useCartStore } from '../stores/cart-store';
 import { sounds } from '@/utils/audio';
-import type { Product } from '@/types/product.types';
+import type {
+  Product,
+  ProductVariantOption,
+} from '@/types/product.types';
+import type { SelectedModifier } from '../types/cart.types';
 
 interface ProductGridProps {
   products: Product[];
@@ -17,19 +22,38 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null);
 
   const cartItems = useCartStore((state) => state.items);
   const addItem = useCartStore((state) => state.addItem);
 
-  const handleAddToCart = (product: Product) => {
-    addItem(product);
+  const handleProductClick = (product: Product) => {
+    const hasVariants = Boolean(product.variants && product.variants.length > 0);
+    const hasModifiers = Boolean(product.modifierGroups && product.modifierGroups.length > 0);
+
+    if (hasVariants || hasModifiers) {
+      setSelectedModalProduct(product);
+    } else {
+      addItem(product);
+      sounds.playBeep();
+    }
+  };
+
+  const handleModalAddToCart = (
+    product: Product,
+    quantity: number,
+    selectedVariant?: ProductVariantOption,
+    selectedModifiers?: SelectedModifier[]
+  ) => {
+    addItem(product, quantity, selectedVariant, selectedModifiers);
     sounds.playBeep();
   };
 
   const cartItemMap = useMemo(() => {
     const map = new Map<string, number>();
     cartItems.forEach((item) => {
-      map.set(item.product.id, item.quantity);
+      const current = map.get(item.product.id) || 0;
+      map.set(item.product.id, current + item.quantity);
     });
     return map;
   }, [cartItems]);
@@ -44,7 +68,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
 
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.barcode && p.barcode.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (p.subType && p.subType.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'ALL' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
@@ -54,7 +81,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
     if (e.key === 'Enter' && filteredProducts.length === 1) {
       const product = filteredProducts[0];
       if (product.stock > (cartItemMap.get(product.id) || 0)) {
-        handleAddToCart(product);
+        handleProductClick(product);
         setSearchQuery('');
       }
     }
@@ -121,12 +148,24 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
                 key={product.id}
                 product={product}
                 quantityInCart={cartItemMap.get(product.id) || 0}
-                onAddToCart={handleAddToCart}
+                onAddToCart={handleProductClick}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Modal for selecting variants and modifiers */}
+      <VariantModifierModal
+        product={selectedModalProduct}
+        open={Boolean(selectedModalProduct)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedModalProduct(null);
+        }}
+        onAddToCart={handleModalAddToCart}
+      />
     </div>
   );
 };
+
+export default ProductGrid;
