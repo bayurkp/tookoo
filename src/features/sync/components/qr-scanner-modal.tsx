@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { normalizePassphrase } from '@/lib/passphrase';
 import { sounds } from '@/utils/audio';
 import type { StorePairingPayload } from '@/types/sync.types';
@@ -31,7 +30,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'scanner' | 'manual'>('scanner');
   const [manualPassphrase, setManualPassphrase] = useState('');
-  const [manualStoreName, setManualStoreName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -169,7 +167,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
     const payload: StorePairingPayload = {
       storeId: 'paired-store-' + Date.now(),
-      storeName: manualStoreName.trim() || 'Toko Cabang',
+      storeName: 'Toko Terhubung',
       passphrase: cleaned,
       timestamp: Date.now(),
     };
@@ -178,7 +176,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     onPairSuccess(payload);
     onOpenChange(false);
     setManualPassphrase('');
-    setManualStoreName('');
     setErrorMessage(null);
   };
 
@@ -290,19 +287,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           <TabsContent value="manual" className="pt-2 space-y-3">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                {t('sync.scanner.storeNameLabel', 'Nama Toko (Opsional)')}
-              </label>
-              <Input
-                value={manualStoreName}
-                onChange={(e) => setManualStoreName(e.target.value)}
-                placeholder="Contoh: Kedai Utama"
-                className="text-sm"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t('sync.scanner.passphraseLabel', '12 Kata Sandi Toko *')}
+                {t('sync.scanner.passphraseLabel', '12 Kata Kunci Toko *')}
               </label>
               <textarea
                 value={manualPassphrase}

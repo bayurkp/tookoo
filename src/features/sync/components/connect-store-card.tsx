@@ -17,7 +17,6 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const [passphraseInput, setPassphraseInput] = useState('');
-  const [storeNameInput, setStoreNameInput] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -41,14 +40,13 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
 
     onPairSuccess({
       storeId: 'paired-store',
-      storeName: storeNameInput.trim() || 'Toko Cabang',
+      storeName: 'Toko Terhubung',
       passphrase: cleanPassphrase,
       timestamp: Date.now(),
     });
 
     setSuccessMsg('Perangkat berhasil disambungkan ke toko!');
     setPassphraseInput('');
-    setStoreNameInput('');
     setTimeout(() => setSuccessMsg(null), 4000);
   };
 
