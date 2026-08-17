@@ -1,12 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import {
-  ShoppingCart,
-  Package,
-  Receipt,
-  QrCode,
-  Settings,
-} from 'lucide-react';
+import { ShoppingCart, Package, Receipt, QrCode, Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -26,9 +20,6 @@ export const MainLayout: React.FC = () => {
             <div>
               <h1 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-1.5">
                 {t('common.appName')}
-                <span className="text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                  POS Kasir
-                </span>
               </h1>
             </div>
           </div>

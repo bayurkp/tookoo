@@ -1,29 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Store, Key, Copy, Check, RefreshCw } from 'lucide-react';
+import { Store, Key, Copy, Check, RefreshCw, Smartphone } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import type { StoreSettings } from '@/types/store.types';
 
 interface StoreIdentityCardProps {
   settings?: StoreSettings;
   onUpdateStoreName: (name: string) => void;
+  onUpdateDeviceName?: (deviceName: string) => void;
   onRegeneratePassphrase: () => void;
 }
 
 export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
   settings,
   onUpdateStoreName,
+  onUpdateDeviceName,
   onRegeneratePassphrase,
 }) => {
   const { t } = useTranslation();
   const [storeName, setStoreName] = useState(settings?.storeName || 'Toko Saya');
+  const [deviceName, setDeviceName] = useState(settings?.deviceName || 'Kasir Utama');
   const [copied, setCopied] = useState(false);
 
-  const handleSaveName = () => {
+  useEffect(() => {
+    if (settings) {
+      setStoreName(settings.storeName || 'Toko Saya');
+      setDeviceName(settings.deviceName || 'Kasir Utama');
+    }
+  }, [settings]);
+
+  const handleSaveStoreName = () => {
     if (storeName.trim()) {
       onUpdateStoreName(storeName.trim());
+    }
+  };
+
+  const handleSaveDeviceName = () => {
+    if (deviceName.trim() && onUpdateDeviceName) {
+      onUpdateDeviceName(deviceName.trim());
     }
   };
 
@@ -57,32 +74,61 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
       </CardHeader>
 
       <CardContent className="p-4 pt-2 space-y-4">
-        {/* Store Name Input */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-foreground">
-            {t('sync.storeIdentity.nameLabel', 'Nama Toko')}
-          </label>
-          <div className="flex gap-2">
-            <Input
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
-              placeholder="Contoh: Toko Kopi Senja"
-              className="h-9 text-sm"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleSaveName}
-              className="h-9 px-3 text-xs cursor-pointer"
-            >
-              {t('sync.storeIdentity.saveBtn', 'Simpan Nama')}
-            </Button>
-          </div>
-        </div>
+        <FieldGroup className="gap-3">
+          {/* Store Name Input */}
+          <Field>
+            <FieldLabel htmlFor="sync-store-name">
+              {t('sync.storeIdentity.nameLabel', 'Nama Toko')}
+            </FieldLabel>
+            <div className="flex gap-2">
+              <Input
+                id="sync-store-name"
+                value={storeName}
+                onChange={(e) => setStoreName(e.target.value)}
+                placeholder="Contoh: Toko Kopi Senja"
+                className="h-9 text-sm"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSaveStoreName}
+                className="h-9 px-3 text-xs cursor-pointer"
+              >
+                {t('sync.storeIdentity.saveBtn', 'Simpan Nama')}
+              </Button>
+            </div>
+          </Field>
+
+          {/* Device / Terminal Name */}
+          <Field>
+            <FieldLabel htmlFor="sync-device-name" className="flex items-center gap-1.5">
+              <Smartphone className="h-3.5 w-3.5 text-primary" />
+              <span>{t('sync.storeIdentity.deviceLabel', 'Nama Terminal Ini')}</span>
+            </FieldLabel>
+            <div className="flex gap-2">
+              <Input
+                id="sync-device-name"
+                value={deviceName}
+                onChange={(e) => setDeviceName(e.target.value)}
+                placeholder="Contoh: Kasir Utama (Tablet)"
+                className="h-9 text-sm"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSaveDeviceName}
+                className="h-9 px-3 text-xs cursor-pointer"
+              >
+                Simpan
+              </Button>
+            </div>
+          </Field>
+        </FieldGroup>
 
         {/* 12-Word Passphrase */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 pt-1">
           <div className="flex justify-between items-center">
             <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <Key className="h-3.5 w-3.5 text-primary" />
@@ -135,3 +181,5 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
     </Card>
   );
 };
+
+export default StoreIdentityCard;

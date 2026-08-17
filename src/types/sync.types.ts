@@ -1,4 +1,9 @@
-export type SyncAction = 'UPSERT' | 'DELETE' | 'FULL_SYNC_REQUEST' | 'FULL_SYNC_RESPONSE';
+export type SyncAction =
+  | 'UPSERT'
+  | 'DELETE'
+  | 'HANDSHAKE'
+  | 'FULL_SYNC_REQUEST'
+  | 'FULL_SYNC_RESPONSE';
 
 export interface SyncMessage<T = unknown> {
   action: SyncAction;
@@ -18,6 +23,7 @@ export interface PeerConnectionInfo {
 export interface StorePairingPayload {
   storeId: string;
   storeName: string;
+  deviceName?: string;
   passphrase: string;
   timestamp: number;
 }

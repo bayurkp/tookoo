@@ -35,6 +35,7 @@ export const SettingsPage: React.FC = () => {
 
   // Form local state
   const [storeName, setStoreName] = useState('');
+  const [deviceName, setDeviceName] = useState('');
   const [storeAddress, setStoreAddress] = useState('');
   const [receiptFooter, setReceiptFooter] = useState('');
   const [defaultCashier, setDefaultCashier] = useState('');
@@ -45,6 +46,7 @@ export const SettingsPage: React.FC = () => {
   useEffect(() => {
     if (settings) {
       setStoreName(settings.storeName || '');
+      setDeviceName(settings.deviceName || '');
       setStoreAddress(settings.storeAddress || '');
       setReceiptFooter(settings.receiptFooter || '');
       setDefaultCashier(settings.defaultCashier || '');
@@ -59,6 +61,7 @@ export const SettingsPage: React.FC = () => {
 
     updateSettings({
       storeName: storeName.trim(),
+      deviceName: deviceName.trim() || undefined,
       storeAddress: storeAddress.trim() || undefined,
       receiptFooter: receiptFooter.trim() || undefined,
       defaultCashier: defaultCashier.trim() || undefined,
@@ -128,7 +131,7 @@ export const SettingsPage: React.FC = () => {
                 <CardDescription className="text-xs">
                   {t(
                     'settings.profile.desc',
-                    'Informasi toko yang akan tercetak pada struk belanja pelanggan.'
+                    'Informasi toko dan identitas terminal kasir ini.'
                   )}
                 </CardDescription>
               </div>
@@ -154,6 +157,20 @@ export const SettingsPage: React.FC = () => {
                     placeholder="Contoh: Toko Kopi Senja"
                     disabled={isSettingsLoading}
                     required
+                  />
+                </Field>
+
+                {/* Device / Terminal Name */}
+                <Field>
+                  <FieldLabel htmlFor="device-name">
+                    {t('settings.profile.deviceName', 'Nama Terminal / HP Ini')}
+                  </FieldLabel>
+                  <Input
+                    id="device-name"
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                    placeholder="Contoh: Kasir Utama (Tablet) / HP Kasir 1"
+                    disabled={isSettingsLoading}
                   />
                 </Field>
 
@@ -192,7 +209,7 @@ export const SettingsPage: React.FC = () => {
                 </Field>
 
                 {/* Receipt Footer Message */}
-                <Field>
+                <Field className="sm:col-span-2">
                   <FieldLabel htmlFor="receipt-footer">
                     {t('settings.profile.receiptFooter', 'Pesan Kaki Struk')}
                   </FieldLabel>
@@ -482,7 +499,7 @@ export const SettingsPage: React.FC = () => {
                   </p>
                 </div>
                 <Badge variant="secondary" className="text-xs py-0.5 font-mono">
-                  Offline-Ready
+                  {deviceName || 'Terminal Kasir'}
                 </Badge>
               </div>
             </div>

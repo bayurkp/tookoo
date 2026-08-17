@@ -1,6 +1,7 @@
 export interface StoreSettings {
   id: string; // UUID v4 (Store ID)
   storeName: string;
+  deviceName?: string; // e.g. "Kasir Utama (Tablet)", "HP Kasir 2"
   storeAddress?: string;
   receiptFooter?: string;
   defaultCashier?: string;

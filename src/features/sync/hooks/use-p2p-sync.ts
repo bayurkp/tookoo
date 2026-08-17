@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getOrCreateStoreSettings, updateStoreSettings } from '../api/store-settings-api';
 import {
@@ -22,6 +22,9 @@ export const useP2pSync = () => {
     queryFn: getOrCreateStoreSettings,
   });
 
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+
   // Mutate Store Settings
   const updateSettingsMutation = useMutation({
     mutationFn: (updates: Partial<Omit<StoreSettings, 'id' | 'createdAt'>>) =>
@@ -34,6 +37,30 @@ export const useP2pSync = () => {
   // Handle incoming P2P message
   const handleIncomingMessage = useCallback(
     async (msg: SyncMessage) => {
+      if (msg.action === 'HANDSHAKE') {
+        const peerData = msg.data as { deviceName?: string };
+        const deviceName = peerData?.deviceName || 'Terminal Kasir';
+
+        setPeers((prev) => {
+          const existing = prev.find((p) => p.peerId === msg.deviceId);
+          if (existing) {
+            return prev.map((p) =>
+              p.peerId === msg.deviceId ? { ...p, deviceName, status: 'CONNECTED' } : p
+            );
+          }
+          return [
+            ...prev,
+            {
+              peerId: msg.deviceId,
+              deviceName,
+              connectedAt: Date.now(),
+              status: 'CONNECTED',
+            },
+          ];
+        });
+        return;
+      }
+
       const applied = await applySyncMessage(msg);
       if (applied) {
         queryClient.invalidateQueries({ queryKey: [msg.collection] });
@@ -46,6 +73,17 @@ export const useP2pSync = () => {
   const handlePeerStatus = useCallback((peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => {
     setPeers((prev) => {
       if (status === 'CONNECTED') {
+        // Send our handshake back to the peer with our device name
+        const currentSettings = settingsRef.current;
+        const currentDeviceName = currentSettings?.deviceName || 'Kasir Utama';
+        p2pEngine.broadcast({
+          action: 'HANDSHAKE',
+          collection: 'settings',
+          data: { deviceName: currentDeviceName },
+          updatedAt: Date.now(),
+          deviceId: currentSettings?.id || 'host-device',
+        });
+
         const existing = prev.find((p) => p.peerId === peerId);
         if (existing) {
           return prev.map((p) => (p.peerId === peerId ? { ...p, status } : p));
@@ -54,7 +92,7 @@ export const useP2pSync = () => {
           ...prev,
           {
             peerId,
-            deviceName: 'Terminal Kasir Peer',
+            deviceName: 'Terminal Kasir',
             connectedAt: Date.now(),
             status,
           },
@@ -75,6 +113,10 @@ export const useP2pSync = () => {
   // Actions
   const updateStoreName = (name: string) => {
     updateSettingsMutation.mutate({ storeName: name });
+  };
+
+  const updateDeviceName = (name: string) => {
+    updateSettingsMutation.mutate({ deviceName: name });
   };
 
   const regeneratePassphrase = () => {
@@ -112,6 +154,7 @@ export const useP2pSync = () => {
     isSettingsLoading,
     peers,
     updateStoreName,
+    updateDeviceName,
     regeneratePassphrase,
     updateSettings,
     exportBackup,
