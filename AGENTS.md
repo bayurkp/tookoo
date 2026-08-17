@@ -326,9 +326,31 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 5 — Testing Standards
+# Part 5 — Performance & Optimization Standards
 
-## 12. Testing Strategy & Execution
+## 12. Route-Level Code Splitting
+- Wajib menggunakan `React.lazy()` di level rute ([`src/app/router.tsx`](file:///d:/Projects/tookoo/src/app/router.tsx)) untuk mengisolasi ukuran bundle awal (*initial bundle size*).
+- Hindari *over-splitting* pada level komponen kecil agar tidak menyebabkan *request waterfall*.
+
+## 13. Component & State Optimizations
+- **State Locality:** Tempatkan state sedekat mungkin dengan komponen yang mengonsumsinya. Jangan letakkan semua state di global store.
+- **Lazy State Initialization:** Gunakan callback initializer `useState(() => expensiveComputation())` untuk menghindari eksekusi ulang pada setiap siklus re-render.
+- **Atomic Selectors (Zustand):** Selalu gunakan selector presisi (contoh: `useCartStore(state => state.items)`) agar komponen hanya re-render saat data spesifik tersebut berubah.
+- **Children Prop Pattern (Virtual DOM Isolation):** Terapkan pola `children` pada komponen wrapper (seperti layout & modal container) untuk mengisolasi sub-tree Virtual DOM dari re-render parent.
+- **Zero-Runtime CSS:** Gunakan Tailwind CSS murni (build-time generated) untuk menghilangkan kalkulasi CSS runtime.
+
+## 14. Data Prefetching & Media Optimizations
+- **Data Prefetching:** Gunakan `queryClient.prefetchQuery()` saat user melakukan hover pada navigasi atau tombol penting untuk mempercepat transisi halaman.
+- **Image & Icon Optimization:**
+  - Gunakan format vektor SVG atau format modern WebP.
+  - Gunakan `loading="lazy"` untuk gambar produk yang berada di luar viewport awal.
+- **Web Vitals First:** Pastikan skor Core Web Vitals (terutama INP - *Interaction to Next Paint* dan LCP - *Largest Contentful Paint*) optimal untuk respon kasir instan (0 ms latency).
+
+---
+
+# Part 6 — Testing Standards
+
+## 15. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
    - Letak: Berdampingan di folder `__tests__/` atau di `src/utils/__tests__/`.
@@ -342,7 +364,7 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 6 — The Golden Do's & Don'ts
+# Part 7 — The Golden Do's & Don'ts
 
 ### ✅ DO'S
 - Selalu gunakan `crypto.randomUUID()` untuk ID entitas baru.
