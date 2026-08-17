@@ -19,14 +19,16 @@ describe('SettingsPage', () => {
     await db.settings.clear();
   });
 
-  it('renders all settings sections correctly', async () => {
+  it('renders all separated settings sections correctly', async () => {
     render(<SettingsPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText(/Profil Toko & Kasir/i)).toBeInTheDocument();
+      expect(screen.getByText(/^Profil Toko$/i)).toBeInTheDocument();
+      expect(screen.getByText(/Profil Perangkat & Terminal/i)).toBeInTheDocument();
       expect(screen.getByText(/Tema & Tampilan/i)).toBeInTheDocument();
       expect(screen.getByText(/Bahasa Aplikasi/i)).toBeInTheDocument();
-      expect(screen.getByText(/Perangkat & Operasional Kasir/i)).toBeInTheDocument();
+      expect(screen.getByText(/Suara & Operasional Kasir/i)).toBeInTheDocument();
+      expect(screen.getByText(/Keamanan & Hak Akses/i)).toBeInTheDocument();
     });
   });
 

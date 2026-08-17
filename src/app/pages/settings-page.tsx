@@ -12,7 +12,6 @@ import {
   Volume2,
   VolumeX,
   Printer,
-  HardDrive,
   CheckCircle2,
   Volume1,
   UserCheck,
@@ -42,9 +41,9 @@ export const SettingsPage: React.FC = () => {
 
   // Form local state
   const [storeName, setStoreName] = useState('');
-  const [deviceName, setDeviceName] = useState('');
   const [storeAddress, setStoreAddress] = useState('');
   const [receiptFooter, setReceiptFooter] = useState('');
+  const [deviceName, setDeviceName] = useState('');
   const [defaultCashier, setDefaultCashier] = useState('');
   const [ownerPin, setOwnerPin] = useState('');
   const [isSettingPin, setIsSettingPin] = useState(false);
@@ -55,9 +54,9 @@ export const SettingsPage: React.FC = () => {
   useEffect(() => {
     if (settings) {
       setStoreName(settings.storeName || '');
-      setDeviceName(settings.deviceName || '');
       setStoreAddress(settings.storeAddress || '');
       setReceiptFooter(settings.receiptFooter || '');
+      setDeviceName(settings.deviceName || '');
       setDefaultCashier(settings.defaultCashier || '');
       setOwnerPin(settings.ownerPin || '');
       setSoundEnabled(settings.soundEnabled !== false);
@@ -68,18 +67,25 @@ export const SettingsPage: React.FC = () => {
     }
   }, [settings, setRole]);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveStoreProfile = (e: React.FormEvent) => {
     e.preventDefault();
     if (!storeName.trim()) return;
 
     updateSettings({
       storeName: storeName.trim(),
-      deviceName: deviceName.trim() || undefined,
       storeAddress: storeAddress.trim() || undefined,
       receiptFooter: receiptFooter.trim() || undefined,
+    });
+
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const handleSaveDeviceProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateSettings({
+      deviceName: deviceName.trim() || undefined,
       defaultCashier: defaultCashier.trim() || undefined,
-      soundEnabled,
-      autoPrint,
     });
 
     setSavedSuccess(true);
@@ -130,7 +136,7 @@ export const SettingsPage: React.FC = () => {
         <p className="text-muted-foreground text-sm">
           {t(
             'settings.subtitle',
-            'Kelola profil tokomu, keamanan hak akses (RBAC), tema, bahasa, dan opsi perangkat kasir.'
+            'Kelola profil toko, profil perangkat, tema, bahasa, suara, dan keamanan.'
           )}
         </p>
       </div>
@@ -143,7 +149,7 @@ export const SettingsPage: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* 1. Profil Toko & Kasir */}
+        {/* 1. Profil Toko (Store Profile) */}
         <Card className="border-border/80 shadow-none md:col-span-2">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">
@@ -152,13 +158,10 @@ export const SettingsPage: React.FC = () => {
               </div>
               <div>
                 <CardTitle className="text-base font-bold">
-                  {t('settings.profile.title', 'Profil Toko & Kasir')}
+                  {t('settings.storeProfile.title', 'Profil Toko')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {t(
-                    'settings.profile.desc',
-                    'Informasi toko dan identitas terminal kasir ini.'
-                  )}
+                  {t('settings.storeProfile.desc', 'Nama, alamat, dan pesan kaki yang akan tercetak di struk belanja pelanggan.')}
                 </CardDescription>
               </div>
             </div>
@@ -167,14 +170,14 @@ export const SettingsPage: React.FC = () => {
           <CardContent className="p-5">
             <form
               data-testid="profile-form"
-              onSubmit={handleSaveProfile}
+              onSubmit={handleSaveStoreProfile}
               className="space-y-4"
             >
               <FieldGroup className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Store Name */}
-                <Field>
+                <Field className="sm:col-span-2">
                   <FieldLabel htmlFor="store-name">
-                    {t('settings.profile.storeName', 'Nama Toko')} *
+                    {t('settings.storeProfile.storeName', 'Nama Toko')} *
                   </FieldLabel>
                   <Input
                     id="store-name"
@@ -186,10 +189,75 @@ export const SettingsPage: React.FC = () => {
                   />
                 </Field>
 
+                {/* Store Address */}
+                <Field>
+                  <FieldLabel htmlFor="store-address">
+                    {t('settings.storeProfile.storeAddress', 'Alamat / Lokasi Toko')}
+                  </FieldLabel>
+                  <Input
+                    id="store-address"
+                    value={storeAddress}
+                    onChange={(e) => setStoreAddress(e.target.value)}
+                    placeholder={t(
+                      'settings.storeProfile.storeAddressPlaceholder',
+                      'Contoh: Jl. Sudirman No. 45, Jakarta'
+                    )}
+                    disabled={isSettingsLoading}
+                  />
+                </Field>
+
+                {/* Receipt Footer Message */}
+                <Field>
+                  <FieldLabel htmlFor="receipt-footer">
+                    {t('settings.storeProfile.receiptFooter', 'Pesan Kaki Struk')}
+                  </FieldLabel>
+                  <Input
+                    id="receipt-footer"
+                    value={receiptFooter}
+                    onChange={(e) => setReceiptFooter(e.target.value)}
+                    placeholder={t(
+                      'settings.storeProfile.receiptFooterPlaceholder',
+                      'Contoh: Terima kasih atas kunjungan Anda!'
+                    )}
+                    disabled={isSettingsLoading}
+                  />
+                </Field>
+              </FieldGroup>
+
+              <div className="flex justify-end pt-2">
+                <Button type="submit" disabled={isSettingsLoading} className="cursor-pointer">
+                  {t('settings.storeProfile.saveBtn', 'Simpan Profil Toko')}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* 2. Profil Perangkat (Device Profile) */}
+        <Card className="border-border/80 shadow-none md:col-span-2">
+          <CardHeader className="p-5 pb-3 border-b">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <Smartphone className="h-4 w-4" />
+              </div>
+              <div>
+                <CardTitle className="text-base font-bold">
+                  {t('settings.deviceProfile.title', 'Profil Perangkat & Terminal')}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {t('settings.deviceProfile.desc', 'Identitas terminal kasir ini dalam jaringan lokal toko.')}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5">
+            <form onSubmit={handleSaveDeviceProfile} className="space-y-4">
+              <FieldGroup className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Device / Terminal Name */}
                 <Field>
                   <FieldLabel htmlFor="device-name">
-                    {t('settings.profile.deviceName', 'Nama Terminal / HP Ini')}
+                    {t('settings.deviceProfile.deviceName', 'Nama Terminal / HP Ini')}
                   </FieldLabel>
                   <Input
                     id="device-name"
@@ -203,186 +271,59 @@ export const SettingsPage: React.FC = () => {
                 {/* Default Cashier */}
                 <Field>
                   <FieldLabel htmlFor="default-cashier">
-                    {t('settings.profile.defaultCashier', 'Nama Kasir Bawaan')}
+                    {t('settings.deviceProfile.defaultCashier', 'Nama Kasir Bawaan')}
                   </FieldLabel>
                   <Input
                     id="default-cashier"
                     value={defaultCashier}
                     onChange={(e) => setDefaultCashier(e.target.value)}
                     placeholder={t(
-                      'settings.profile.defaultCashierPlaceholder',
+                      'settings.deviceProfile.defaultCashierPlaceholder',
                       'Contoh: Kasir 1'
-                    )}
-                    disabled={isSettingsLoading}
-                  />
-                </Field>
-
-                {/* Store Address */}
-                <Field>
-                  <FieldLabel htmlFor="store-address">
-                    {t('settings.profile.storeAddress', 'Alamat / Lokasi Toko')}
-                  </FieldLabel>
-                  <Input
-                    id="store-address"
-                    value={storeAddress}
-                    onChange={(e) => setStoreAddress(e.target.value)}
-                    placeholder={t(
-                      'settings.profile.storeAddressPlaceholder',
-                      'Contoh: Jl. Sudirman No. 45, Jakarta'
-                    )}
-                    disabled={isSettingsLoading}
-                  />
-                </Field>
-
-                {/* Receipt Footer Message */}
-                <Field className="sm:col-span-2">
-                  <FieldLabel htmlFor="receipt-footer">
-                    {t('settings.profile.receiptFooter', 'Pesan Kaki Struk')}
-                  </FieldLabel>
-                  <Input
-                    id="receipt-footer"
-                    value={receiptFooter}
-                    onChange={(e) => setReceiptFooter(e.target.value)}
-                    placeholder={t(
-                      'settings.profile.receiptFooterPlaceholder',
-                      'Contoh: Terima kasih atas kunjungan Anda!'
                     )}
                     disabled={isSettingsLoading}
                   />
                 </Field>
               </FieldGroup>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                {/* Device ID Info */}
+                <div className="p-3.5 rounded-lg border border-border/80 flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-bold text-foreground">
+                      {t('settings.device.deviceId', 'ID Terminal Toko')}
+                    </span>
+                    <p className="font-mono text-[11px] text-muted-foreground truncate max-w-[200px]">
+                      {settings?.id || 'Memuat...'}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs py-0.5 font-mono">
+                    {deviceName || 'Terminal Kasir'}
+                  </Badge>
+                </div>
+
+                {/* Storage Status */}
+                <div className="p-3.5 rounded-lg border border-border/80 flex items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-bold text-foreground">
+                      Penyimpanan Offline
+                    </span>
+                    <p className="text-[11px] text-muted-foreground">
+                      IndexedDB Browser Terenkripsi
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0.5 font-semibold">
+                    Aman & Lokal
+                  </Badge>
+                </div>
+              </div>
+
               <div className="flex justify-end pt-2">
                 <Button type="submit" disabled={isSettingsLoading} className="cursor-pointer">
-                  {t('settings.profile.saveBtn', 'Simpan Profil')}
+                  {t('settings.deviceProfile.saveBtn', 'Simpan Profil Perangkat')}
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
-
-        {/* 2. Keamanan & Peran Kasir (RBAC & PIN) */}
-        <Card className="border-border/80 shadow-none md:col-span-2">
-          <CardHeader className="p-5 pb-3 border-b">
-            <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                <Shield className="h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-bold">
-                  Keamanan & Peran Terminal (RBAC)
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif.
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-5 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Role Selector Card */}
-              <div className="p-4 rounded-lg border border-border/80 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground">
-                    Peran Terminal Ini
-                  </span>
-                  <Badge variant={currentRole === 'OWNER' ? 'default' : 'secondary'} className="text-xs">
-                    {currentRole === 'OWNER' ? 'Pemilik (Owner)' : 'Kasir (Staff)'}
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleSwitchRole('OWNER')}
-                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
-                      currentRole === 'OWNER'
-                        ? 'border-primary bg-primary/5 text-primary font-bold'
-                        : 'border-border hover:bg-muted/40 text-muted-foreground'
-                    }`}
-                  >
-                    <UserCheck className="h-4 w-4" />
-                    <span className="text-xs">Pemilik Toko</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleSwitchRole('CASHIER')}
-                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
-                      currentRole === 'CASHIER'
-                        ? 'border-primary bg-primary/5 text-primary font-bold'
-                        : 'border-border hover:bg-muted/40 text-muted-foreground'
-                    }`}
-                  >
-                    <User className="h-4 w-4" />
-                    <span className="text-xs">Kasir / Staf</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-muted-foreground">
-                  Mode Kasir membatasi akses ke menu laporan pendapatan dan kunci sinkronisasi.
-                </p>
-              </div>
-
-              {/* Owner PIN Management */}
-              <div className="p-4 rounded-lg border border-border/80 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <KeyRound className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-bold text-foreground">
-                      PIN Keamanan Pemilik
-                    </span>
-                  </div>
-                  <Badge variant={settings?.ownerPin ? 'outline' : 'secondary'} className="text-xs">
-                    {settings?.ownerPin ? 'PIN Aktif' : 'Belum Ada PIN'}
-                  </Badge>
-                </div>
-
-                {isSettingPin ? (
-                  <form onSubmit={handleSavePin} className="space-y-2">
-                    <Input
-                      type="password"
-                      maxLength={6}
-                      value={ownerPin}
-                      onChange={(e) => setOwnerPin(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Masukkan 4-6 digit PIN"
-                      className="text-center font-bold tracking-widest h-9 text-sm"
-                      autoFocus
-                    />
-                    <div className="flex gap-2 justify-end">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsSettingPin(false)}
-                        className="h-7 text-xs"
-                      >
-                        Batal
-                      </Button>
-                      <Button type="submit" size="sm" className="h-7 text-xs" disabled={ownerPin.length < 4}>
-                        Simpan PIN
-                      </Button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-[11px] text-muted-foreground">
-                      {settings?.ownerPin
-                        ? 'PIN digunakan untuk membuka otorisasi saat terminal dalam mode kasir.'
-                        : 'Belum ada PIN master. Pasang PIN untuk melindungi menu toko Anda.'}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsSettingPin(true)}
-                      className="h-7 text-xs w-full cursor-pointer"
-                    >
-                      {settings?.ownerPin ? 'Ubah PIN Pemilik' : 'Pasang PIN Pemilik'}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -522,22 +463,19 @@ export const SettingsPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* 5. Perangkat & Operasional Kasir */}
+        {/* 5. Suara & Operasional Percetakan */}
         <Card className="border-border/80 shadow-none md:col-span-2">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">
               <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                <Smartphone className="h-4 w-4" />
+                <Volume2 className="h-4 w-4" />
               </div>
               <div>
                 <CardTitle className="text-base font-bold">
-                  {t('settings.device.title', 'Perangkat & Operasional Kasir')}
+                  {t('settings.sound.title', 'Suara & Operasional Kasir')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  {t(
-                    'settings.device.desc',
-                    'Pengaturan suara transaksi dan status database lokal.'
-                  )}
+                  {t('settings.sound.desc', 'Pengaturan suara transaksi dan status otomatisasi pencetakan struk.')}
                 </CardDescription>
               </div>
             </div>
@@ -617,41 +555,130 @@ export const SettingsPage: React.FC = () => {
                   {autoPrint ? 'Aktif' : 'Nonaktif'}
                 </Button>
               </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              {/* Local Database Storage Info */}
-              <div className="p-4 rounded-lg border border-border/80 flex items-center justify-between gap-3">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <HardDrive className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-bold text-foreground">
-                      {t('settings.device.storageStatus', 'Penyimpanan Lokal (IndexedDB)')}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground">
-                    {t(
-                      'settings.device.storageDesc',
-                      '100% data tersimpan aman secara lokal di peramban.'
-                    )}
-                  </p>
+        {/* 6. Keamanan & Peran Terminal (RBAC & PIN) */}
+        <Card className="border-border/80 shadow-none md:col-span-2">
+          <CardHeader className="p-5 pb-3 border-b">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <Shield className="h-4 w-4" />
+              </div>
+              <div>
+                <CardTitle className="text-base font-bold">
+                  {t('settings.security.title', 'Keamanan & Hak Akses (RBAC)')}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {t('settings.security.desc', 'Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif.')}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Role Selector Card */}
+              <div className="p-4 rounded-lg border border-border/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">
+                    Peran Terminal Ini
+                  </span>
+                  <Badge variant={currentRole === 'OWNER' ? 'default' : 'secondary'} className="text-xs">
+                    {currentRole === 'OWNER' ? 'Pemilik (Owner)' : 'Kasir (Staff)'}
+                  </Badge>
                 </div>
-                <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0.5 font-semibold">
-                  Aman
-                </Badge>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchRole('OWNER')}
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                      currentRole === 'OWNER'
+                        ? 'border-primary bg-primary/5 text-primary font-bold'
+                        : 'border-border hover:bg-muted/40 text-muted-foreground'
+                    }`}
+                  >
+                    <UserCheck className="h-4 w-4" />
+                    <span className="text-xs">Pemilik Toko</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchRole('CASHIER')}
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                      currentRole === 'CASHIER'
+                        ? 'border-primary bg-primary/5 text-primary font-bold'
+                        : 'border-border hover:bg-muted/40 text-muted-foreground'
+                    }`}
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="text-xs">Kasir / Staf</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Mode Kasir membatasi akses ke menu laporan pendapatan dan kunci sinkronisasi.
+                </p>
               </div>
 
-              {/* Device ID */}
-              <div className="p-4 rounded-lg border border-border/80 flex items-center justify-between gap-3">
-                <div className="space-y-0.5">
-                  <span className="text-xs font-bold text-foreground">
-                    {t('settings.device.deviceId', 'ID Terminal Toko')}
-                  </span>
-                  <p className="font-mono text-[11px] text-muted-foreground truncate max-w-[200px]">
-                    {settings?.id || 'Memuat...'}
-                  </p>
+              {/* Owner PIN Management */}
+              <div className="p-4 rounded-lg border border-border/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <KeyRound className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold text-foreground">
+                      PIN Keamanan Pemilik
+                    </span>
+                  </div>
+                  <Badge variant={settings?.ownerPin ? 'outline' : 'secondary'} className="text-xs">
+                    {settings?.ownerPin ? 'PIN Aktif' : 'Belum Ada PIN'}
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className="text-xs py-0.5 font-mono">
-                  {deviceName || 'Terminal Kasir'}
-                </Badge>
+
+                {isSettingPin ? (
+                  <form onSubmit={handleSavePin} className="space-y-2">
+                    <Input
+                      type="password"
+                      maxLength={6}
+                      value={ownerPin}
+                      onChange={(e) => setOwnerPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Masukkan 4-6 digit PIN"
+                      className="text-center font-bold tracking-widest h-9 text-sm"
+                      autoFocus
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsSettingPin(false)}
+                        className="h-7 text-xs"
+                      >
+                        Batal
+                      </Button>
+                      <Button type="submit" size="sm" className="h-7 text-xs" disabled={ownerPin.length < 4}>
+                        Simpan PIN
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-[11px] text-muted-foreground">
+                      {settings?.ownerPin
+                        ? 'PIN digunakan untuk membuka otorisasi saat terminal dalam mode kasir.'
+                        : 'Belum ada PIN master. Pasang PIN untuk melindungi menu toko Anda.'}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsSettingPin(true)}
+                      className="h-7 text-xs w-full cursor-pointer"
+                    >
+                      {settings?.ownerPin ? 'Ubah PIN Pemilik' : 'Pasang PIN Pemilik'}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

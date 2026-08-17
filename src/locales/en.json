@@ -189,19 +189,25 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage store profile, visual theme, language, and cashier device preferences.",
+    "subtitle": "Manage store profile, device profile, visual theme, language, and security preferences.",
     "saved": "Settings Saved",
-    "profile": {
-      "title": "Store & Cashier Profile",
+    "storeProfile": {
+      "title": "Store Profile",
       "desc": "Store information printed on customer shopping receipts.",
       "storeName": "Store Name",
       "storeAddress": "Store Address / Location (Optional)",
       "storeAddressPlaceholder": "e.g., 45 Sudirman St, Jakarta",
       "receiptFooter": "Receipt Footer Note (Optional)",
       "receiptFooterPlaceholder": "e.g., Thank you for shopping with us!",
+      "saveBtn": "Save Store Profile"
+    },
+    "deviceProfile": {
+      "title": "Device & Terminal Profile",
+      "desc": "Local network identity for this cashier terminal.",
+      "deviceName": "Terminal / Device Name",
       "defaultCashier": "Default Cashier Name",
       "defaultCashierPlaceholder": "e.g., Cashier 1",
-      "saveBtn": "Save Profile"
+      "saveBtn": "Save Device Profile"
     },
     "appearance": {
       "title": "Theme & Appearance",
@@ -217,10 +223,18 @@
       "indonesian": "Bahasa Indonesia (ID)",
       "english": "English (EN)"
     },
+    "sound": {
+      "title": "Sound & Cashier Operations",
+      "desc": "Transaction audio chimes and receipt printing automation."
+    },
+    "security": {
+      "title": "Security & Access Control (RBAC)",
+      "desc": "Configure Owner PIN to lock revenue analytics and sensitive store settings."
+    },
     "device": {
       "title": "Device & Cashier Operations",
       "desc": "Transaction sound effects and local database status.",
-      "soundEffects": "Cashier Sound Effects (Beep & Success chime)",
+      "soundEffects": "Cashier Sound Effects",
       "soundDesc": "Play audio confirmations when scanning barcodes or completing payment.",
       "autoPrint": "Auto-Print Receipt",
       "autoPrintDesc": "Automatically open receipt print dialog after payment confirmation.",

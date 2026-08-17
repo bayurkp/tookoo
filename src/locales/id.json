@@ -189,19 +189,25 @@
   },
   "settings": {
     "title": "Pengaturan",
-    "subtitle": "Kelola profil tokomu, tema visual, bahasa, dan opsi perangkat kasir.",
+    "subtitle": "Kelola profil toko, profil perangkat, tema visual, bahasa, dan keamanan kasir.",
     "saved": "Pengaturan Berhasil Disimpan",
-    "profile": {
-      "title": "Profil Toko & Kasir",
+    "storeProfile": {
+      "title": "Profil Toko",
       "desc": "Informasi toko yang akan tercetak pada struk belanja pelanggan.",
       "storeName": "Nama Toko",
       "storeAddress": "Alamat / Lokasi Toko (Opsional)",
       "storeAddressPlaceholder": "Contoh: Jl. Sudirman No. 45, Jakarta",
       "receiptFooter": "Pesan Kaki Struk (Opsional)",
       "receiptFooterPlaceholder": "Contoh: Terima kasih atas kunjungan Anda!",
+      "saveBtn": "Simpan Profil Toko"
+    },
+    "deviceProfile": {
+      "title": "Profil Perangkat & Terminal",
+      "desc": "Identitas terminal kasir ini dalam jaringan lokal toko.",
+      "deviceName": "Nama Terminal / HP Ini",
       "defaultCashier": "Nama Kasir Bawaan",
       "defaultCashierPlaceholder": "Contoh: Kasir 1",
-      "saveBtn": "Simpan Profil"
+      "saveBtn": "Simpan Profil Perangkat"
     },
     "appearance": {
       "title": "Tema & Tampilan",
@@ -217,14 +223,22 @@
       "indonesian": "Bahasa Indonesia (ID)",
       "english": "English (EN)"
     },
+    "sound": {
+      "title": "Suara & Operasional Kasir",
+      "desc": "Pengaturan suara transaksi dan status otomatisasi pencetakan struk."
+    },
+    "security": {
+      "title": "Keamanan & Hak Akses (RBAC)",
+      "desc": "Atur PIN Pemilik Toko untuk mengunci menu laporan omzet dan pengaturan sensitif."
+    },
     "device": {
       "title": "Perangkat & Operasional Kasir",
       "desc": "Pengaturan suara transaksi dan status database lokal.",
-      "soundEffects": "Efek Suara Kasir (Beep & Sukses)",
+      "soundEffects": "Suara Efek Kasir",
       "soundDesc": "Memainkan audio konfirmasi saat scan produk atau pembayaran berhasil.",
-      "autoPrint": "Otomatis Cetak Struk",
+      "autoPrint": "Cetak Struk Otomatis",
       "autoPrintDesc": "Langsung buka jendela cetak struk setelah konfirmasi bayar.",
-      "deviceId": "ID Terminal Kasir",
+      "deviceId": "ID Terminal Toko",
       "storageStatus": "Penyimpanan Database Lokal",
       "storageDesc": "100% data tersimpan aman secara lokal di peramban (IndexedDB)."
     }
