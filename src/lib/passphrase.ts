@@ -62,11 +62,24 @@ const DEFAULT_WORDLIST = [
  */
 export const generatePassphrase = (wordCount = 12): string => {
   const words: string[] = [];
-  const cryptoArray = new Uint32Array(wordCount);
-  crypto.getRandomValues(cryptoArray);
 
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      const cryptoArray = new Uint32Array(wordCount);
+      crypto.getRandomValues(cryptoArray);
+      for (let i = 0; i < wordCount; i++) {
+        const wordIndex = cryptoArray[i] % DEFAULT_WORDLIST.length;
+        words.push(DEFAULT_WORDLIST[wordIndex]);
+      }
+      return words.join(' ');
+    }
+  } catch {
+    // Fallback if crypto fails
+  }
+
+  // Math.random fallback
   for (let i = 0; i < wordCount; i++) {
-    const wordIndex = cryptoArray[i] % DEFAULT_WORDLIST.length;
+    const wordIndex = Math.floor(Math.random() * DEFAULT_WORDLIST.length);
     words.push(DEFAULT_WORDLIST[wordIndex]);
   }
 
