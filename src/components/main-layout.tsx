@@ -1,13 +1,15 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { ShoppingCart, Package, Receipt, QrCode, Languages } from 'lucide-react';
+import { ShoppingCart, Package, Receipt, QrCode, Languages, Moon, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTheme } from '@/hooks/use-theme';
 
 export const MainLayout: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { isDark, toggleTheme } = useTheme();
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === 'id' ? 'en' : 'id';
@@ -16,11 +18,11 @@ export const MainLayout: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex h-screen w-full flex-col bg-background overflow-hidden">
+      <div className="flex h-screen w-full flex-col bg-background text-foreground overflow-hidden">
         {/* Top Header */}
-        <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6 bg-card/60 backdrop-blur z-20 shrink-0">
+        <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6 bg-card/80 backdrop-blur z-20 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-lg shadow-xs">
               T
             </div>
             <div>
@@ -33,7 +35,8 @@ export const MainLayout: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language Switcher */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -53,6 +56,28 @@ export const MainLayout: React.FC = () => {
               </TooltipContent>
             </Tooltip>
 
+            {/* Dark / Light Theme Toggle */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label="Toggle theme"
+                >
+                  {isDark ? (
+                    <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200" />
+                  ) : (
+                    <Moon className="h-4 w-4 text-slate-600 transition-transform duration-200" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                {isDark ? 'Mode Terang' : 'Mode Gelap'}
+              </TooltipContent>
+            </Tooltip>
+
             <HeaderStatusBadge isOnline={navigator.onLine} peerCount={0} />
           </div>
         </header>
@@ -60,14 +85,14 @@ export const MainLayout: React.FC = () => {
         {/* Main Content Area */}
         <div className="flex flex-1 overflow-hidden relative">
           {/* Desktop Sidebar Navigation */}
-          <aside className="w-64 border-r bg-card/30 p-4 flex flex-col justify-between hidden md:flex shrink-0">
+          <aside className="w-64 border-r bg-card/40 p-4 flex flex-col justify-between hidden md:flex shrink-0">
             <nav className="space-y-1.5">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -81,7 +106,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -95,7 +120,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -109,7 +134,7 @@ export const MainLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`
                 }
@@ -125,7 +150,7 @@ export const MainLayout: React.FC = () => {
           </aside>
 
           {/* Dynamic Page Router Outlet */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 md:pb-6 bg-slate-50/70">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 md:pb-6 bg-background">
             <Outlet />
           </main>
         </div>
@@ -184,3 +209,5 @@ export const MainLayout: React.FC = () => {
     </TooltipProvider>
   );
 };
+
+export default MainLayout;
