@@ -19,17 +19,19 @@ describe('SyncPage', () => {
     await db.settings.clear();
   });
 
-  it('renders store identity, qr card, peers, and backup cards', async () => {
+  it('renders store identity, security RBAC, qr card, peers whitelist/blacklist, and backup cards', async () => {
     render(<SyncPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText(/Nama & Kunci Keamanan Toko|Identitas Toko/i)).toBeInTheDocument();
-      expect(screen.getByText(/QR Code Sambung Toko|QR Code Pairing Toko/i)).toBeInTheDocument();
-      expect(screen.getByText(/Perangkat Toko Terhubung|Terminal Terhubung/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(/Cadangkan & Pulihkan Data|Cadangan & Pemulihan Data/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Nama & Kunci Keamanan Toko/i)).toBeInTheDocument();
+      expect(screen.getByText(/Hak Akses & Keamanan/i)).toBeInTheDocument();
+      expect(screen.getByText(/QR Code Sambung Toko/i)).toBeInTheDocument();
+      expect(screen.getByText(/Cadangkan & Pulihkan Data/i)).toBeInTheDocument();
     });
+
+    // Verify tabs in ConnectedPeersCard
+    expect(screen.getByRole('button', { name: /Tepercaya/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Diblokir/i })).toBeInTheDocument();
 
     // Open scanner modal
     const scanBtn = screen.getByRole('button', {
@@ -38,7 +40,7 @@ describe('SyncPage', () => {
     fireEvent.click(scanBtn);
 
     expect(
-      screen.getByText(/Sambungkan Perangkat Kasir|Pairing Terminal Kasir/i)
+      screen.getByText(/Sambungkan Perangkat Kasir/i)
     ).toBeInTheDocument();
   });
 });

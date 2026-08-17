@@ -18,6 +18,8 @@ export interface StoreSettings {
   ownerPin?: string; // 4-6 digit security PIN for owner operations
   activeRole?: UserRole; // Current role of this terminal ('OWNER' | 'CASHIER')
   blacklistedDeviceIds?: string[]; // List of blocked device IDs
+  whitelistedDeviceIds?: string[]; // List of explicitly trusted device IDs
+  whitelistOnly?: boolean; // When true, only whitelisted devices are allowed to sync
   soundEnabled?: boolean;
   autoPrint?: boolean;
   passphrase: string; // 12 random words (BIP-39 mnemonic)

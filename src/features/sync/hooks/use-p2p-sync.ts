@@ -8,6 +8,7 @@ import {
   type DatabaseBackup,
 } from '../api/sync-engine';
 import { p2pEngine } from '@/lib/webrtc';
+import { db } from '@/lib/db';
 import { generatePassphrase } from '@/lib/passphrase';
 import type { PeerConnectionInfo, SyncMessage } from '@/types/sync.types';
 import type { StoreSettings } from '@/types/store.types';
@@ -15,6 +16,7 @@ import type { StoreSettings } from '@/types/store.types';
 export const useP2pSync = () => {
   const queryClient = useQueryClient();
   const [peers, setPeers] = useState<PeerConnectionInfo[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Fetch Store Settings
   const { data: settings, isLoading: isSettingsLoading } = useQuery<StoreSettings>({
@@ -37,14 +39,24 @@ export const useP2pSync = () => {
   // Handle incoming P2P message
   const handleIncomingMessage = useCallback(
     async (msg: SyncMessage) => {
+      const currentSettings = settingsRef.current;
+      const currentBlacklist = currentSettings?.blacklistedDeviceIds || [];
+      const currentWhitelist = currentSettings?.whitelistedDeviceIds || [];
+      const isWhitelistOnly = Boolean(currentSettings?.whitelistOnly);
+
       // 1. Check blacklist: Ignore all messages from blacklisted devices
-      const currentBlacklist = settingsRef.current?.blacklistedDeviceIds || [];
       if (currentBlacklist.includes(msg.deviceId)) {
         console.warn(`[P2P] Ignored message from blacklisted device: ${msg.deviceId}`);
         return;
       }
 
-      // 2. Handle Handshake
+      // 2. Check whitelist-only mode
+      if (isWhitelistOnly && !currentWhitelist.includes(msg.deviceId)) {
+        console.warn(`[P2P] Ignored message from non-whitelisted device: ${msg.deviceId}`);
+        return;
+      }
+
+      // 3. Handle Handshake
       if (msg.action === 'HANDSHAKE') {
         const peerData = msg.data as { deviceName?: string };
         const deviceName = peerData?.deviceName || 'Terminal Kasir';
@@ -69,7 +81,7 @@ export const useP2pSync = () => {
         return;
       }
 
-      // 3. Apply normal sync mutation
+      // 4. Apply normal sync mutation
       const applied = await applySyncMessage(msg);
       if (applied) {
         queryClient.invalidateQueries({ queryKey: [msg.collection] });
@@ -80,16 +92,21 @@ export const useP2pSync = () => {
 
   // Handle peer connection state change
   const handlePeerStatus = useCallback((peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => {
-    // Check blacklist before accepting connection
-    const currentBlacklist = settingsRef.current?.blacklistedDeviceIds || [];
+    const currentSettings = settingsRef.current;
+    const currentBlacklist = currentSettings?.blacklistedDeviceIds || [];
+    const currentWhitelist = currentSettings?.whitelistedDeviceIds || [];
+    const isWhitelistOnly = Boolean(currentSettings?.whitelistOnly);
+
+    // Check blacklist & whitelist before accepting connection
     if (currentBlacklist.includes(peerId)) {
+      return;
+    }
+    if (isWhitelistOnly && !currentWhitelist.includes(peerId)) {
       return;
     }
 
     setPeers((prev) => {
       if (status === 'CONNECTED') {
-        // Send our handshake back to the peer with our device name
-        const currentSettings = settingsRef.current;
         const currentDeviceName = currentSettings?.deviceName || 'Kasir Utama';
         p2pEngine.broadcast({
           action: 'HANDSHAKE',
@@ -138,7 +155,12 @@ export const useP2pSync = () => {
     const current = settings?.blacklistedDeviceIds || [];
     if (!current.includes(deviceId)) {
       const updated = [...current, deviceId];
-      updateSettingsMutation.mutate({ blacklistedDeviceIds: updated });
+      // Also remove from whitelist if present
+      const updatedWhitelist = (settings?.whitelistedDeviceIds || []).filter((id) => id !== deviceId);
+      updateSettingsMutation.mutate({
+        blacklistedDeviceIds: updated,
+        whitelistedDeviceIds: updatedWhitelist,
+      });
       setPeers((prev) => prev.filter((p) => p.peerId !== deviceId));
     }
   };
@@ -149,8 +171,62 @@ export const useP2pSync = () => {
     updateSettingsMutation.mutate({ blacklistedDeviceIds: updated });
   };
 
+  const whitelistDevice = (deviceId: string) => {
+    const current = settings?.whitelistedDeviceIds || [];
+    if (!current.includes(deviceId)) {
+      const updated = [...current, deviceId];
+      // Also remove from blacklist if present
+      const updatedBlacklist = (settings?.blacklistedDeviceIds || []).filter((id) => id !== deviceId);
+      updateSettingsMutation.mutate({
+        whitelistedDeviceIds: updated,
+        blacklistedDeviceIds: updatedBlacklist,
+      });
+    }
+  };
+
+  const unwhitelistDevice = (deviceId: string) => {
+    const current = settings?.whitelistedDeviceIds || [];
+    const updated = current.filter((id) => id !== deviceId);
+    updateSettingsMutation.mutate({ whitelistedDeviceIds: updated });
+  };
+
+  const toggleWhitelistOnly = (enabled: boolean) => {
+    updateSettingsMutation.mutate({ whitelistOnly: enabled });
+  };
+
   const regeneratePassphrase = () => {
     updateSettingsMutation.mutate({ passphrase: generatePassphrase(12) });
+  };
+
+  const syncAllDataNow = async () => {
+    setIsSyncing(true);
+    try {
+      const products = await db.products.toArray();
+      const orders = await db.orders.toArray();
+      const deviceId = settings?.id || 'host-device';
+
+      for (const product of products) {
+        p2pEngine.broadcast({
+          action: 'UPSERT',
+          collection: 'products',
+          data: product,
+          updatedAt: product.updatedAt,
+          deviceId,
+        });
+      }
+
+      for (const order of orders) {
+        p2pEngine.broadcast({
+          action: 'UPSERT',
+          collection: 'orders',
+          data: order,
+          updatedAt: order.updatedAt,
+          deviceId,
+        });
+      }
+    } finally {
+      setTimeout(() => setIsSyncing(false), 1000);
+    }
   };
 
   const exportBackup = async () => {
@@ -183,10 +259,15 @@ export const useP2pSync = () => {
     settings,
     isSettingsLoading,
     peers,
+    isSyncing,
     updateStoreName,
     updateDeviceName,
     blacklistDevice,
     unblacklistDevice,
+    whitelistDevice,
+    unwhitelistDevice,
+    toggleWhitelistOnly,
+    syncAllDataNow,
     regeneratePassphrase,
     updateSettings,
     exportBackup,

@@ -31,7 +31,7 @@
     "cashier": "Kasir",
     "products": "Produk",
     "orders": "Riwayat",
-    "sync": "Sambung Perangkat",
+    "sync": "Sinkronisasi",
     "settings": "Pengaturan"
   },
   "status": {
@@ -141,8 +141,8 @@
     }
   },
   "sync": {
-    "title": "Sambung Perangkat Toko",
-    "subtitle": "Hubungkan HP pemilik dan beberapa perangkat kasir agar data toko selalu sama.",
+    "title": "Sinkronisasi",
+    "subtitle": "Sinkronisasi multi-terminal kasir peer-to-peer (WebRTC), kelola izin akses (RBAC), whitelist, dan blacklist perangkat.",
     "storeIdentity": {
       "title": "Nama & Kunci Keamanan Toko",
       "desc": "Kunci keamanan rahasia untuk menyambungkan HP pemilik dan mesin kasir toko.",

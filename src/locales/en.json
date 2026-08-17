@@ -31,7 +31,7 @@
     "cashier": "Cashier",
     "products": "Products",
     "orders": "History",
-    "sync": "Connect Devices",
+    "sync": "Synchronization",
     "settings": "Settings"
   },
   "status": {
@@ -141,8 +141,8 @@
     }
   },
   "sync": {
-    "title": "Connect Store Devices",
-    "subtitle": "Link owner phone and cashier devices together to keep store data synced.",
+    "title": "Synchronization",
+    "subtitle": "Peer-to-peer (WebRTC) multi-terminal sync, access control (RBAC), device whitelist, and blacklist management.",
     "storeIdentity": {
       "title": "Store Name & Security Key",
       "desc": "Secret security words to link owner phone and cashier devices.",
