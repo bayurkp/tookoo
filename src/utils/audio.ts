@@ -3,7 +3,7 @@
  * Zero external audio dependencies, 100% offline-ready.
  */
 
-class SoundEffects {
+export class SoundEffects {
   private ctx: AudioContext | null = null;
 
   private getContext(): AudioContext | null {

@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
-import { SoundEffects } from '@/utils/audio';
+import { sounds } from '@/utils/audio';
 
 export const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -70,7 +70,7 @@ export const SettingsPage: React.FC = () => {
     setSoundEnabled(nextVal);
     updateSettings({ soundEnabled: nextVal });
     if (nextVal) {
-      SoundEffects.beep();
+      sounds.playBeep();
     }
   };
 
@@ -81,7 +81,7 @@ export const SettingsPage: React.FC = () => {
   };
 
   const handleTestSound = () => {
-    SoundEffects.successChime();
+    sounds.playSuccess();
   };
 
   const currentLang = i18n.language?.startsWith('en') ? 'en' : 'id';
