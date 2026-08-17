@@ -37,6 +37,7 @@ export class P2PClient {
     string,
     { pc: RTCPeerConnection; channel: RTCDataChannel | null; deviceName: string }
   >();
+  private pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
   private broadcastChannel: BroadcastChannel | null = null;
   private isInitialized = false;
 
@@ -52,7 +53,7 @@ export class P2PClient {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    // 1. Setup Local BroadcastChannel (for multi-tab testing on same machine)
+    // 1. Setup Local BroadcastChannel (for multi-tab on same machine)
     if (typeof BroadcastChannel !== 'undefined') {
       try {
         this.broadcastChannel = new BroadcastChannel('tookoo-p2p-relay');
@@ -64,7 +65,7 @@ export class P2PClient {
       }
     }
 
-    // 2. Setup Vite HMR WebSocket Signaling (for cross-device LAN / Tunnel communication)
+    // 2. Setup Vite WebSocket Signaling (for LAN / Tunnel cross-device)
     if (typeof import.meta !== 'undefined' && import.meta.hot) {
       import.meta.hot.on('tookoo:signal', (data: SignalPayload) => {
         this.handleIncomingSignal(data);
@@ -84,7 +85,7 @@ export class P2PClient {
     if (deviceName) this.deviceName = deviceName;
 
     if (changed && this.passphrase && this.deviceId) {
-      // Announce presence to all peers sharing the same network/passphrase
+      // Announce presence
       this.sendSignal({
         type: 'JOIN',
         passphrase: this.passphrase,
@@ -124,15 +125,14 @@ export class P2PClient {
 
     switch (signal.type) {
       case 'JOIN': {
-        // Peer joined the same store passphrase room
+        // Connected peer joined with matching store passphrase
         this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
         this.onConnectCallback?.();
 
-        // Initiator logic: Higher deviceId initiates WebRTC connection
+        // Initiator logic: Only the node with lexicographically higher deviceId sends offer
         if (
           typeof RTCPeerConnection !== 'undefined' &&
-          this.deviceId > peerId &&
-          !this.peerConnections.has(peerId)
+          this.deviceId > peerId
         ) {
           await this.initiatePeerOffer(peerId, peerDeviceName);
         }
@@ -148,26 +148,14 @@ export class P2PClient {
 
       case 'ANSWER': {
         if (signal.targetId === this.deviceId && signal.sdp) {
-          const entry = this.peerConnections.get(peerId);
-          if (entry && typeof RTCSessionDescription !== 'undefined') {
-            await entry.pc.setRemoteDescription(new RTCSessionDescription(signal.sdp));
-            this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
-            this.onConnectCallback?.();
-          }
+          await this.handlePeerAnswer(peerId, peerDeviceName, signal.sdp);
         }
         break;
       }
 
       case 'ICE': {
         if (signal.targetId === this.deviceId && signal.candidate) {
-          const entry = this.peerConnections.get(peerId);
-          if (entry && typeof RTCIceCandidate !== 'undefined') {
-            try {
-              await entry.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-            } catch {
-              // candidate error ignored
-            }
-          }
+          await this.handleIceCandidate(peerId, signal.candidate);
         }
         break;
       }
@@ -181,7 +169,7 @@ export class P2PClient {
       }
 
       case 'LEAVE': {
-        this.peerConnections.delete(peerId);
+        this.closePeer(peerId);
         this.onStatusCallback?.(peerId, 'DISCONNECTED');
         break;
       }
@@ -192,23 +180,14 @@ export class P2PClient {
     if (typeof RTCPeerConnection === 'undefined') return;
 
     try {
+      this.closePeer(peerId);
+
       const pc = new RTCPeerConnection(ICE_SERVERS);
       const channel = pc.createDataChannel('tookoo-sync');
 
       this.peerConnections.set(peerId, { pc, channel, deviceName: peerDeviceName });
       this.setupDataChannel(peerId, peerDeviceName, channel);
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          this.sendSignal({
-            type: 'ICE',
-            passphrase: this.passphrase,
-            fromId: this.deviceId,
-            targetId: peerId,
-            candidate: event.candidate.toJSON(),
-          });
-        }
-      };
+      this.setupConnectionListeners(peerId, peerDeviceName, pc);
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
@@ -222,7 +201,7 @@ export class P2PClient {
         sdp: offer,
       });
     } catch (err) {
-      console.warn('[WebRTC] Failed to create offer:', err);
+      console.warn('[WebRTC] Failed to initiate offer:', err);
     }
   }
 
@@ -234,6 +213,8 @@ export class P2PClient {
     if (typeof RTCPeerConnection === 'undefined') return;
 
     try {
+      this.closePeer(peerId);
+
       const pc = new RTCPeerConnection(ICE_SERVERS);
       this.peerConnections.set(peerId, { pc, channel: null, deviceName: peerDeviceName });
 
@@ -243,20 +224,12 @@ export class P2PClient {
         this.setupDataChannel(peerId, peerDeviceName, event.channel);
       };
 
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          this.sendSignal({
-            type: 'ICE',
-            passphrase: this.passphrase,
-            fromId: this.deviceId,
-            targetId: peerId,
-            candidate: event.candidate.toJSON(),
-          });
-        }
-      };
+      this.setupConnectionListeners(peerId, peerDeviceName, pc);
 
       if (typeof RTCSessionDescription !== 'undefined') {
         await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        this.flushPendingCandidates(peerId, pc);
+
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
 
@@ -275,6 +248,90 @@ export class P2PClient {
     } catch (err) {
       console.warn('[WebRTC] Failed to handle offer:', err);
     }
+  }
+
+  private async handlePeerAnswer(
+    peerId: string,
+    peerDeviceName: string,
+    sdp: RTCSessionDescriptionInit
+  ) {
+    const entry = this.peerConnections.get(peerId);
+    if (!entry) return;
+
+    // Glare Guard: Only apply answer if signaling state is have-local-offer
+    if (entry.pc.signalingState !== 'have-local-offer') {
+      return;
+    }
+
+    try {
+      if (typeof RTCSessionDescription !== 'undefined') {
+        await entry.pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        this.flushPendingCandidates(peerId, entry.pc);
+        this.onStatusCallback?.(peerId, 'CONNECTED', peerDeviceName);
+        this.onConnectCallback?.();
+      }
+    } catch (err) {
+      console.warn('[WebRTC] Error applying answer description:', err);
+    }
+  }
+
+  private async handleIceCandidate(peerId: string, candidate: RTCIceCandidateInit) {
+    const entry = this.peerConnections.get(peerId);
+    if (!entry || !entry.pc.remoteDescription) {
+      // Buffer candidate until remote description is set
+      const queue = this.pendingCandidates.get(peerId) || [];
+      queue.push(candidate);
+      this.pendingCandidates.set(peerId, queue);
+      return;
+    }
+
+    try {
+      if (typeof RTCIceCandidate !== 'undefined') {
+        await entry.pc.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    } catch {
+      // ignore ICE candidate error
+    }
+  }
+
+  private flushPendingCandidates(peerId: string, pc: RTCPeerConnection) {
+    const queue = this.pendingCandidates.get(peerId);
+    if (queue && queue.length > 0) {
+      queue.forEach((candidate) => {
+        try {
+          if (typeof RTCIceCandidate !== 'undefined') {
+            pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(() => {});
+          }
+        } catch {
+          // ignore
+        }
+      });
+      this.pendingCandidates.delete(peerId);
+    }
+  }
+
+  private setupConnectionListeners(peerId: string, deviceName: string, pc: RTCPeerConnection) {
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        this.sendSignal({
+          type: 'ICE',
+          passphrase: this.passphrase,
+          fromId: this.deviceId,
+          targetId: peerId,
+          candidate: event.candidate.toJSON(),
+        });
+      }
+    };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === 'connected') {
+        this.onStatusCallback?.(peerId, 'CONNECTED', deviceName);
+        this.onConnectCallback?.();
+      } else if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
+        this.closePeer(peerId);
+        this.onStatusCallback?.(peerId, 'DISCONNECTED');
+      }
+    };
   }
 
   private setupDataChannel(peerId: string, deviceName: string, channel: RTCDataChannel) {
@@ -297,10 +354,24 @@ export class P2PClient {
     };
   }
 
+  private closePeer(peerId: string) {
+    const entry = this.peerConnections.get(peerId);
+    if (entry) {
+      try {
+        entry.channel?.close();
+        entry.pc.close();
+      } catch {
+        // ignore
+      }
+      this.peerConnections.delete(peerId);
+    }
+    this.pendingCandidates.delete(peerId);
+  }
+
   public broadcast(message: SyncMessage): boolean {
     let sent = false;
 
-    // 1. Send via open WebRTC DataChannels
+    // 1. Send via active WebRTC DataChannels
     this.peerConnections.forEach(({ channel }) => {
       if (channel && channel.readyState === 'open') {
         try {
@@ -312,7 +383,7 @@ export class P2PClient {
       }
     });
 
-    // 2. Multi-tier fallback: Broadcast via Signaling Channel
+    // 2. Reliable Signal Fallback (Guarantees data delivery even if WebRTC drops)
     if (this.passphrase) {
       this.sendSignal({
         type: 'SYNC_DATA',
@@ -337,6 +408,7 @@ export class P2PClient {
       }
     });
     this.peerConnections.clear();
+    this.pendingCandidates.clear();
 
     if (this.broadcastChannel) {
       try {
