@@ -5,6 +5,7 @@ import {
   ShoppingCart,
   Receipt,
   Package,
+  SlidersHorizontal,
   RefreshCw,
   Settings,
   ShieldCheck,
@@ -95,7 +96,7 @@ export const AppSidebar: React.FC = () => {
             </nav>
           </div>
 
-          {/* Group 2: Katalog & Inventaris */}
+          {/* Group 2: Katalog & Stok */}
           <div>
             <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
               Katalog & Stok
@@ -112,7 +113,21 @@ export const AppSidebar: React.FC = () => {
                 }
               >
                 <Package className="h-4 w-4 shrink-0" />
-                <span>{t('nav.products', 'Produk & Varian')}</span>
+                <span>{t('nav.products', 'Katalog Produk')}</span>
+              </NavLink>
+
+              <NavLink
+                to="/stock-adjustment"
+                className={({ isActive }) =>
+                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground shadow-xs'
+                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                  }`
+                }
+              >
+                <SlidersHorizontal className="h-4 w-4 shrink-0" />
+                <span>{t('nav.stockAdjustment', 'Stok Adjustment')}</span>
               </NavLink>
             </nav>
           </div>

@@ -30,6 +30,7 @@
   "nav": {
     "cashier": "Kasir",
     "products": "Produk",
+    "stockAdjustment": "Stok Adjustment",
     "orders": "Riwayat",
     "sync": "Sinkronisasi",
     "settings": "Pengaturan"

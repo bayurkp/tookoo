@@ -24,7 +24,7 @@ describe('ProductsPage', () => {
   it('shows empty state when no products exist and opens form dialog', async () => {
     render(<ProductsPage />, { wrapper: createWrapper() });
 
-    expect(screen.getByText(/Daftar Produk|Kelola Produk/i)).toBeInTheDocument();
+    expect(screen.getByText(/Daftar Produk|Katalog Produk|Kelola Produk/i)).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText(/Belum ada produk/i)).toBeInTheDocument();
     });
@@ -66,12 +66,67 @@ describe('ProductsPage', () => {
       expect(screen.getByText('Donat Cokelat')).toBeInTheDocument();
     });
 
-    // Click category filter "Makanan" (first occurrence is the category pill)
+    // Click category filter "Makanan" (in category pill list)
     const makananBadges = screen.getAllByText('Makanan');
     fireEvent.click(makananBadges[0]);
 
     expect(screen.queryByText('Kopi Hitam')).not.toBeInTheDocument();
     expect(screen.getByText('Donat Cokelat')).toBeInTheDocument();
+  });
+
+  it('switches between tabs (Categories, Variants, Modifiers)', async () => {
+    await db.products.put({
+      id: 'p-multi',
+      name: 'Kaos Polos',
+      category: 'Pakaian',
+      price: 50000,
+      stock: 15,
+      variants: [
+        { id: 'v1', name: 'Size L', price: 55000, stock: 8 },
+        { id: 'v2', name: 'Size XL', price: 60000, stock: 7 },
+      ],
+      modifierGroups: [
+        {
+          id: 'mg1',
+          name: 'Bungkus Kado',
+          maxSelect: 1,
+          required: false,
+          options: [{ id: 'opt1', name: 'Kertas Kado Pita', price: 5000 }],
+        },
+      ],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      deletedAt: null,
+    });
+
+    render(<ProductsPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Kaos Polos')).toBeInTheDocument();
+    });
+
+    // 1. Switch to Categories Tab
+    const catTab = screen.getByRole('tab', { name: /Kategori/i });
+    fireEvent.keyDown(catTab, { key: 'Enter' });
+    await waitFor(() => {
+      expect(screen.getByText(/1 Produk terdaftar/i)).toBeInTheDocument();
+    });
+
+    // 2. Switch to Variants Tab
+    const varTab = screen.getByRole('tab', { name: /Daftar Varian/i });
+    fireEvent.keyDown(varTab, { key: 'Enter' });
+    await waitFor(() => {
+      expect(screen.getByText('Kaos Polos - Size L')).toBeInTheDocument();
+      expect(screen.getByText('Kaos Polos - Size XL')).toBeInTheDocument();
+    });
+
+    // 3. Switch to Modifiers Tab
+    const modTab = screen.getByRole('tab', { name: /Modifier/i });
+    fireEvent.keyDown(modTab, { key: 'Enter' });
+    await waitFor(() => {
+      expect(screen.getByText('Bungkus Kado')).toBeInTheDocument();
+      expect(screen.getByText('Kertas Kado Pita')).toBeInTheDocument();
+    });
   });
 
   it('opens AlertDialog and deletes product upon confirmation', async () => {

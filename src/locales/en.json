@@ -30,6 +30,7 @@
   "nav": {
     "cashier": "Cashier",
     "products": "Products",
+    "stockAdjustment": "Stock Adjustment",
     "orders": "History",
     "sync": "Synchronization",
     "settings": "Settings"

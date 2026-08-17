@@ -32,6 +32,7 @@ describe('AppSidebar', () => {
     expect(screen.getByRole('link', { name: /Kasir/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Riwayat/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Produk/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Stok Adjustment/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Sinkronisasi/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Pengaturan/i })).toBeInTheDocument();
   });
