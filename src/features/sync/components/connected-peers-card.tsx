@@ -82,8 +82,8 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
                   </div>
                 </div>
 
-                <Badge variant="success" className="text-xs py-0">
-                  {peer.status}
+                <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0">
+                  {t('sync.connected', 'Terhubung')}
                 </Badge>
               </div>
             ))}

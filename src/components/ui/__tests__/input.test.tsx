@@ -8,8 +8,8 @@ describe('Input', () => {
     expect(screen.getByPlaceholderText('Masukkan nama produk')).toBeInTheDocument();
   });
 
-  it('displays error message when error prop is provided', () => {
-    render(<Input placeholder="Nama" error="Nama wajib diisi" />);
-    expect(screen.getByText('Nama wajib diisi')).toBeInTheDocument();
+  it('renders disabled input when disabled prop is true', () => {
+    render(<Input placeholder="Nama" disabled />);
+    expect(screen.getByPlaceholderText('Nama')).toBeDisabled();
   });
 });

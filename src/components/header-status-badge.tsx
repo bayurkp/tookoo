@@ -16,12 +16,9 @@ export const HeaderStatusBadge: React.FC<HeaderStatusBadgeProps> = ({
 
   if (peerCount > 0) {
     return (
-      <Badge variant="success" className="gap-1.5 py-1 px-3">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-        </span>
-        <span>{t('status.p2pConnected', { count: peerCount })}</span>
+      <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1.5 py-1 px-3">
+        <Wifi className="h-3.5 w-3.5" />
+        <span className="text-xs font-semibold">{t('status.p2pConnected', { count: peerCount })}</span>
       </Badge>
     );
   }

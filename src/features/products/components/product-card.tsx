@@ -38,7 +38,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
                 Stok Habis
               </Badge>
             ) : product.stock <= 5 ? (
-              <Badge variant="warning" className="text-[11px] font-semibold">
+              <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10 text-[11px] font-semibold">
                 Sisa {product.stock}
               </Badge>
             ) : (

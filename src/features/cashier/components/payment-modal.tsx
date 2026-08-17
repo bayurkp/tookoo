@@ -225,9 +225,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total)}.`,
                 })}
               </p>
-              <Badge variant="success" className="gap-1 mt-2">
+              <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1 mt-2 font-medium">
                 <CheckCircle2 className="h-3 w-3" />
-                {t('cashier.payment.readyToProcess', 'Siap Diproses')}
+                <span>{t('cashier.payment.ready', 'Siap Transaksi')}</span>
               </Badge>
             </div>
           </TabsContent>

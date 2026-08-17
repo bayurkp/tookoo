@@ -104,8 +104,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                 id="name"
                 placeholder="Contoh: Kopi Americano"
                 {...register('name')}
-                error={errors.name?.message}
               />
+              {errors.name?.message && (
+                <p className="text-xs text-destructive">{errors.name.message}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -117,8 +119,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                   id="category"
                   placeholder="Contoh: Minuman"
                   {...register('category')}
-                  error={errors.category?.message}
                 />
+                {errors.category?.message && (
+                  <p className="text-xs text-destructive">{errors.category.message}</p>
+                )}
               </div>
 
               <div className="space-y-1">
@@ -130,8 +134,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                   type="number"
                   placeholder="0"
                   {...register('price')}
-                  error={errors.price?.message}
                 />
+                {errors.price?.message && (
+                  <p className="text-xs text-destructive">{errors.price.message}</p>
+                )}
               </div>
             </div>
 
@@ -144,8 +150,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                 type="number"
                 placeholder="0"
                 {...register('stock')}
-                error={errors.stock?.message}
               />
+              {errors.stock?.message && (
+                <p className="text-xs text-destructive">{errors.stock.message}</p>
+              )}
             </div>
 
             <div className="space-y-1">
@@ -156,8 +164,10 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                 id="imageUrl"
                 placeholder="https://images.unsplash.com/..."
                 {...register('imageUrl')}
-                error={errors.imageUrl?.message}
               />
+              {errors.imageUrl?.message && (
+                <p className="text-xs text-destructive">{errors.imageUrl.message}</p>
+              )}
             </div>
           </div>
 

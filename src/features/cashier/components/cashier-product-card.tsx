@@ -66,7 +66,7 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
                 {t('products.outOfStock', 'Habis')}
               </Badge>
             ) : product.stock <= 5 ? (
-              <Badge variant="warning" className="font-semibold text-[11px]">
+              <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10 font-semibold text-[11px]">
                 {t('products.lowStock', {
                   count: product.stock,
                   defaultValue: `Sisa ${product.stock}`,

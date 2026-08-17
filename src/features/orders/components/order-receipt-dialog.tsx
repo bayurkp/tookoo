@@ -77,7 +77,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-end">
-            <Badge variant="success" className="text-xs py-0">
+            <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0 font-semibold">
               {t('orders.receipt.completed', 'SELESAI')}
             </Badge>
           </div>
