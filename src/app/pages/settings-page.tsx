@@ -18,12 +18,14 @@ import {
   User,
   Users,
   KeyRound,
+  Lock,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { PinModal } from '@/components/pin-modal';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuthStore } from '@/stores/auth-store';
@@ -47,6 +49,17 @@ export const SettingsPage: React.FC = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoPrint, setAutoPrint] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [pinModalOpen, setPinModalOpen] = useState(false);
+  const [pendingRole, setPendingRole] = useState<UserRole | null>(null);
+
+  const isRolePromotion = (targetRole: UserRole) => {
+    const roleRank: Record<UserRole, number> = {
+      CASHIER: 1,
+      MANAGER: 2,
+      OWNER: 3,
+    };
+    return roleRank[targetRole] > roleRank[currentRole];
+  };
 
   useEffect(() => {
     if (settings) {
@@ -98,8 +111,23 @@ export const SettingsPage: React.FC = () => {
   };
 
   const handleSwitchRole = (newRole: UserRole) => {
-    setRole(newRole);
-    updateSettings({ activeRole: newRole });
+    if (newRole === currentRole) return;
+
+    if (isRolePromotion(newRole) && settings?.ownerPin) {
+      setPendingRole(newRole);
+      setPinModalOpen(true);
+    } else {
+      setRole(newRole);
+      updateSettings({ activeRole: newRole });
+    }
+  };
+
+  const handlePinSuccess = () => {
+    if (pendingRole) {
+      setRole(pendingRole);
+      updateSettings({ activeRole: pendingRole });
+      setPendingRole(null);
+    }
   };
 
   const handleToggleSound = () => {
@@ -593,26 +621,46 @@ export const SettingsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleSwitchRole('OWNER')}
-                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer relative ${
                       currentRole === 'OWNER'
                         ? 'border-primary bg-primary/5 text-primary font-bold'
                         : 'border-border hover:bg-muted/40 text-muted-foreground'
                     }`}
+                    title={
+                      isRolePromotion('OWNER')
+                        ? 'Perlu PIN Pemilik untuk beralih ke peran Pemilik'
+                        : 'Pemilik Toko (Akses Penuh)'
+                    }
                   >
-                    <UserCheck className="h-4 w-4" />
+                    <div className="flex items-center justify-center gap-0.5">
+                      <UserCheck className="h-4 w-4" />
+                      {isRolePromotion('OWNER') && (
+                        <Lock className="h-2.5 w-2.5 text-muted-foreground" />
+                      )}
+                    </div>
                     <span className="text-xs">Pemilik</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleSwitchRole('MANAGER')}
-                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer relative ${
                       currentRole === 'MANAGER'
                         ? 'border-primary bg-primary/5 text-primary font-bold'
                         : 'border-border hover:bg-muted/40 text-muted-foreground'
                     }`}
+                    title={
+                      isRolePromotion('MANAGER')
+                        ? 'Perlu PIN Pemilik untuk beralih ke peran Manajer'
+                        : 'Manajer (Kelola Produk & Laporan)'
+                    }
                   >
-                    <Users className="h-4 w-4" />
+                    <div className="flex items-center justify-center gap-0.5">
+                      <Users className="h-4 w-4" />
+                      {isRolePromotion('MANAGER') && (
+                        <Lock className="h-2.5 w-2.5 text-muted-foreground" />
+                      )}
+                    </div>
                     <span className="text-xs">Manajer</span>
                   </button>
 
@@ -624,13 +672,19 @@ export const SettingsPage: React.FC = () => {
                         ? 'border-primary bg-primary/5 text-primary font-bold'
                         : 'border-border hover:bg-muted/40 text-muted-foreground'
                     }`}
+                    title="Kasir (Khusus Jualan)"
                   >
                     <User className="h-4 w-4" />
                     <span className="text-xs">Kasir</span>
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground">
-                  Mode Kasir membatasi akses ke menu laporan pendapatan dan kunci sinkronisasi.
+                  {currentRole === 'OWNER' &&
+                    'Pemilik: Akses penuh dan berwenang menentukan peran manajer maupun kasir.'}
+                  {currentRole === 'MANAGER' &&
+                    'Manajer: Akses produk & laporan. Dapat beralih ke Kasir, namun perlu PIN untuk menjadi Pemilik.'}
+                  {currentRole === 'CASHIER' &&
+                    'Kasir: Khusus transaksi penjualan. Perlu PIN Pemilik untuk beralih peran.'}
                 </p>
               </div>
 
@@ -700,6 +754,18 @@ export const SettingsPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* PIN Verification Modal for Role Elevation */}
+      <PinModal
+        open={pinModalOpen}
+        onOpenChange={setPinModalOpen}
+        correctPin={settings?.ownerPin}
+        title="Otorisasi PIN Pemilik"
+        description={`Masukkan PIN Pemilik untuk mengubah peran terminal menjadi ${
+          pendingRole === 'OWNER' ? 'Pemilik' : 'Manajer'
+        }.`}
+        onSuccess={handlePinSuccess}
+      />
     </div>
   );
 };
