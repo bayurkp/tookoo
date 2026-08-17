@@ -348,9 +348,25 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 6 — Testing Standards
+# Part 6 — Error Handling & Resilience
 
-## 15. Testing Strategy & Execution
+## 15. Local DB & Query Error Management
+- **Centralized Query Error Handling:** Konfigurasi `QueryCache` dan `MutationCache` di [`src/lib/query-client.ts`](file:///d:/Projects/tookoo/src/lib/query-client.ts) dengan global error handler untuk menampilkan Toast Notifikasi otomatis saat terjadi kegagalan operasi Dexie atau WebRTC.
+- **Graceful Mutation Rollback:** Mutasi transaksi kasir yang gagal wajib ditangani dengan pemulihan state yang aman tanpa menyebabkan inkonsistensi data lokal.
+
+## 16. Multi-Level Error Boundaries
+- **Localized Error Boundaries:** Pasang `react-error-boundary` bertingkat:
+  - *Route Level:* Menjaga agar error di satu halaman (misal: Laporan/Riwayat) tidak merusak alur transaksi kasir utama.
+  - *Widget Level:* Mengisolasi komponen rentan (seperti pemindai kamera QR Code atau widget WebRTC) dengan UI fallback ramah pengguna ([`src/components/error-fallback.tsx`](file:///d:/Projects/tookoo/src/components/error-fallback.tsx)).
+
+## 17. Error Logging & Observability
+- Seluruh *uncaught errors* dicatat secara terstruktur dengan metadata konteks (nama komponen, operasi yang gagal) tanpa mengekspos data kredensial toko atau passphrase mnemonic.
+
+---
+
+# Part 7 — Testing Standards
+
+## 18. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
    - Letak: Berdampingan di folder `__tests__/` atau di `src/utils/__tests__/`.
@@ -364,7 +380,7 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 7 — The Golden Do's & Don'ts
+# Part 8 — The Golden Do's & Don'ts
 
 ### ✅ DO'S
 - Selalu gunakan `crypto.randomUUID()` untuk ID entitas baru.
