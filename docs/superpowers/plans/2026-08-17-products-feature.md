@@ -147,7 +147,7 @@ Expected: FAIL (Cannot find module '@/components/ui/input')
 Create `src/components/ui/input.tsx`:
 ```typescript
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/cn';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
@@ -181,7 +181,7 @@ Create `src/components/ui/dialog.tsx`:
 ```typescript
 import * as React from 'react';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/cn';
 
 interface DialogProps {
   open: boolean;

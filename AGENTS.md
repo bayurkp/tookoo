@@ -100,6 +100,7 @@ src/features/<feature-name>/
 ```text
 .
 ├── .husky/                           // Git Hooks (pre-commit lint, format, typecheck)
+├── components.json                   // shadcn/ui configuration file (configured to @/lib/cn)
 ├── e2e/                              // Playwright End-to-End Tests
 │   └── tests/
 │       ├── smoke.spec.ts             // App loading & PWA offline readiness check
@@ -121,7 +122,7 @@ src/features/<feature-name>/
 │   ├── assets/                       // Static assets (images, icons, fonts)
 │   │
 │   ├── components/                   // Shared Global UI Components (shadcn/ui model)
-│   │   ├── ui/                       // button.tsx, card.tsx, dialog.tsx, input.tsx, badge.tsx
+│   │   ├── ui/                       // button.tsx, card.tsx, dialog.tsx, input.tsx, badge.tsx...
 │   │   │   └── __tests__/            // Unit tests for core UI components
 │   │   ├── error-fallback.tsx        // Fallback UI for caught runtime component errors
 │   │   ├── header-status-badge.tsx   // Dynamic P2P WebRTC connection status indicator
@@ -156,11 +157,11 @@ src/features/<feature-name>/
 │   │   └── use-online-status.ts
 │   │
 │   ├── lib/                          // Preconfigured Reusable Libraries
+│   │   ├── cn.ts                     // Class merging helper (clsx + tailwind-merge)
 │   │   ├── db.ts                     // Dexie.js DB instance (products, orders, settings tables)
 │   │   ├── webrtc.ts                 // WebRTC DataChannel P2P Client Engine
 │   │   ├── passphrase.ts             // BIP-39 12-word mnemonic helper
-│   │   ├── query-client.ts           // TanStack QueryClient setup with global error handlers
-│   │   └── utils.ts                  // cn class merging helper (clsx + tailwind-merge)
+│   │   └── query-client.ts           // TanStack QueryClient setup with global error handlers
 │   │
 │   ├── stores/                       // Global Application State (Zustand)
 │   │   └── notification-store.ts     // Global Toast Notification Store
@@ -338,15 +339,16 @@ When receiving a sync message from a peer over WebRTC:
 
 - Avoid passing too many props. Use composition techniques via _children props_ or _slots_ to build flexible, modular interfaces.
 
-### 4. Shared UI Abstractions (shadcn/ui Model)
+### 4. Maximize shadcn/ui Primitives (`src/components/ui/`)
 
-- Place shared UI primitives in [`src/components/ui/`](file:///d:/Projects/tookoo/src/components/ui) following the shadcn/ui code ownership model.
+- Place all shared UI primitives in [`src/components/ui/`](file:///d:/Projects/tookoo/src/components/ui) following the shadcn/ui code ownership model.
+- Maximize the use of standard shadcn/ui components (`Button`, `Card`, `Badge`, `Dialog`, `Input`, `Sheet`, `Table`, `Tabs`, `DropdownMenu`, `Toast`, `ScrollArea`) for UI consistency, accessibility, and clean design tokens.
 - Wrap third-party components to adapt them to POS application requirements.
 
-### 5. Zero-Runtime Styling (Tailwind CSS)
+### 5. Zero-Runtime Styling (Tailwind CSS) & `cn` Helper
 
-- Build-time generated Tailwind CSS classes only.
-- Use the `cn()` helper (`clsx` + `tailwind-merge`) in [`src/lib/utils.ts`](file:///d:/Projects/tookoo/src/lib/utils.ts) for dynamic class combination.
+- Build-time generated Tailwind CSS utility classes only.
+- Use the `cn()` helper (`clsx` + `tailwind-merge`) in [`src/lib/cn.ts`](file:///d:/Projects/tookoo/src/lib/cn.ts) for dynamic class combination. Configured in `components.json` as the standard utils alias (`@/lib/cn`).
 
 ---
 
