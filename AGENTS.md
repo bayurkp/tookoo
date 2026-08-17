@@ -30,12 +30,14 @@ User interaction in UI Route
 ```
 
 ### Hard Rules:
+
 - **No Cross-Feature Imports:** Code in `src/features/orders` MUST NEVER import from `src/features/products`. Cross-feature composition is strictly done at the application level (`src/app/routes/`).
-- **Shared Isolation:** Modul di `src/components`, `src/lib`, `src/types`, `src/utils`, dan `src/hooks` DILARANG mengimpor dari `src/features` atau `src/app`.
-- **No Barrel Files:** Hindari `index.ts` barrel files untuk memaksimalkan *tree-shaking* dan performa bundling Vite. Impor langsung ke file spesifik (contoh: `import { Button } from '@/components/ui/button';`).
-- **No Raw Data Mutation:** Data mutation strictly follows `get`, `upsert`, and `delete`.
+- **Shared Isolation:** Modules in `src/components`, `src/lib`, `src/types`, `src/utils`, `src/hooks`, and `src/stores` are FORBIDDEN from importing from `src/features` or `src/app`.
+- **No Barrel Files:** Avoid `index.ts` barrel files to maximize _tree-shaking_ and Vite bundling performance. Import directly from specific files (e.g., `import { Button } from '@/components/ui/button';`).
+- **No Raw Data Mutation:** Data mutations strictly follow `get`, `upsert`, and `delete`.
 
 ### Feature Module Structure (`src/features/<feature-name>/`):
+
 ```text
 src/features/<feature-name>/
 ├── api/          # TanStack Query & Dexie mutation declarations
@@ -47,6 +49,7 @@ src/features/<feature-name>/
 ```
 
 ### Boundary Enforcement (ESLint `import/no-restricted-paths`):
+
 ```javascript
 'import/no-restricted-paths': [
   'error',
@@ -75,20 +78,20 @@ src/features/<feature-name>/
 
 ## 2. Technology Stack
 
-| Concern | Solution / Package |
-| :--- | :--- |
-| **Framework & Language** | React 19 + TypeScript (Strict Mode, no `any`) |
-| **Build Tool & Bundler** | Vite |
-| **Architecture** | Bulletproof React (Feature-Based Modular) |
-| **Client / App State** | Zustand (Cart store, Notification toast store) |
-| **DB Cache & Queries** | TanStack Query v5 (React Query) |
-| **Local Database** | Dexie.js (`dexie` + `dexie-react-hooks`) over IndexedDB |
-| **P2P Networking** | WebRTC DataChannel (Direct LAN & Google STUN) |
-| **UI Components & Styling** | Tailwind CSS + shadcn/ui + Lucide React Icons |
-| **Form & Validation** | React Hook Form + Zod (`@hookform/resolvers`) |
-| **Routing** | React Router v7/v6 (Lazy-loaded routes) |
-| **Testing Suite** | Vitest + React Testing Library + `fake-indexeddb` + Playwright |
-| **PWA Support** | `vite-plugin-pwa` (Service Worker offline caching) |
+| Concern                     | Solution / Package                                             |
+| :-------------------------- | :------------------------------------------------------------- |
+| **Framework & Language**    | React 19 + TypeScript (Strict Mode, no `any`)                  |
+| **Build Tool & Bundler**    | Vite                                                           |
+| **Architecture**            | Bulletproof React (Feature-Based Modular)                      |
+| **Client / App State**      | Zustand (Cart store, Notification toast store)                 |
+| **DB Cache & Queries**      | TanStack Query v5 (React Query)                                |
+| **Local Database**          | Dexie.js (`dexie` + `dexie-react-hooks`) over IndexedDB        |
+| **P2P Networking**          | WebRTC DataChannel (Direct LAN & Google STUN)                  |
+| **UI Components & Styling** | Tailwind CSS + shadcn/ui + Lucide React Icons                  |
+| **Form & Validation**       | React Hook Form + Zod (`@hookform/resolvers`)                  |
+| **Routing**                 | React Router v7/v6 (Lazy-loaded routes)                        |
+| **Testing Suite**           | Vitest + React Testing Library + `fake-indexeddb` + Playwright |
+| **PWA Support**             | `vite-plugin-pwa` (Service Worker offline caching)             |
 
 ---
 
@@ -99,52 +102,53 @@ src/features/<feature-name>/
 ├── .husky/                           // Git Hooks (pre-commit lint, format, typecheck)
 ├── e2e/                              // Playwright End-to-End Tests
 │   └── tests/
-│       ├── smoke.spec.ts             // Cek load aplikasi & PWA offline readiness
-│       └── cashier-checkout.spec.ts  // Alur transaksi kasir lengkap
+│       ├── smoke.spec.ts             // App loading & PWA offline readiness check
+│       └── cashier-checkout.spec.ts  // Full cashier checkout transaction flow
 │
 ├── src/
 │   ├── app/                          // Application Layer
 │   │   ├── routes/                   // Route & Page compositions (Lazy Loaded)
-│   │   │   ├── __tests__/            // Integration tests per-route
+│   │   │   ├── __tests__/            // Route integration tests
 │   │   │   │   └── cashier-route.test.tsx
-│   │   │   ├── cashier-route.tsx     // Komposisi layar kasir & keranjang
-│   │   │   ├── products-route.tsx    // Komposisi layar kelola produk
-│   │   │   ├── orders-route.tsx      // Komposisi layar riwayat struk
-│   │   │   └── sync-route.tsx        // Komposisi layar pairing P2P
-│   │   ├── app.tsx                     // Root App component with ErrorBoundary & MainLayout
+│   │   │   ├── cashier-route.tsx     // Cashier terminal & cart layout composition
+│   │   │   ├── products-route.tsx    // Product catalog management screen
+│   │   │   ├── orders-route.tsx      // Receipts history & daily sales report
+│   │   │   └── sync-route.tsx        // P2P pairing & synchronization screen
+│   │   ├── app.tsx                   // Root App component with ErrorBoundary & MainLayout
 │   │   ├── provider.tsx              // Global Providers (QueryClientProvider, ErrorBoundary, Toaster)
 │   │   └── router.tsx                // Router configuration with React.lazy & localized ErrorBoundaries
 │   │
 │   ├── assets/                       // Static assets (images, icons, fonts)
 │   │
-│   ├── components/                   // Shared Global UI Components (shadcn/ui)
-│   │   ├── ui/                       // button.tsx, card.tsx, dialog.tsx, input.tsx, badge.tsx, form.tsx
+│   ├── components/                   // Shared Global UI Components (shadcn/ui model)
+│   │   ├── ui/                       // button.tsx, card.tsx, dialog.tsx, input.tsx, badge.tsx
 │   │   │   └── __tests__/            // Unit tests for core UI components
-│   │   ├── error-fallback.tsx        // Fallback UI saat terjadi error di component
-│   │   ├── header-status-badge.tsx   // Indikator status P2P WebRTC
-│   │   └── main-layout.tsx           // Kerangka layout navigasi utama
+│   │   ├── error-fallback.tsx        // Fallback UI for caught runtime component errors
+│   │   ├── header-status-badge.tsx   // Dynamic P2P WebRTC connection status indicator
+│   │   └── main-layout.tsx           // Primary navigation layout frame
 │   │
-│   ├── config/                       // Global configuration & constants
+│   ├── config/                       // Global configuration & environment constants
 │   │   └── env.ts
 │   │
 │   ├── features/                     // Feature-Based Modules
-│   │   ├── cashier/                  // Fitur Kasir & Transaksi
+│   │   ├── cashier/                  // Cashier terminal & transaction flow
 │   │   │   ├── components/           // product-grid.tsx, cart-sheet.tsx, payment-modal.tsx
 │   │   │   ├── hooks/                // use-cashier-actions.ts
-│   │   │   ├── stores/               // cart-store.ts (Zustand with selectors)
+│   │   │   ├── stores/               // cart-store.ts (Zustand with atomic selectors)
 │   │   │   └── types/                // cart.types.ts
 │   │   │
-│   │   ├── products/                 // Fitur Manajemen Produk
+│   │   ├── products/                 // Product Catalog & Inventory Management
 │   │   │   ├── api/                  // get-products.ts, upsert-product.ts, delete-product.ts
-│   │   │   ├── components/           // product-card.tsx, product-form-dialog.tsx (React Hook Form + Zod)
-│   │   │   └── hooks/                // use-products.ts (TanStack Query hooks)
+│   │   │   ├── components/           // product-card.tsx, product-form-dialog.tsx (RHF + Zod)
+│   │   │   ├── hooks/                // use-products.ts (TanStack Query hooks)
+│   │   │   └── types/                // product-form.types.ts
 │   │   │
-│   │   ├── orders/                   // Fitur Riwayat & Laporan
+│   │   ├── orders/                   // Sales History & Receipts
 │   │   │   ├── api/                  // get-orders.ts, upsert-order.ts
 │   │   │   ├── components/           // order-receipt-dialog.tsx, daily-summary-card.tsx
 │   │   │   └── hooks/                // use-orders.ts (TanStack Query hooks)
 │   │   │
-│   │   └── sync/                     // Fitur P2P Pairing & Kunci Toko
+│   │   └── sync/                     // P2P Pairing & Store Keys
 │   │       ├── components/           // qr-display-card.tsx, qr-scanner-modal.tsx, passphrase-form.tsx
 │   │       └── hooks/                // use-p2p-sync.ts
 │   │
@@ -152,32 +156,32 @@ src/features/<feature-name>/
 │   │   └── use-online-status.ts
 │   │
 │   ├── lib/                          // Preconfigured Reusable Libraries
-│   │   ├── db.ts                     // Instance Dexie.js (tabel products, orders, settings)
-│   │   ├── webrtc.ts                 // Engine WebRTC DataChannel Client
-│   │   ├── passphrase.ts             // Helper BIP-39 12 kata acak
-│   │   ├── query-client.ts           // TanStack QueryClient setup with global error handler
-│   │   └── utils.ts                  // cn helper dari shadcn
+│   │   ├── db.ts                     // Dexie.js DB instance (products, orders, settings tables)
+│   │   ├── webrtc.ts                 // WebRTC DataChannel P2P Client Engine
+│   │   ├── passphrase.ts             // BIP-39 12-word mnemonic helper
+│   │   ├── query-client.ts           // TanStack QueryClient setup with global error handlers
+│   │   └── utils.ts                  // cn class merging helper (clsx + tailwind-merge)
 │   │
 │   ├── stores/                       // Global Application State (Zustand)
-│   │   └── notification-store.ts     // Global Toast Notifications
+│   │   └── notification-store.ts     // Global Toast Notification Store
 │   │
 │   ├── testing/                      // Testing Utilities, Fixtures & Setup
-│   │   ├── setup-tests.ts            // Vitest global setup (fake-indexeddb)
+│   │   ├── setup-tests.ts            // Vitest global setup (fake-indexeddb, jest-dom)
 │   │   ├── test-utils.tsx            // Custom renderWithProviders helper
-│   │   └── mocks/                    // Mock data generator (products, orders)
+│   │   └── mocks/                    // Mock data generators (products, orders)
 │   │
-│   ├── types/                        // Shared TypeScript Types
+│   ├── types/                        // Shared TypeScript Entity Types
 │   │   ├── product.types.ts
 │   │   ├── order.types.ts
 │   │   ├── store.types.ts
 │   │   └── sync.types.ts
 │   │
 │   ├── utils/                        // Shared Pure Utility Functions
-│   │   ├── __tests__/                // Unit tests for helpers
+│   │   ├── __tests__/                // Unit tests for pure helpers
 │   │   ├── uuid.ts                   // crypto.randomUUID()
-│   │   └── format-currency.ts        // Format IDR Rupiah
+│   │   └── format-currency.ts        // Indonesian Rupiah (IDR) currency formatter
 │   │
-│   └── main.tsx                      // Entry Point
+│   └── main.tsx                      // React Root Application Entry Point
 ```
 
 ---
@@ -186,46 +190,51 @@ src/features/<feature-name>/
 
 ## 4. Entity Standards & Identity (UUID v4)
 
-- Semua entitas data WAJIB menggunakan **UUID v4** yang di-generate via `crypto.randomUUID()`.
-- DILARANG KERAS menggunakan auto-increment integer ID untuk menghindari tabrakan data (*ID collision*) antar perangkat offline.
+- All data entities MUST use **UUID v4** generated via `crypto.randomUUID()`.
+- Auto-incrementing integer IDs are STRICTLY FORBIDDEN to eliminate ID collisions between offline peer devices.
 
 ### Strict Timestamps:
-Setiap entitas data WAJIB memiliki 3 field audit timestamp:
-1. `createdAt: number` — Timestamp milidetik saat pertama kali dibuat.
-2. `updatedAt: number` — Timestamp milidetik saat mutasi terakhir (kunci utama resolusi konflik LWW).
-3. `deletedAt: number | null` — `null` jika aktif, dan timestamp angka jika dihapus.
+
+Every data entity MUST include 3 audit timestamp fields:
+
+1. `createdAt: number` — Millisecond timestamp of initial creation.
+2. `updatedAt: number` — Millisecond timestamp of latest mutation (primary key for LWW conflict resolution).
+3. `deletedAt: number | null` — `null` if active, or millisecond timestamp if soft-deleted.
 
 ---
 
 ## 5. The 3 Data Operations (`get`, `upsert`, `delete`)
 
-Untuk mencegah *race condition* dan kompleksitas sinkronisasi, seluruh operasi data disederhanakan hanya menjadi 3 metode:
+To prevent race conditions and synchronize data cleanly across devices, all data operations are simplified into 3 standard methods:
 
-1. **`get(id: string)` / `getAll()`:** Membaca data dari Dexie.js lokal (filter otomatis `deletedAt === null`).
-2. **`upsert(entity: T)`:** Menambah jika baru, atau memperbarui jika ID sudah ada. Wajib meng-update `updatedAt = Date.now()`.
-3. **`delete(id: string)`:** **Soft Delete**. Mengisi `deletedAt = Date.now()` dan `updatedAt = Date.now()`. Jangan lakukan hard delete pada tabel fisik kecuali diminta reset toko.
+1. **`get(id: string)` / `getAll()`:** Reads data from local Dexie.js (automatically filtered where `deletedAt === null`).
+2. **`upsert(entity: T)`:** Inserts if new, or updates if the ID already exists. Always updates `updatedAt = Date.now()`.
+3. **`delete(id: string)`:** **Soft Delete**. Populates `deletedAt = Date.now()` and `updatedAt = Date.now()`. Never perform physical hard deletes on IndexedDB tables unless a full store reset is requested.
 
 ---
 
 ## 6. P2P Synchronization Protocol & Last-Write-Wins (LWW)
 
 ### Sync Message Shape (`src/types/sync.types.ts`):
+
 ```typescript
 export interface SyncMessage<T = unknown> {
-  action: 'UPSERT' | 'DELETE';
-  collection: 'products' | 'orders' | 'settings';
-  data: T;
-  updatedAt: number;
-  deviceId: string;
+  action: "UPSERT" | "DELETE"
+  collection: "products" | "orders" | "settings"
+  data: T
+  updatedAt: number
+  deviceId: string
 }
 ```
 
 ### Ingestion Logic (Handling Incoming Messages):
-Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
-1. Periksa entitas lokal di Dexie berdasarkan `data.id`.
-2. **Aturan LWW (Last-Write-Wins):** Jika data belum ada, atau `msg.updatedAt > localEntity.updatedAt`, terapkan perubahan via `table.put(msg.data)`.
-3. Jika `msg.updatedAt <= localEntity.updatedAt`, abaikan pesan (karena data lokal lebih baru).
-4. Panggil `queryClient.invalidateQueries({ queryKey: [msg.collection] })` agar UI langsung reaktif.
+
+When receiving a sync message from a peer over WebRTC:
+
+1. Check the local entity in Dexie using `data.id`.
+2. **LWW (Last-Write-Wins) Rule:** If the entity does not exist locally, or `msg.updatedAt > localEntity.updatedAt`, apply the mutation via `table.put(msg.data)`.
+3. If `msg.updatedAt <= localEntity.updatedAt`, ignore the incoming message (the local copy is newer or identical).
+4. Trigger `queryClient.invalidateQueries({ queryKey: [msg.collection] })` to update UI immediately with zero latency.
 
 ---
 
@@ -233,42 +242,47 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ## 7. The 5-Tier State Management
 
-1. **Component State (`useState`, `useReducer`):** Khusus untuk UI lokal (toggle modal, dropdown terbuka).
+1. **Component State (`useState`, `useReducer`):** Strictly for localized UI state (modal visibility, open dropdowns).
 2. **Application State (Zustand):**
-   - Keranjang kasir (`cart-store.ts`): items, add/remove, qty increment, discount.
+   - Cashier Shopping Cart (`cart-store.ts`): items, add/remove, quantity adjustment, discount.
    - Global Toast Notifications (`notification-store.ts`).
-   - Gunakan **Atomic Selectors** (`useCartStore(state => state.items)`) untuk mencegah re-render yang tidak perlu.
+   - Always use **Atomic Selectors** (`useCartStore(state => state.items)`) to eliminate unnecessary re-renders.
 3. **Database / Cache State (TanStack Query):**
-   - Seluruh pembacaan tabel Dexie dibungkus dalam `useQuery`.
-   - Seluruh penulisan dibungkus dalam `useMutation` dengan callback `onSuccess` yang memicu `invalidateQueries`.
+   - All reads from Dexie tables are wrapped in `useQuery`.
+   - All writes/mutations are wrapped in `useMutation` with `onSuccess` callbacks that invalidate relevant query keys.
 4. **Form State (React Hook Form + Zod):**
-   - Semua form input (Tambah Produk, Input Passphrase) WAJIB menggunakan validasi skema Zod.
+   - All forms (Add/Edit Product, Passphrase Input) MUST be validated against Zod schemas.
 5. **URL State (React Router):**
-   - Filter kategori dan search query kasir disimpan di `useSearchParams()`.
+   - Category filters and cashier search queries are synchronized with `useSearchParams()`.
 
 ---
 
 ## 8. Project Standards & Tooling
 
 ### 1. ESLint & Static Analysis
-- Menjaga kebersihan dan keseragaman kode dengan konfigurasi aturan ketat.
-- Mencegah kesalahan umum dan pelanggaran arsitektur sejak awal penulisan kode.
+
+- Maintain strict code cleanliness and consistency across the codebase.
+- Prevent architectural boundary violations early during development.
 
 ### 2. Prettier
-- Menjaga konsistensi format penulisan kode di seluruh *codebase*.
-- Konfigurasi `.prettierrc` wajib diaktifkan bersama fitur *format on save*.
+
+- Enforce consistent code formatting.
+- `.prettierrc` configuration must be active alongside editor "format on save".
 
 ### 3. TypeScript (Strict Mode)
-- Wajib menggunakan TypeScript Strict Mode tanpa tipe `any`.
-- Saat melakukan *refactoring*, selalu perbarui deklarasi tipe data (`types/`) terlebih dahulu sebelum memperbaiki implementasi kode.
+
+- Strict Mode enabled without using the `any` type.
+- When refactoring, always update type definitions (`types/`) first before adjusting implementation code.
 
 ### 4. Husky & Git Hooks
-- Menjalankan validasi otomatis sebelum *commit* (*pre-commit hooks*): *linting*, *formatting*, dan *type-checking* untuk mencegah kode rusak masuk ke repositori.
+
+- Run automated pre-commit checks: _linting_, _formatting_, and _type-checking_ to ensure clean repository commits.
 
 ### 5. Absolute Imports (`@/*`)
-- Wajib menggunakan alias `@/*` untuk seluruh *internal imports*.
-- Dilarang keras menggunakan *relative imports* bertingkat (seperti `../../../../components/ui/button`).
-- Konfigurasi di `tsconfig.json` & `vite.config.ts`:
+
+- Always use the `@/*` alias for internal imports.
+- Multi-level relative imports (such as `../../../../components/ui/button`) are strictly forbidden.
+- Configured in `tsconfig.json` & `vite.config.ts`:
   ```json
   "compilerOptions": {
     "baseUrl": ".",
@@ -279,8 +293,9 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
   ```
 
 ### 6. File & Folder Naming Conventions (`eslint-plugin-check-file`)
-- Seluruh nama berkas dan folder (kecuali `__tests__`) wajib menggunakan format **`kebab-case`**.
-- Penegakan aturan via ESLint:
+
+- All files and folders (except `__tests__`) MUST follow **`kebab-case`**.
+- ESLint configuration rule:
   ```javascript
   'check-file/filename-naming-convention': [
     'error',
@@ -288,7 +303,7 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
       '**/*.{ts,tsx}': 'KEBAB_CASE',
     },
     {
-      ignoreMiddleExtensions: true, // mendukung ekstensi ganda seperti .test.tsx, .spec.ts
+      ignoreMiddleExtensions: true, // supports extensions like .test.tsx, .spec.ts
     },
   ],
   'check-file/folder-naming-convention': [
@@ -300,52 +315,61 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
   ```
 
 ### 7. Core Quality Principles
-- **Zero Runtime CSS:** Gunakan utilitas Tailwind CSS murni.
-- **Children Prop Pattern:** Terapkan pola `children` pada komponen pembungkus untuk isolasi Virtual DOM.
-- **Error Boundaries:** Pasang `react-error-boundary` di level route dan widget penting dengan UI fallback yang ramah bagi kasir.
+
+- **Zero Runtime CSS:** Use pure Tailwind CSS utility classes.
+- **Children Prop Pattern:** Apply the `children` pattern on container wrappers for Virtual DOM isolation.
+- **Error Boundaries:** Wrap routes and critical widgets in `react-error-boundary` with cashier-friendly fallback views.
 
 ---
 
 ## 9. Components & Styling Best Practices
 
 ### 1. Colocation Principle
-- Letakkan komponen, helper fungsi, tipe data, dan state sedekat mungkin dengan tempat komponen tersebut digunakan (`src/features/<feature>/components/`).
-- Mengurangi *redundant re-renders* pada update state dan mempermudah pemeliharaan kode.
+
+- Keep components, helper functions, types, and state as close as possible to where they are used (`src/features/<feature>/components/`).
+- Reduces redundant re-renders and simplifies code maintenance.
 
 ### 2. Avoid Monolithic Components & Nested Render Functions
-- Dilarang membuat fungsi *inline render* bersarang (seperti `function renderItems() { ... }`) di dalam komponen besar.
-- Ekstrak setiap bagian UI yang berdiri sendiri menjadi komponen terpisah dengan *Single Responsibility Principle*.
+
+- Do not create nested inline rendering functions (such as `function renderItems() { ... }`) inside large components.
+- Extract self-contained UI fragments into dedicated components with a Single Responsibility Principle.
 
 ### 3. Limit Component Props & Favor Composition
-- Hindari komponen yang menerima terlalu banyak *props*. Gunakan teknik komposisi via *children prop* atau *slots* untuk menyusun UI secara fleksibel dan modular.
+
+- Avoid passing too many props. Use composition techniques via _children props_ or _slots_ to build flexible, modular interfaces.
 
 ### 4. Shared UI Abstractions (shadcn/ui Model)
-- Letakkan komponen UI bersama di [`src/components/ui/`](file:///d:/Projects/tookoo/src/components/ui) dengan pendekatan *code ownership* ala shadcn/ui.
-- Bungkus (*wrapper*) pustaka pihak ketiga untuk menyesuaikan kebutuhan aplikasi kasir.
+
+- Place shared UI primitives in [`src/components/ui/`](file:///d:/Projects/tookoo/src/components/ui) following the shadcn/ui code ownership model.
+- Wrap third-party components to adapt them to POS application requirements.
 
 ### 5. Zero-Runtime Styling (Tailwind CSS)
-- Wajib menggunakan utility classes Tailwind CSS murni (build-time generated) untuk performa rendering optimal tanpa overhead CSS runtime.
-- Gunakan helper `cn()` (`clsx` + `tailwind-merge`) di [`src/lib/utils.ts`](file:///d:/Projects/tookoo/src/lib/utils.ts) untuk penggabungan class dinamis.
+
+- Build-time generated Tailwind CSS classes only.
+- Use the `cn()` helper (`clsx` + `tailwind-merge`) in [`src/lib/utils.ts`](file:///d:/Projects/tookoo/src/lib/utils.ts) for dynamic class combination.
 
 ---
 
 # Part 4 — Security & Access Control
 
 ## 10. Authentication & Store Identity
-- **Self-Sovereign Store Pairing:** Tookoo tidak mengandalkan server auth terpusat. Identitas dan akses toko diamankan melalui Store Secret Key yang dihasilkan saat inisialisasi toko dan dibagikan secara aman via QR Code atau 12 Kata Passphrase (BIP-39 mnemonic).
-- **Session & Key Storage:** Kunci toko disimpan di IndexedDB/Dexie table `settings` (bukan di plain `localStorage` yang rentan XSS) dan di-load ke memory state saat aplikasi aktif.
+
+- **Self-Sovereign Store Pairing:** Tookoo does not rely on a centralized authentication server. Store identity and access are secured via a Store Secret Key generated during store initialization and shared securely via QR Code or 12-Word BIP-39 mnemonic passphrase.
+- **Session & Key Storage:** Store keys are stored in IndexedDB/Dexie table `settings` (never in plain `localStorage` which is vulnerable to XSS) and loaded into memory state when active.
 
 ## 11. Authorization (RBAC & PBAC)
+
 - **Role-Based Access Control (RBAC):**
-  - `OWNER`: Akses penuh ke pengaturan toko, generate QR pairing, rekap laporan omzet, export data, dan reset toko.
-  - `CASHIER` / `STAFF`: Dibatasi pada operasional kasir (katalog produk, keranjang belanja, proses pembayaran, cetak struk).
+  - `OWNER`: Full access to store settings, QR pairing generation, revenue reports, database export, and store reset.
+  - `CASHIER` / `STAFF`: Restricted to sales operations (product catalog, shopping cart, checkout, receipt printing).
 - **Permission-Based Access Control (PBAC):**
-  - Fitur sensitif seperti penghapusan produk atau pembatalan transaksi diproteksi berdasarkan hak akses peran aktif.
+  - Sensitive operations such as deleting catalog products or voiding orders require active role authorization.
 
 ## 12. Client-Side Security & XSS Mitigation
-- **Input Sanitization & Schema Validation:** Seluruh input pengguna (nama produk, kategori, harga, nama kasir) WAJIB divalidasi ketat menggunakan skema Zod sebelum diproses ke database.
-- **No Sensitive Data in URLs:** Secret key atau data sensitif dilarang ditaruh di query params URL (`useSearchParams`).
-- **Safe Rendering:** Dilarang menggunakan `dangerouslySetInnerHTML` tanpa sanitasi HTML yang teruji.
+
+- **Input Sanitization & Schema Validation:** All user inputs (product names, categories, prices, cashier names) MUST be validated against strict Zod schemas before being persisted.
+- **No Sensitive Data in URLs:** Secret keys or sensitive store tokens must never be placed in URL query parameters (`useSearchParams`).
+- **Safe Rendering:** Never use `dangerouslySetInnerHTML` without verified HTML sanitization.
 
 ---
 
@@ -353,126 +377,141 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ## 13. Tookoo's Brand Voice (POS Operator Mindset)
 
-Tookoo berbicara seperti **asisten kasir yang tangkas, ringkas, dan dapat diandalkan (*Smart, Fast & Trustworthy POS Partner*)**.
-Pengguna aplikasi adalah pelaku UMKM dan kasir yang melayani antrean pembeli secara langsung. Seluruh teks antarmuka (UI copy) wajib dapat dipahami seketika dalam $\le 1$ detik tanpa beban kognitif berlebih.
+Tookoo speaks like a **smart, fast, and trustworthy cashier assistant (_Smart, Fast & Trustworthy POS Partner_)**.
+Our users are MSME business owners and cashiers serving customers in fast-paced retail and F&B queues. All interface text (UI copy) must be immediately understood in $\le 1$ second with zero cognitive friction.
 
 ### Voice Qualities
 
-| Quality | Meaning in POS Context | What it is NOT |
-| :--- | :--- | :--- |
-| **Fast & Direct (Ringkas)** | Langsung ke inti aksi. Kalimat pendek, kata kerja aktif, hilangkan kata basa-basi. | Dingin, kasar, membingungkan |
-| **Reliable & Reassuring (Pasti)** | Memberikan kepastian status (offline, tersimpan, kembalian, tersambung) secara akurat. | Meragukan, lambat, ambigu |
-| **Pragmatic (Praktis & Solutif)** | Menggunakan istilah bisnis/kasir umum (Omzet, Stok, Kembalian, Struk) tanpa jargon rumit. | Teoretis, berbelit-belit |
-| **Professional (Profesional)** | Menjaga alur kerja kasir tetap tertata, tenang, dan cepat bahkan saat antrean padat. | Kaku, penuh teks hukum panjang |
+| Quality                   | Meaning in POS Context                                                       | What it is NOT                  |
+| :------------------------ | :--------------------------------------------------------------------------- | :------------------------------ |
+| **Fast & Direct**         | Straight to the action. Short sentences, active verbs, zero fluff.           | Cold, abrupt, confusing         |
+| **Reliable & Reassuring** | Confirms status (offline, saved, change due, connected) with exact numbers.  | Uncertain, slow, ambiguous      |
+| **Pragmatic**             | Clear retail terms (Revenue, Stock, Change, Receipt) without complex jargon. | Over-engineered, verbose        |
+| **Professional**          | Keeps cashier workflows calm, orderly, and fast during rush hours.           | Stiff, legalistic, bureaucratic |
 
 ---
 
 ## 14. Voice by Moment (POS Scenarios)
 
-### 1. Transaksi Kasir & Pembayaran Sukses
-- **Tone:** Tegas, cepat, langsung menampilkan angka kunci (Kembalian & Total).
-- **✅ Contoh:** `"Pembayaran Berhasil. Kembalian: Rp 15.000."`, `"Transaksi Selesai."`
-- **❌ Hindari:** `"Hore! Pembayaran dari pelanggan berhasil diproses ke dalam sistem!"`
+### 1. Checkout & Successful Payment
 
-### 2. Status Stok & Inventaris
-- **Tone:** Informatif, preventif, tidak mendramatisir.
-- **✅ Contoh:** `"Stok tersisa 3"`, `"Stok habis"`, `"Produk berhasil ditambahkan ke katalog."`
-- **❌ Hindari:** `"Gawat! Anda kehabisan stok barang ini!"`
+- **Tone:** Decisive, fast, highlighting key numbers (Change Due & Total).
+- **✅ Examples:** `"Payment Successful. Change Due: Rp 15,000."`, `"Transaction Complete."`
+- **❌ Avoid:** `"Hooray! The customer payment has been successfully recorded into the database!"`
 
-### 3. Koneksi P2P & Status Offline
-- **Tone:** Transparan dan menenangkan (memberi jaminan data tetap aman 100%).
-- **✅ Contoh:** `"Mode Toko Lokal (Offline). Data tersimpan aman di perangkat."`, `"Tersambung ke 2 perangkat kasir."`
-- **❌ Hindari:** `"Koneksi internet terputus! Aplikasi tidak dapat berjalan."`
+### 2. Inventory & Stock Status
 
-### 4. Konfirmasi Aksi Destruktif (Hapus & Batal)
-- **Tone:** Lugas, langsung berupa pertanyaan pendek berorientasi tindakan.
-- **✅ Contoh:** `"Hapus produk ini?"`, `"Batalkan transaksi ini?"`
-- **❌ Hindari:** `"Apakah Anda benar-benar yakin ingin menghapus data produk ini secara permanen dari basis data?"`
+- **Tone:** Informative, proactive, non-alarmist.
+- **✅ Examples:** `"3 left in stock"`, `"Out of stock"`, `"Product added to catalog."`
+- **❌ Avoid:** `"Oh no! You have completely run out of stock for this item!"`
 
-### 5. Empty States (Layar Kosong)
-- **Tone:** Mengundang aksi langsung dengan tombol CTA yang jelas.
-- **✅ Contoh:** `"Belum ada produk. Tambahkan produk pertamamu untuk mulai transaksi."`, `"Belum ada transaksi hari ini."`
-- **❌ Hindari:** `"Oops! Tidak ada data apa pun yang ditemukan di sini."`
+### 3. P2P Connectivity & Offline Status
 
-### 6. Error & Gangguan Teknis
-- **Tone:** Jujur, tenang, langsung memberikan solusi atau retry otomatis.
-- **✅ Contoh:** `"Gagal memindai QR. Pastikan kamera memiliki izin dan coba lagi."`, `"Gagal menyimpan data lokal. Mencoba kembali..."`
-- **❌ Hindari:** `"Error 500: Uncaught Exception"`, `"Oopsie! Ada kesalahan teknis! 😅"`
+- **Tone:** Transparent and reassuring (100% data safety guarantee).
+- **✅ Examples:** `"Local Store Mode (Offline). Data safely stored on device."`, `"Connected to 2 cashier terminals."`
+- **❌ Avoid:** `"Internet connection lost! Application cannot function."`
+
+### 4. Confirmations & Destructive Actions
+
+- **Tone:** Direct, concise question focused on action.
+- **✅ Examples:** `"Delete this product?"`, `"Cancel this order?"`
+- **❌ Avoid:** `"Are you entirely sure you want to permanently delete this product from the database?"`
+
+### 5. Empty States
+
+- **Tone:** Welcoming and action-oriented with a clear CTA.
+- **✅ Examples:** `"No products yet. Add your first product to start sales."`, `"No transactions recorded today."`
+- **❌ Avoid:** `"Oops! No data was found here."`
+
+### 6. Errors & Technical Issues
+
+- **Tone:** Honest, calm, immediately providing a solution or auto-retry.
+- **✅ Examples:** `"Failed to scan QR. Check camera permissions and try again."`, `"Unable to save locally. Retrying..."`
+- **❌ Avoid:** `"Error 500: Uncaught Exception"`, `"Oopsie! Something went wrong! 😅"`
 
 ---
 
 ## 15. What Tookoo UI Copy Never Does
 
-- **Never uses filler or over-cheerful exclamation marks.** Maksimum 0–1 tanda seru (`!`), hindari kata basa-basi seperti "Hore", "Aduh", "Oops".
-- **Never blames the cashier or store owner.** Fokus pada apa yang terjadi dan tombol aksi pemulihannya.
-- **Never uses unicode emojis in UI copy.** Gunakan semantic vector icons dari `lucide-react` (misal: `<Receipt />`, `<Package />`, `<Trash2 />`).
-- **Never uses cryptic developer errors.** Jangan tampilkan trace kode atau JSON error mentah di antarmuka kasir.
+- **Never uses filler or over-cheerful exclamation marks.** Maximum 0–1 exclamation mark (`!`), avoiding cheer words like "Hooray", "Oops", "Yay".
+- **Never blames the cashier or store owner.** Focus on what happened and how to proceed.
+- **Never uses unicode emojis in UI copy.** Use semantic vector icons from `lucide-react` (e.g., `<Receipt />`, `<Package />`, `<Trash2 />`).
+- **Never displays raw developer errors or unformatted stack traces.**
 
 ---
 
 ## 16. UI Copy Consistency & Microcopy Rules
 
-### 1. Label Tombol & Aksi (Format: Kata Kerja + Objek)
-Selalu gunakan format **Verb + Noun** yang konsisten di seluruh modul:
+### 1. Button & Action Labels (Format: Verb + Noun)
 
-| Aksi | Tombol yang Benar | Hindari (Tidak Konsisten) |
-| :--- | :--- | :--- |
-| Tambah data baru | **Tambah Produk**, **Tambah Item** | "Buat Baru", "Add", "Input" |
-| Simpan form/edit | **Simpan Produk**, **Simpan Pengaturan** | "Submit", "Simpan", "Save" |
-| Proses transaksi | **Bayar Sekarang**, **Proses Bayar** | "OK", "Lanjut", "Checkout" |
-| Cetak fisik | **Cetak Struk** | "Print", "Keluarkan Nota" |
-| Hapus data | **Hapus Produk**, **Hapus Item** | "Delete", "Buang" |
-| Pembatalan modal | **Batal** | "Keluar", "Tutup Saja" |
+Always use consistent **Verb + Noun** patterns across all modules:
 
-### 2. Loading State Pattern (3 Tahap: Idle → Loading → Result)
-| State | Pattern | Contoh |
-| :--- | :--- | :--- |
-| **Idle** | Verb + Noun | `"Simpan Produk"` |
-| **Loading** | Verb + `...` | `"Menyimpan..."` |
-| **Success** | Past / Done | `"Produk Disimpan"` |
-| **Error** | Gagal + Solusi | `"Gagal menyimpan. Coba lagi"` |
+| Action              | Correct Label                       | Avoid (Inconsistent)             |
+| :------------------ | :---------------------------------- | :------------------------------- |
+| Add new item        | **Add Product**, **Add Item**       | "Create New", "Input", "Add"     |
+| Save form / changes | **Save Product**, **Save Settings** | "Submit", "Save", "OK"           |
+| Process payment     | **Pay Now**, **Process Payment**    | "Checkout", "Continue", "Finish" |
+| Print receipt       | **Print Receipt**                   | "Print", "Generate Slip"         |
+| Delete data         | **Delete Product**, **Delete Item** | "Remove", "Trash", "Discard"     |
+| Dismiss modal       | **Cancel**                          | "Close", "Dismiss", "Exit"       |
 
-### 3. Format Mata Uang & Angka
-- Seluruh angka nominal rupiah WAJIB diformat menggunakan helper [`formatCurrency()`](file:///d:/Projects/tookoo/src/utils/format-currency.ts) (contoh: `Rp 25.000`, bukan `25000` atau `IDR 25000.00`).
-- Tanggal dan jam transaksi menggunakan format lokal Indonesia yang ringkas (contoh: `17 Agu 2026, 20:30`).
+### 2. Loading State Pattern (3 Steps: Idle → Loading → Result)
+
+| State       | Pattern           | Example                       |
+| :---------- | :---------------- | :---------------------------- |
+| **Idle**    | Verb + Noun       | `"Save Product"`              |
+| **Loading** | Verb + `...`      | `"Saving..."`                 |
+| **Success** | Past / Done       | `"Product Saved"`             |
+| **Error**   | Action + Solution | `"Failed to save. Try again"` |
+
+### 3. Currency & Date Formatting
+
+- All monetary amounts MUST be formatted with the [`formatCurrency()`](file:///d:/Projects/tookoo/src/utils/format-currency.ts) helper (e.g., `Rp 25.000`, not `25000` or `IDR 25000.00`).
+- Transaction dates and timestamps use concise local formats (e.g., `Aug 17, 2026, 20:30`).
 
 ---
 
 # Part 6 — Performance & Optimization Standards
 
 ## 17. Route-Level Code Splitting
-- Wajib menggunakan `React.lazy()` di level rute ([`src/app/router.tsx`](file:///d:/Projects/tookoo/src/app/router.tsx)) untuk mengisolasi ukuran bundle awal (*initial bundle size*).
-- Hindari *over-splitting* pada level komponen kecil agar tidak menyebabkan *request waterfall*.
+
+- Always use `React.lazy()` at the route level ([`src/app/router.tsx`](file:///d:/Projects/tookoo/src/app/router.tsx)) to minimize initial JavaScript bundle size.
+- Avoid micro-splitting small UI components to prevent network request waterfalls.
 
 ## 18. Component & State Optimizations
-- **State Locality:** Tempatkan state sedekat mungkin dengan komponen yang mengonsumsinya. Jangan letakkan semua state di global store.
-- **Lazy State Initialization:** Gunakan callback initializer `useState(() => expensiveComputation())` untuk menghindari eksekusi ulang pada setiap siklus re-render.
-- **Atomic Selectors (Zustand):** Selalu gunakan selector presisi (contoh: `useCartStore(state => state.items)`) agar komponen hanya re-render saat data spesifik tersebut berubah.
-- **Children Prop Pattern (Virtual DOM Isolation):** Terapkan pola `children` pada komponen wrapper (seperti layout & modal container) untuk mengisolasi sub-tree Virtual DOM dari re-render parent.
-- **Zero-Runtime CSS:** Gunakan Tailwind CSS murni (build-time generated) untuk menghilangkan kalkulasi CSS runtime.
+
+- **State Locality:** Colocate state as close as possible to the consuming component. Avoid single monolithic global stores.
+- **Lazy State Initialization:** Use callback initializers `useState(() => expensiveComputation())` to prevent redundant computations on re-render.
+- **Atomic Selectors (Zustand):** Always use precise selectors (`useCartStore(state => state.items)`) to ensure components only re-render when their slice of state changes.
+- **Children Prop Pattern (Virtual DOM Isolation):** Use the `children` pattern on container wrappers to isolate sub-tree Virtual DOM re-renders.
+- **Zero-Runtime CSS:** Build-time generated Tailwind CSS eliminates runtime CSS overhead.
 
 ## 19. Data Prefetching & Media Optimizations
-- **Data Prefetching:** Gunakan `queryClient.prefetchQuery()` saat user melakukan hover pada navigasi atau tombol penting untuk mempercepat transisi halaman.
+
+- **Data Prefetching:** Use `queryClient.prefetchQuery()` on navigation hover to make page transitions feel instantaneous.
 - **Image & Icon Optimization:**
-  - Gunakan format vektor SVG atau format modern WebP.
-  - Gunakan `loading="lazy"` untuk gambar produk yang berada di luar viewport awal.
-- **Web Vitals First:** Pastikan skor Core Web Vitals (terutama INP - *Interaction to Next Paint* dan LCP - *Largest Contentful Paint*) optimal untuk respon kasir instan (0 ms latency).
+  - Use vector SVG or modern WebP formats.
+  - Apply `loading="lazy"` for product catalog images below the fold.
+- **Web Vitals First:** Optimize Core Web Vitals (especially INP - _Interaction to Next Paint_ and LCP - _Largest Contentful Paint_) to ensure instant 0ms cashier interaction response.
 
 ---
 
 # Part 7 — Error Handling & Resilience
 
 ## 20. Local DB & Query Error Management
-- **Centralized Query Error Handling:** Konfigurasi `QueryCache` dan `MutationCache` di [`src/lib/query-client.ts`](file:///d:/Projects/tookoo/src/lib/query-client.ts) dengan global error handler untuk menampilkan Toast Notifikasi otomatis saat terjadi kegagalan operasi Dexie atau WebRTC.
-- **Graceful Mutation Rollback:** Mutasi transaksi kasir yang gagal wajib ditangani dengan pemulihan state yang aman tanpa menyebabkan inkonsistensi data lokal.
+
+- **Centralized Query Error Handling:** Configure `QueryCache` and `MutationCache` in [`src/lib/query-client.ts`](file:///d:/Projects/tookoo/src/lib/query-client.ts) with global error listeners that trigger toast notifications (`notification-store.ts`) on IndexedDB or WebRTC failures.
+- **Graceful Mutation Rollback:** Failed cashier transactions must safely recover state without causing local database corruption.
 
 ## 21. Multi-Level Error Boundaries
-- **Localized Error Boundaries:** Pasang `react-error-boundary` bertingkat:
-  - *Route Level:* Menjaga agar error di satu halaman (misal: Laporan/Riwayat) tidak merusak alur transaksi kasir utama.
-  - *Widget Level:* Mengisolasi komponen rentan (seperti pemindai kamera QR Code atau widget WebRTC) dengan UI fallback ramah pengguna ([`src/components/error-fallback.tsx`](file:///d:/Projects/tookoo/src/components/error-fallback.tsx)).
+
+- **Localized Error Boundaries:** Apply `react-error-boundary` across multiple levels:
+  - _Route Level:_ Prevents an error in reports or history from crashing the main cashier terminal.
+  - _Widget Level:_ Isolates sensitive components (e.g., QR Camera scanner or WebRTC connection widget) with cashier-friendly fallback views ([`src/components/error-fallback.tsx`](file:///d:/Projects/tookoo/src/components/error-fallback.tsx)).
 
 ## 22. Error Logging & Observability
-- Seluruh *uncaught errors* dicatat secara terstruktur dengan metadata konteks (nama komponen, operasi yang gagal) tanpa mengekspos data kredensial toko atau passphrase mnemonic.
+
+- All uncaught runtime errors are logged with contextual metadata (component name, failed action) without exposing private store credentials or BIP-39 mnemonic passphrases.
 
 ---
 
@@ -481,29 +520,31 @@ Selalu gunakan format **Verb + Noun** yang konsisten di seluruh modul:
 ## 23. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
-   - Letak: Berdampingan di folder `__tests__/` atau di `src/utils/__tests__/`.
-   - Menguji logika murni, format rupiah, UUID generator, dan algoritma timestamp LWW.
+   - Location: Colocated in `__tests__/` or `src/utils/__tests__/`.
+   - Tests pure business logic, currency formatting, UUID generator, and LWW timestamp algorithms.
 2. **Integration Testing (Testing Library + `fake-indexeddb`):**
-   - Menguji interaksi hook TanStack Query dengan Dexie DB lokal.
-   - Menguji aksi keranjang belanja kasir dari tambah item hingga checkout.
+   - Tests TanStack Query hooks interacting with the local Dexie DB.
+   - Tests cashier cart actions from item selection to checkout.
 3. **End-to-End Testing (Playwright):**
-   - Letak: `e2e/tests/`.
-   - Menguji skenario nyata dari inisialisasi toko, input produk, hingga transaksi selesai.
+   - Location: `e2e/tests/`.
+   - Tests real-world end-to-end user flows from store pairing to payment completion.
 
 ---
 
 # Part 9 — The Golden Do's & Don'ts
 
 ### ✅ DO'S
-- Selalu gunakan `crypto.randomUUID()` untuk ID entitas baru.
-- Selalu isi `updatedAt = Date.now()` pada setiap operasi `upsert` dan `delete`.
-- Selalu filter `where('deletedAt').equals(null)` saat membaca data aktif untuk kasir.
-- Selalu gunakan selector spesifik saat membaca data dari Zustand store.
-- Pisahkan halaman rute menggunakan `React.lazy()` di `src/app/router.tsx`.
+
+- Always use `crypto.randomUUID()` for new entity IDs.
+- Always update `updatedAt = Date.now()` on every `upsert` and `delete` operation.
+- Always filter `where('deletedAt').equals(null)` when querying active records for cashier views.
+- Always use specific atomic selectors when reading state from Zustand stores.
+- Always split route pages using `React.lazy()` in `src/app/router.tsx`.
 
 ### ❌ DON'TS
-- DILARANG melakukan *Cross-Feature Import* (misal: `features/cashier` mengimpor langsung dari `features/products/components`).
-- DILARANG menggunakan barrel files (`index.ts` re-exporting everything).
-- DILARANG melakukan mutasi *hard delete* langsung ke database tanpa soft-delete.
-- DILARANG menaruh logika komputasi berat langsung di dalam *render phase* komponen.
-- DILARANG menggunakan tipe `any` di TypeScript.
+
+- NEVER perform _Cross-Feature Imports_ (e.g., `features/cashier` importing directly from `features/products/components`).
+- NEVER use barrel files (`index.ts` re-exporting modules).
+- NEVER perform hard deletes on physical database tables unless a full store reset is explicitly requested.
+- NEVER execute heavy synchronous computations directly in component render phases.
+- NEVER use the `any` type in TypeScript.
