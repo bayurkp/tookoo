@@ -9,6 +9,7 @@
 **Tech Stack:** React 19, TypeScript, Vite, Tailwind CSS, Lucide React, Dexie.js, TanStack Query v5, React Hook Form, Zod, Vitest, Testing Library, fake-indexeddb.
 
 ## Global Constraints
+
 - Absolute imports with `@/*` alias only.
 - Strict kebab-case filenames (`kebab-case.tsx` / `kebab-case.ts`).
 - No barrel files (`index.ts`). Direct imports only.
@@ -23,17 +24,20 @@
 ### Task 1: Testing & Vitest Configuration with `fake-indexeddb`
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `vite.config.ts`
 - Create: `src/testing/setup-tests.ts`
 - Create: `src/utils/__tests__/format-currency.test.ts`
 
 **Interfaces:**
+
 - Produces: Vitest setup with IndexedDB polyfill and `@testing-library/jest-dom` assertions for all subsequent test tasks.
 
 - [ ] **Step 1: Write test script & Vitest config**
 
 Modify `vite.config.ts`:
+
 ```typescript
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -57,6 +61,7 @@ export default defineConfig({
 ```
 
 Modify `package.json` scripts:
+
 ```json
 "scripts": {
   "dev": "vite",
@@ -71,6 +76,7 @@ Modify `package.json` scripts:
 - [ ] **Step 2: Create test setup file**
 
 Create `src/testing/setup-tests.ts`:
+
 ```typescript
 import '@testing-library/jest-dom/vitest';
 import 'fake-indexeddb/auto';
@@ -79,6 +85,7 @@ import 'fake-indexeddb/auto';
 - [ ] **Step 3: Write test for format-currency utility**
 
 Create `src/utils/__tests__/format-currency.test.ts`:
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { formatCurrency } from '@/utils/format-currency';
@@ -111,17 +118,20 @@ git commit -m "test: setup vitest with fake-indexeddb and format-currency test"
 ### Task 2: Shared UI Primitives (`Input` and `Dialog`)
 
 **Files:**
+
 - Create: `src/components/ui/input.tsx`
 - Create: `src/components/ui/dialog.tsx`
 - Test: `src/components/ui/__tests__/input.test.tsx`
 
 **Interfaces:**
+
 - Produces: `<Input />` supporting standard HTML input props with Tailwind styles.
 - Produces: `<Dialog />`, `<DialogContent />`, `<DialogHeader />`, `<DialogTitle />`, `<DialogDescription />`, `<DialogFooter />`.
 
 - [ ] **Step 1: Write the failing test for Input component**
 
 Create `src/components/ui/__tests__/input.test.tsx`:
+
 ```typescript
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
@@ -145,6 +155,7 @@ Expected: FAIL (Cannot find module '@/components/ui/input')
 - [ ] **Step 3: Implement Input component**
 
 Create `src/components/ui/input.tsx`:
+
 ```typescript
 import * as React from 'react';
 import { cn } from '@/lib/cn';
@@ -178,6 +189,7 @@ Input.displayName = 'Input';
 - [ ] **Step 4: Implement Dialog component**
 
 Create `src/components/ui/dialog.tsx`:
+
 ```typescript
 import * as React from 'react';
 import { X } from 'lucide-react';
@@ -246,6 +258,7 @@ git commit -m "feat(ui): add shared input and dialog modal primitives"
 ### Task 3: Products Data Layer & APIs (`get-products`, `upsert-product`, `delete-product`)
 
 **Files:**
+
 - Create: `src/features/products/types/product-form.types.ts`
 - Create: `src/features/products/api/get-products.ts`
 - Create: `src/features/products/api/upsert-product.ts`
@@ -253,6 +266,7 @@ git commit -m "feat(ui): add shared input and dialog modal primitives"
 - Test: `src/features/products/api/__tests__/products-api.test.ts`
 
 **Interfaces:**
+
 - Produces: `getProducts(): Promise<Product[]>` (active products only, sorted desc)
 - Produces: `upsertProduct(input: UpsertProductInput): Promise<Product>`
 - Produces: `deleteProduct(id: string): Promise<void>` (soft delete)
@@ -260,6 +274,7 @@ git commit -m "feat(ui): add shared input and dialog modal primitives"
 - [ ] **Step 1: Define Form Schema & Types**
 
 Create `src/features/products/types/product-form.types.ts`:
+
 ```typescript
 import { z } from 'zod';
 
@@ -281,6 +296,7 @@ export type UpsertProductInput = ProductFormValues & {
 - [ ] **Step 2: Write failing test for Products API operations**
 
 Create `src/features/products/api/__tests__/products-api.test.ts`:
+
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
 import { db } from '@/lib/db';
@@ -362,20 +378,20 @@ Expected: FAIL (Cannot find modules)
 - [ ] **Step 4: Implement API functions**
 
 Create `src/features/products/api/get-products.ts`:
+
 ```typescript
 import { db } from '@/lib/db';
 import { Product } from '@/types/product.types';
 
 export const getProducts = async (): Promise<Product[]> => {
-  const products = await db.products
-    .filter((item) => item.deletedAt === null)
-    .toArray();
+  const products = await db.products.filter((item) => item.deletedAt === null).toArray();
 
   return products.sort((a, b) => b.createdAt - a.createdAt);
 };
 ```
 
 Create `src/features/products/api/upsert-product.ts`:
+
 ```typescript
 import { db } from '@/lib/db';
 import { Product } from '@/types/product.types';
@@ -423,6 +439,7 @@ export const upsertProduct = async (input: UpsertProductInput): Promise<Product>
 ```
 
 Create `src/features/products/api/delete-product.ts`:
+
 ```typescript
 import { db } from '@/lib/db';
 
@@ -457,10 +474,12 @@ git commit -m "feat(products): implement dexie data layer with soft delete and u
 ### Task 4: Products React Query Hooks (`use-products`)
 
 **Files:**
+
 - Create: `src/features/products/hooks/use-products.ts`
 - Test: `src/features/products/hooks/__tests__/use-products.test.tsx`
 
 **Interfaces:**
+
 - Produces: `useProducts()` -> `useQuery` with `queryKey: ['products']`
 - Produces: `useUpsertProduct()` -> `useMutation` with automatic query invalidation
 - Produces: `useDeleteProduct()` -> `useMutation` with automatic query invalidation
@@ -468,6 +487,7 @@ git commit -m "feat(products): implement dexie data layer with soft delete and u
 - [ ] **Step 1: Write failing hook test**
 
 Create `src/features/products/hooks/__tests__/use-products.test.tsx`:
+
 ```typescript
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -522,6 +542,7 @@ Expected: FAIL (Cannot find module)
 - [ ] **Step 3: Implement use-products hooks**
 
 Create `src/features/products/hooks/use-products.ts`:
+
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProducts } from '@/features/products/api/get-products';
@@ -578,17 +599,20 @@ git commit -m "feat(products): add tanstack query hooks with automatic cache inv
 ### Task 5: Product Components (`ProductCard` and `ProductFormDialog`)
 
 **Files:**
+
 - Create: `src/features/products/components/product-card.tsx`
 - Create: `src/features/products/components/product-form-dialog.tsx`
 - Test: `src/features/products/components/__tests__/product-card.test.tsx`
 
 **Interfaces:**
+
 - Produces: `<ProductCard product={product} onEdit={fn} onDelete={fn} />`
 - Produces: `<ProductFormDialog open={open} onOpenChange={fn} productToEdit={product | null} />`
 
 - [ ] **Step 1: Write test for ProductCard**
 
 Create `src/features/products/components/__tests__/product-card.test.tsx`:
+
 ```typescript
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
@@ -637,6 +661,7 @@ Expected: FAIL
 - [ ] **Step 3: Implement ProductCard**
 
 Create `src/features/products/components/product-card.tsx`:
+
 ```typescript
 import * as React from 'react';
 import { Edit2, Trash2, Package } from 'lucide-react';
@@ -719,6 +744,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
 - [ ] **Step 4: Implement ProductFormDialog**
 
 Create `src/features/products/components/product-form-dialog.tsx`:
+
 ```typescript
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -905,15 +931,18 @@ git commit -m "feat(products): add product card and form dialog with zod validat
 #### Task 6: Page Composition & Full Feature Integration (`products-page.tsx`)
 
 **Files:**
+
 - Modify: `src/app/pages/products-page.tsx`
 - Create: `src/app/pages/__tests__/products-page.test.tsx`
 
 **Interfaces:**
+
 - Connects `useProducts`, `useDeleteProduct`, category filters, and `<ProductFormDialog />`.
 
 - [ ] **Step 1: Write Page Integration Test**
 
 Create `src/app/pages/__tests__/products-page.test.tsx`:
+
 ```typescript
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -955,6 +984,7 @@ describe('ProductsPage', () => {
 - [ ] **Step 2: Implement full ProductsPage component**
 
 Update `src/app/pages/products-page.tsx`:
+
 ```typescript
 import React, { useState, useMemo } from 'react';
 import { Plus, Search, PackageOpen } from 'lucide-react';

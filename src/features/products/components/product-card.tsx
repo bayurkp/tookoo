@@ -12,11 +12,7 @@ interface ProductCardProps {
   onDelete: (id: string) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  onEdit,
-  onDelete,
-}) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) => {
   return (
     <Card className="overflow-hidden border-border/80 hover:shadow-md transition-shadow flex flex-col justify-between">
       <div>
@@ -47,7 +43,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Category Badge */}
           {product.category && (
             <div className="absolute bottom-2 left-2">
-              <Badge variant="outline" className="bg-background/80 backdrop-blur-xs text-xs font-normal">
+              <Badge
+                variant="outline"
+                className="bg-background/80 backdrop-blur-xs text-xs font-normal"
+              >
                 {product.category}
               </Badge>
             </div>
@@ -59,9 +58,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="font-semibold text-base line-clamp-1" title={product.name}>
             {product.name}
           </h3>
-          <p className="text-primary font-bold text-lg">
-            {formatCurrency(product.price)}
-          </p>
+          <p className="text-primary font-bold text-lg">{formatCurrency(product.price)}</p>
         </CardContent>
       </div>
 

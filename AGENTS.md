@@ -225,11 +225,11 @@ To prevent race conditions and synchronize data cleanly across devices, all data
 
 ```typescript
 export interface SyncMessage<T = unknown> {
-  action: "UPSERT" | "DELETE"
-  collection: "products" | "orders" | "settings"
-  data: T
-  updatedAt: number
-  deviceId: string
+  action: 'UPSERT' | 'DELETE';
+  collection: 'products' | 'orders' | 'settings';
+  data: T;
+  updatedAt: number;
+  deviceId: string;
 }
 ```
 

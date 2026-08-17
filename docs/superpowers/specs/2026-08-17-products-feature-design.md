@@ -44,21 +44,23 @@ src/
 ## 3. Data Layer Specifications
 
 ### Entity Model (`Product` from `src/types/product.types.ts`)
+
 ```typescript
 export interface Product {
-  id: string;              // UUID v4
+  id: string; // UUID v4
   name: string;
   category: string;
   price: number;
   stock: number;
   imageUrl?: string;
-  createdAt: number;       // Timestamp ms
-  updatedAt: number;       // Timestamp ms
-  deletedAt: number | null;// Soft delete timestamp or null if active
+  createdAt: number; // Timestamp ms
+  updatedAt: number; // Timestamp ms
+  deletedAt: number | null; // Soft delete timestamp or null if active
 }
 ```
 
 ### Operations
+
 1. **`getProducts()`**: Queries `db.products.filter(item => item.deletedAt === null).toArray()` sorted by `createdAt desc`.
 2. **`upsertProduct(input)`**:
    - If `input.id` exists, updates with `updatedAt: Date.now()`.
@@ -71,14 +73,20 @@ export interface Product {
 ## 4. UI & Form Validation
 
 ### Zod Schema
+
 ```typescript
 import { z } from 'zod';
 
 export const productFormSchema = z.object({
   name: z.string().min(2, 'Nama produk minimal 2 karakter'),
   category: z.string().min(1, 'Kategori wajib dipilih atau diisi'),
-  price: z.number({ invalid_type_error: 'Harga harus berupa angka' }).min(0, 'Harga tidak boleh negatif'),
-  stock: z.number({ invalid_type_error: 'Stok harus berupa angka' }).int('Stok harus berupa bilangan bulat').min(0, 'Stok tidak boleh negatif'),
+  price: z
+    .number({ invalid_type_error: 'Harga harus berupa angka' })
+    .min(0, 'Harga tidak boleh negatif'),
+  stock: z
+    .number({ invalid_type_error: 'Stok harus berupa angka' })
+    .int('Stok harus berupa bilangan bulat')
+    .min(0, 'Stok tidak boleh negatif'),
   imageUrl: z.string().url('URL gambar tidak valid').optional().or(z.literal('')),
 });
 
@@ -86,6 +94,7 @@ export type ProductFormValues = z.infer<typeof productFormSchema>;
 ```
 
 ### Component Breakdown
+
 - **`ProductFormDialog`**:
   - Controlled by open state.
   - Supports both "Tambah Produk" (create) and "Edit Produk" (update).

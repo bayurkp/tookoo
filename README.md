@@ -87,45 +87,45 @@ All data entities enforce **UUID v4**, **Audit Timestamps**, and **Last-Write-Wi
 ```typescript
 // 1. Product Model
 export interface Product {
-  id: string // UUID v4
-  name: string
-  category: string
-  price: number
-  stock: number
-  imageUrl?: string
-  createdAt: number // Timestamp ms
-  updatedAt: number // Timestamp ms
-  deletedAt: number | null // Soft delete timestamp or null
+  id: string; // UUID v4
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  imageUrl?: string;
+  createdAt: number; // Timestamp ms
+  updatedAt: number; // Timestamp ms
+  deletedAt: number | null; // Soft delete timestamp or null
 }
 
 // 2. Order Model
 export interface Order {
-  id: string // UUID v4
-  orderNumber: string // e.g., "TKD-001"
+  id: string; // UUID v4
+  orderNumber: string; // e.g., "TKD-001"
   items: Array<{
-    productId: string // Product UUID
-    name: string
-    price: number
-    qty: number
-    subtotal: number
-  }>
-  totalAmount: number
-  paymentMethod: "CASH" | "QRIS" | "TRANSFER"
-  cashierName: string
-  createdAt: number // Timestamp ms
-  updatedAt: number // Timestamp ms
-  deletedAt: number | null
+    productId: string; // Product UUID
+    name: string;
+    price: number;
+    qty: number;
+    subtotal: number;
+  }>;
+  totalAmount: number;
+  paymentMethod: 'CASH' | 'QRIS' | 'TRANSFER';
+  cashierName: string;
+  createdAt: number; // Timestamp ms
+  updatedAt: number; // Timestamp ms
+  deletedAt: number | null;
 }
 
 // 3. Store Settings Model
 export interface StoreSettings {
-  id: string // UUID v4 (Store ID)
-  storeName: string
-  passphrase: string // 12-word BIP-39 mnemonic
-  storeSecretKey: string // P2P encryption secret key
-  createdAt: number // Timestamp ms
-  updatedAt: number // Timestamp ms
-  deletedAt: number | null
+  id: string; // UUID v4 (Store ID)
+  storeName: string;
+  passphrase: string; // 12-word BIP-39 mnemonic
+  storeSecretKey: string; // P2P encryption secret key
+  createdAt: number; // Timestamp ms
+  updatedAt: number; // Timestamp ms
+  deletedAt: number | null;
 }
 ```
 

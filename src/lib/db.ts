@@ -13,7 +13,8 @@ export class TookooDatabase extends Dexie {
 
     this.version(1).stores({
       products: 'id, name, category, price, stock, createdAt, updatedAt, deletedAt',
-      orders: 'id, orderNumber, totalAmount, paymentMethod, cashierName, createdAt, updatedAt, deletedAt',
+      orders:
+        'id, orderNumber, totalAmount, paymentMethod, cashierName, createdAt, updatedAt, deletedAt',
       settings: 'id, storeName, passphrase, createdAt, updatedAt, deletedAt',
     });
   }

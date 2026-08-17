@@ -30,8 +30,7 @@ export const ProductsPage: React.FC = () => {
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory =
-        selectedCategory === 'ALL' || p.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'ALL' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [products, searchQuery, selectedCategory]);
@@ -57,9 +56,14 @@ export const ProductsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{t('products.title', 'Kelola Produk')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            {t('products.title', 'Kelola Produk')}
+          </h2>
           <p className="text-muted-foreground text-sm">
-            {t('products.subtitle', 'Daftar master data produk, inventaris stok, dan kategori tokomu.')}
+            {t(
+              'products.subtitle',
+              'Daftar master data produk, inventaris stok, dan kategori tokomu.'
+            )}
           </p>
         </div>
         <Button onClick={handleOpenCreate} className="w-full sm:w-auto gap-2">
@@ -117,8 +121,14 @@ export const ProductsPage: React.FC = () => {
           <h3 className="font-semibold text-lg">{t('products.empty', 'Belum ada produk')}</h3>
           <p className="text-sm text-muted-foreground max-w-sm mt-1 mb-4">
             {searchQuery || selectedCategory !== 'ALL'
-              ? t('products.emptyFilter', 'Tidak ada produk yang cocok dengan pencarian atau filter yang dipilih.')
-              : t('products.emptyHint', 'Tambahkan produk pertama tokomu untuk mulai melayani transaksi kasir.')}
+              ? t(
+                  'products.emptyFilter',
+                  'Tidak ada produk yang cocok dengan pencarian atau filter yang dipilih.'
+                )
+              : t(
+                  'products.emptyHint',
+                  'Tambahkan produk pertama tokomu untuk mulai melayani transaksi kasir.'
+                )}
           </p>
           <Button onClick={handleOpenCreate} variant="outline" size="sm" className="gap-2">
             <Plus className="h-4 w-4" />

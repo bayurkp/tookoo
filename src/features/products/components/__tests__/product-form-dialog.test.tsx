@@ -20,10 +20,9 @@ describe('ProductFormDialog', () => {
   });
 
   it('renders create mode with empty form', () => {
-    render(
-      <ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
+      wrapper: createWrapper(),
+    });
 
     expect(screen.getByText('Tambah Produk Baru')).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('');
@@ -41,10 +40,9 @@ describe('ProductFormDialog', () => {
       deletedAt: null,
     };
 
-    render(
-      <ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={product} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={product} />, {
+      wrapper: createWrapper(),
+    });
 
     expect(screen.getByText('Edit Produk')).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('Cappuccino Hot');
@@ -52,10 +50,9 @@ describe('ProductFormDialog', () => {
   });
 
   it('validates required fields on empty submit', async () => {
-    render(
-      <ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />,
-      { wrapper: createWrapper() }
-    );
+    render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
+      wrapper: createWrapper(),
+    });
 
     const submitBtn = screen.getByRole('button', { name: /Tambah Produk/i });
     fireEvent.click(submitBtn);

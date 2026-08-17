@@ -10,10 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  productFormSchema,
-  type ProductFormInput,
-} from '../types/product-form.types';
+import { productFormSchema, type ProductFormInput } from '../types/product-form.types';
 import { useUpsertProduct } from '../hooks/use-products';
 import type { Product } from '@/types/product.types';
 
@@ -88,9 +85,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <DialogHeader>
-          <DialogTitle>
-            {productToEdit ? 'Edit Produk' : 'Tambah Produk Baru'}
-          </DialogTitle>
+          <DialogTitle>{productToEdit ? 'Edit Produk' : 'Tambah Produk Baru'}</DialogTitle>
           <DialogDescription>
             {productToEdit
               ? 'Perbarui rincian harga, stok, atau nama produk.'
@@ -174,11 +169,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             Batal
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting
-              ? 'Menyimpan...'
-              : productToEdit
-                ? 'Simpan Perubahan'
-                : 'Tambah Produk'}
+            {isSubmitting ? 'Menyimpan...' : productToEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
           </Button>
         </DialogFooter>
       </form>

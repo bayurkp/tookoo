@@ -46,7 +46,12 @@ export const DialogFooter: React.FC<{ children: React.ReactNode; className?: str
   children,
   className,
 }) => (
-  <div className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 pt-4', className)}>
+  <div
+    className={cn(
+      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 pt-4',
+      className
+    )}
+  >
     {children}
   </div>
 );
@@ -54,7 +59,9 @@ export const DialogFooter: React.FC<{ children: React.ReactNode; className?: str
 export const DialogTitle: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className,
-}) => <h3 className={cn('text-lg font-semibold leading-none tracking-tight', className)}>{children}</h3>;
+}) => (
+  <h3 className={cn('text-lg font-semibold leading-none tracking-tight', className)}>{children}</h3>
+);
 
 export const DialogDescription: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,

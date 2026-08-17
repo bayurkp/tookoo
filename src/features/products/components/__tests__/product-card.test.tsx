@@ -16,13 +16,7 @@ const mockProduct: Product = {
 
 describe('ProductCard', () => {
   it('renders product details correctly', () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onEdit={() => {}}
-        onDelete={() => {}}
-      />
-    );
+    render(<ProductCard product={mockProduct} onEdit={() => {}} onDelete={() => {}} />);
 
     expect(screen.getByText('Espresso Single Shot')).toBeInTheDocument();
     expect(screen.getByText('Kopi')).toBeInTheDocument();
@@ -32,11 +26,7 @@ describe('ProductCard', () => {
 
   it('shows out of stock badge when stock is 0', () => {
     render(
-      <ProductCard
-        product={{ ...mockProduct, stock: 0 }}
-        onEdit={() => {}}
-        onDelete={() => {}}
-      />
+      <ProductCard product={{ ...mockProduct, stock: 0 }} onEdit={() => {}} onDelete={() => {}} />
     );
     expect(screen.getByText(/Stok Habis/i)).toBeInTheDocument();
   });
@@ -45,13 +35,7 @@ describe('ProductCard', () => {
     const handleEdit = vi.fn();
     const handleDelete = vi.fn();
 
-    render(
-      <ProductCard
-        product={mockProduct}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-    );
+    render(<ProductCard product={mockProduct} onEdit={handleEdit} onDelete={handleDelete} />);
 
     const editBtn = screen.getByRole('button', { name: /edit/i });
     const deleteBtn = screen.getByRole('button', { name: /delete/i });

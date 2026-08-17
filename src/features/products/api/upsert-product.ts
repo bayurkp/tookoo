@@ -3,8 +3,7 @@ import { generateUUID } from '@/utils/uuid';
 import type { Product } from '@/types/product.types';
 
 export type UpsertProductInput =
-  | (Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'> & { id?: string })
-  | Product;
+  (Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'> & { id?: string }) | Product;
 
 export const upsertProduct = async (input: UpsertProductInput): Promise<Product> => {
   const now = Date.now();

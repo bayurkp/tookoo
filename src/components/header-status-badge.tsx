@@ -36,7 +36,10 @@ export const HeaderStatusBadge: React.FC<HeaderStatusBadgeProps> = ({
   }
 
   return (
-    <Badge variant="outline" className="gap-1.5 py-1 px-3 text-amber-600 border-amber-300 bg-amber-50">
+    <Badge
+      variant="outline"
+      className="gap-1.5 py-1 px-3 text-amber-600 border-amber-300 bg-amber-50"
+    >
       <WifiOff className="h-3.5 w-3.5" />
       <span>{t('status.offline')}</span>
     </Badge>

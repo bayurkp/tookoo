@@ -13,15 +13,13 @@ export const resources = {
   },
 } as const;
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: 'id', // Default language: Bahasa Indonesia
-    fallbackLng: 'id',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: 'id', // Default language: Bahasa Indonesia
+  fallbackLng: 'id',
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;

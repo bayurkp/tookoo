@@ -1,12 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '../dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../dialog';
 
 describe('Dialog', () => {
   it('does not render when open is false', () => {
