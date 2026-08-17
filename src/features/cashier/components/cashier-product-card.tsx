@@ -28,46 +28,53 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
           onAddToCart(product);
         }
       }}
-      className={`group overflow-hidden transition-all select-none flex flex-col justify-between relative cursor-pointer border-border/80 hover:border-primary/50 hover:shadow-md ${
-        isOutOfStock ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'active:scale-98'
+      className={`group overflow-hidden transition-all duration-200 select-none flex flex-col justify-between relative cursor-pointer border-border/80 bg-card rounded-xl hover:border-primary/40 hover:shadow-md ${
+        isOutOfStock ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'active:scale-[0.98]'
       }`}
     >
       <div>
-        {/* Thumbnail Image / Icon */}
-        <div className="h-28 w-full bg-muted/50 relative flex items-center justify-center overflow-hidden">
+        {/* Thumbnail Image / Gradient Icon */}
+        <div className="h-32 w-full bg-gradient-to-br from-primary/5 via-slate-100/80 to-primary/10 dark:from-primary/10 dark:via-muted/40 dark:to-primary/5 relative flex items-center justify-center overflow-hidden border-b border-border/50">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
+              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
           ) : (
-            <Package className="h-10 w-10 text-muted-foreground/30" />
+            <div className="h-12 w-12 rounded-xl bg-background/90 text-primary flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform duration-300">
+              <Package className="h-6 w-6 opacity-80" />
+            </div>
           )}
 
           {/* Quantity in Cart indicator */}
           {quantityInCart > 0 && (
-            <div className="absolute top-2 left-2">
-              <Badge className="bg-primary text-primary-foreground font-bold px-2 py-0.5 shadow-sm text-xs">
+            <div className="absolute top-2.5 left-2.5">
+              <Badge className="bg-primary text-primary-foreground font-black px-2.5 py-0.5 shadow-md text-xs">
                 {quantityInCart}x
               </Badge>
             </div>
           )}
 
           {/* Stock Badges */}
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-2.5 right-2.5">
             {isOutOfStock ? (
-              <Badge variant="destructive">{t('products.outOfStock', 'Habis')}</Badge>
+              <Badge variant="destructive" className="shadow-xs font-bold text-[11px]">
+                {t('products.outOfStock', 'Habis')}
+              </Badge>
             ) : product.stock <= 5 ? (
-              <Badge variant="warning">
+              <Badge variant="warning" className="shadow-xs font-bold text-[11px]">
                 {t('products.lowStock', {
                   count: product.stock,
                   defaultValue: `Sisa ${product.stock}`,
                 })}
               </Badge>
             ) : (
-              <Badge variant="secondary" className="text-xs font-normal">
+              <Badge
+                variant="outline"
+                className="bg-background/90 backdrop-blur-xs text-[11px] font-semibold py-0.5"
+              >
                 {t('products.stock', {
                   count: product.stock,
                   defaultValue: `Stok: ${product.stock}`,
@@ -78,17 +85,19 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
         </div>
 
         {/* Content */}
-        <CardContent className="p-3 space-y-1">
+        <CardContent className="p-3.5 space-y-1.5">
           <p
-            className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors"
+            className="font-bold text-sm line-clamp-1 group-hover:text-primary transition-colors"
             title={product.name}
           >
             {product.name}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-primary font-bold text-sm">{formatCurrency(product.price)}</span>
-            <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <Plus className="h-3.5 w-3.5" />
+            <span className="text-primary font-black text-base tracking-tight">
+              {formatCurrency(product.price)}
+            </span>
+            <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              <Plus className="h-4 w-4" />
             </div>
           </div>
         </CardContent>
