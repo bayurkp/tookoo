@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
 import { QrCode, ScanLine, ShieldCheck } from 'lucide-react';
 import {
@@ -20,6 +21,7 @@ interface QrPairingCardProps {
 }
 
 export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenScanner }) => {
+  const { t } = useTranslation();
   const pairingPayload: StorePairingPayload = {
     storeId: settings?.id || 'default-store',
     storeName: settings?.storeName || 'Toko Saya',
@@ -38,15 +40,20 @@ export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenSc
               <QrCode className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-base font-bold">QR Code Pairing Toko</CardTitle>
+              <CardTitle className="text-base font-bold">
+                {t('sync.qrCard.title', 'QR Code Pairing Toko')}
+              </CardTitle>
               <CardDescription className="text-xs">
-                Pindai dari perangkat kasir lain untuk menghubungkan database lokal.
+                {t(
+                  'sync.qrCard.desc',
+                  'Pindai dari perangkat kasir lain untuk menghubungkan database lokal.'
+                )}
               </CardDescription>
             </div>
           </div>
           <Badge variant="outline" className="text-xs py-0 gap-1">
             <ShieldCheck className="h-3 w-3 text-emerald-500" />
-            P2P Direct
+            {t('sync.qrCard.direct', 'P2P Direct')}
           </Badge>
         </div>
       </CardHeader>
@@ -56,8 +63,10 @@ export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenSc
           <QRCodeSVG value={payloadString} size={168} level="M" includeMargin={false} />
         </div>
         <p className="text-xs text-muted-foreground text-center max-w-xs">
-          Arahkan kamera terminal kasir baru ke QR di atas atau masukkan 12 kata sandi secara
-          manual.
+          {t(
+            'sync.qrCard.helper',
+            'Arahkan kamera terminal kasir baru ke QR di atas atau masukkan 12 kata sandi secara manual.'
+          )}
         </p>
       </CardContent>
 
@@ -68,7 +77,7 @@ export const QrPairingCard: React.FC<QrPairingCardProps> = ({ settings, onOpenSc
           className="w-full h-9 text-xs font-bold gap-2 cursor-pointer"
         >
           <ScanLine className="h-4 w-4" />
-          <span>Pindai QR Perangkat Lain</span>
+          <span>{t('sync.qrCard.scanBtn', 'Pindai QR Perangkat Lain')}</span>
         </Button>
       </CardFooter>
     </Card>

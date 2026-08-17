@@ -110,20 +110,25 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         <DialogHeader>
           <DialogTitle>{t('cashier.payment.title', 'Pembayaran')}</DialogTitle>
           <DialogDescription>
-            Pilih metode pembayaran dan konfirmasi nominal transaksi.
+            {t(
+              'cashier.payment.description',
+              'Pilih metode pembayaran dan konfirmasi nominal transaksi.'
+            )}
           </DialogDescription>
         </DialogHeader>
 
         {/* Total Highlight */}
         <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground font-medium">Total Tagihan</p>
+            <p className="text-xs text-muted-foreground font-medium">
+              {t('cashier.payment.totalBill', 'Total Tagihan')}
+            </p>
             <p className="text-2xl font-black text-primary tracking-tight">
               {formatCurrency(total)}
             </p>
           </div>
           <Badge variant="outline" className="bg-background text-xs">
-            {items.length} jenis item
+            {t('cashier.payment.itemTypes', { count: items.length })}
           </Badge>
         </div>
 
@@ -138,15 +143,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="CASH" className="gap-1.5">
               <Banknote className="h-4 w-4" />
-              <span>Tunai</span>
+              <span>{t('cashier.payment.cash', 'Tunai')}</span>
             </TabsTrigger>
             <TabsTrigger value="QRIS" className="gap-1.5">
               <QrCode className="h-4 w-4" />
-              <span>QRIS</span>
+              <span>{t('cashier.payment.qris', 'QRIS')}</span>
             </TabsTrigger>
             <TabsTrigger value="TRANSFER" className="gap-1.5">
               <Building className="h-4 w-4" />
-              <span>Transfer</span>
+              <span>{t('cashier.payment.transfer', 'Transfer')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -154,7 +159,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <TabsContent value="CASH" className="space-y-3 pt-2">
             <div className="space-y-1">
               <label htmlFor="cashTendered" className="text-xs font-semibold text-foreground">
-                Uang Diterima (Rp) *
+                {t('cashier.payment.amountReceivedLabel', 'Uang Diterima (Rp) *')}
               </label>
               <Input
                 id="cashTendered"
@@ -180,20 +185,26 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   onClick={() => setCashTendered(String(opt.value))}
                   className="text-xs h-7 px-2"
                 >
-                  {opt.label === 'Uang Pas' ? 'Uang Pas' : formatCurrency(opt.value)}
+                  {opt.label === 'Uang Pas'
+                    ? t('cashier.payment.exactAmount', 'Uang Pas')
+                    : formatCurrency(opt.value)}
                 </Button>
               ))}
             </div>
 
             {/* Change Due Box */}
             <div className="p-3 rounded-lg bg-muted/50 border flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground">Uang Kembalian:</span>
+              <span className="text-xs font-medium text-muted-foreground">
+                {t('cashier.payment.changeDueLabel', 'Uang Kembalian:')}
+              </span>
               <span
                 className={`text-lg font-bold ${
                   isCashInsufficient ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'
                 }`}
               >
-                {isCashInsufficient ? 'Uang Kurang' : formatCurrency(changeDue)}
+                {isCashInsufficient
+                  ? t('cashier.payment.insufficientCash', 'Uang Kurang')
+                  : formatCurrency(changeDue)}
               </span>
             </div>
           </TabsContent>
@@ -202,14 +213,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <TabsContent value="QRIS" className="pt-2">
             <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
               <QrCode className="h-12 w-12 text-primary" />
-              <p className="font-semibold text-sm">Scan QRIS Dinamis Toko</p>
+              <p className="font-semibold text-sm">
+                {t('cashier.payment.qrisTitle', 'Scan QRIS Dinamis Toko')}
+              </p>
               <p className="text-xs text-muted-foreground">
-                Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar{' '}
-                <strong>{formatCurrency(total)}</strong>.
+                {t('cashier.payment.qrisDesc', {
+                  amount: formatCurrency(total),
+                  defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total)}.`,
+                })}
               </p>
               <Badge variant="success" className="gap-1 mt-2">
                 <CheckCircle2 className="h-3 w-3" />
-                Siap Diproses
+                {t('cashier.payment.readyToProcess', 'Siap Diproses')}
               </Badge>
             </div>
           </TabsContent>
@@ -218,10 +233,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <TabsContent value="TRANSFER" className="pt-2">
             <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
               <Building className="h-12 w-12 text-primary" />
-              <p className="font-semibold text-sm">Transfer Bank Manual</p>
+              <p className="font-semibold text-sm">
+                {t('cashier.payment.transferTitle', 'Transfer Bank Manual')}
+              </p>
               <p className="text-xs text-muted-foreground">
-                Verifikasi mutasi rekening masuk sebesar <strong>{formatCurrency(total)}</strong>{' '}
-                sebelum menyelesaikan transaksi.
+                {t('cashier.payment.transferDesc', {
+                  amount: formatCurrency(total),
+                  defaultValue: `Verifikasi mutasi rekening masuk sebesar ${formatCurrency(total)} sebelum menyelesaikan transaksi.`,
+                })}
               </p>
             </div>
           </TabsContent>
@@ -240,7 +259,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             onClick={() => onOpenChange(false)}
             disabled={checkoutMutation.isPending}
           >
-            Batal
+            {t('common.actions.cancel', 'Batal')}
           </Button>
           <Button
             type="button"
@@ -249,10 +268,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             className="gap-2 font-bold"
           >
             {checkoutMutation.isPending ? (
-              'Memproses Transaksi...'
+              t('cashier.payment.processing', 'Memproses Transaksi...')
             ) : (
               <>
-                <span>Konfirmasi Pembayaran</span>
+                <span>{t('cashier.payment.confirm', 'Konfirmasi Pembayaran')}</span>
                 <ArrowRight className="h-4 w-4" />
               </>
             )}

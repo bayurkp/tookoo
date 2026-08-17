@@ -13,7 +13,10 @@
       "print": "Print Receipt",
       "search": "Search...",
       "filter": "Filter",
-      "retry": "Retry"
+      "retry": "Retry",
+      "close": "Close",
+      "apply": "Apply",
+      "view": "View"
     },
     "states": {
       "loading": "Loading...",
@@ -37,27 +40,46 @@
   },
   "cashier": {
     "title": "Cashier Terminal",
+    "subtitle": "Select items to add them to customer order cart.",
     "searchPlaceholder": "Search product name or barcode...",
     "allCategories": "All",
+    "newTransaction": "New Transaction",
     "cart": {
       "title": "Shopping Cart",
       "empty": "Cart is empty",
-      "emptyHint": "Select products from catalog to start transaction.",
+      "emptyHint": "Select products from catalog to start cashier transaction.",
       "subtotal": "Subtotal",
       "discount": "Discount",
       "total": "Total Due",
-      "itemCount": "{{count}} items"
+      "itemCount": "{{count}} items",
+      "clear": "Clear",
+      "addDiscount": "Add Order Discount"
     },
     "payment": {
       "title": "Payment",
+      "description": "Choose payment method and confirm transaction amount.",
+      "totalBill": "Total Bill",
+      "itemTypes": "{{count}} item types",
       "method": "Payment Method",
       "cash": "Cash",
       "qris": "QRIS",
-      "transfer": "Bank Transfer",
+      "transfer": "Transfer",
       "amountReceived": "Amount Received",
+      "amountReceivedLabel": "Amount Received (Rp) *",
       "changeDue": "Change Due",
+      "changeDueLabel": "Change Due:",
+      "changeDueUpper": "CHANGE DUE",
       "exactAmount": "Exact Amount",
+      "insufficientCash": "Insufficient Cash",
+      "qrisTitle": "Scan Dynamic Store QRIS",
+      "qrisDesc": "Ensure customer has scanned QRIS and paid {{amount}}.",
+      "readyToProcess": "Ready to Process",
+      "transferTitle": "Manual Bank Transfer",
+      "transferDesc": "Verify bank transfer receipt of {{amount}} before completing.",
+      "confirm": "Confirm Payment",
+      "processing": "Processing Transaction...",
       "successTitle": "Payment Successful",
+      "successDesc": "Transaction saved to local cashier storage.",
       "changeDueNotice": "Change Due: {{amount}}"
     }
   },
@@ -71,9 +93,9 @@
     "stock": "Stock: {{count}}",
     "outOfStock": "Out of Stock",
     "lowStock": "{{count}} left",
-    "empty": "No products yet",
+    "empty": "No products registered yet.",
     "emptyHint": "Add your first product to start serving cashier sales.",
-    "emptyFilter": "No products match the search query or selected filter.",
+    "emptyFilter": "No products match the selected filter.",
     "form": {
       "createTitle": "Add New Product",
       "editTitle": "Edit Product",
@@ -95,29 +117,72 @@
   },
   "orders": {
     "title": "Transaction History",
-    "subtitle": "Track all receipts and monitor daily sales revenue.",
+    "subtitle": "Daily revenue analytics, payment history, and receipt reprinting.",
+    "searchPlaceholder": "Search receipt number or cashier...",
     "todayRevenue": "Today's Revenue",
     "totalOrders": "Total Transactions",
-    "averageReceipt": "Average Receipt",
-    "empty": "No transactions recorded today",
+    "averageReceipt": "Average Ticket",
+    "nonCashRevenue": "QRIS / Non-Cash",
+    "transactionsUnit": "Transactions",
+    "empty": "No transaction history yet.",
+    "emptyFilter": "No transactions match the selected filter.",
+    "emptyHint": "Completed cashier sales will appear here automatically.",
     "receipt": {
       "title": "Receipt Details",
       "orderNumber": "Receipt No.",
-      "date": "Time",
+      "date": "Transaction Time",
       "cashier": "Cashier",
-      "items": "Items Purchased",
+      "items": "Items Sold",
       "paymentMethod": "Payment Method",
-      "total": "Total Amount"
+      "total": "Total Amount",
+      "completed": "COMPLETED",
+      "reprint": "Reprint Receipt"
     }
   },
   "sync": {
-    "title": "P2P Synchronization",
-    "subtitle": "Connect cashier terminals and owner devices directly without cloud servers.",
-    "statusCard": "Connection Status",
-    "connectedDevices": "Connected Devices: {{count}}",
-    "storeKeyTitle": "Store Key & QR Pairing",
-    "scanQr": "Scan Device QR",
-    "enterPassphrase": "Enter 12-Word Passphrase",
-    "passphraseHelper": "Use 12-word passphrase to connect devices without cameras."
+    "title": "Sync & Store Keys",
+    "subtitle": "Multi-terminal peer-to-peer (WebRTC) pairing without a central server.",
+    "storeIdentity": {
+      "title": "Store Identity & Secret Key",
+      "desc": "Local credentials for serverless peer cashier pairing.",
+      "nameLabel": "Store Name",
+      "passphraseLabel": "12-Word Secret Passphrase (BIP-39)",
+      "regenerate": "Regenerate",
+      "copy": "Copy 12-Word Passphrase",
+      "copied": "Copied to Clipboard!"
+    },
+    "qrCard": {
+      "title": "Store Pairing QR Code",
+      "desc": "Scan from another cashier device to link local databases.",
+      "direct": "P2P Direct",
+      "helper": "Point new cashier terminal camera to the QR above or enter 12-word passphrase manually.",
+      "scanBtn": "Scan Other Device QR"
+    },
+    "scanner": {
+      "title": "Pair Cashier Terminal",
+      "desc": "Link this device to an existing store database.",
+      "cameraTab": "Camera Scan",
+      "manualTab": "12 Words",
+      "cameraTitle": "Point Camera to Store QR",
+      "cameraDesc": "Ensure camera permissions are allowed on browser to scan directly.",
+      "storeNameLabel": "Store Name (Optional)",
+      "passphraseLabel": "12-Word Store Passphrase *",
+      "connectBtn": "Connect Store"
+    },
+    "peers": {
+      "title": "Connected Terminals",
+      "desc": "Active cashier devices in store local network.",
+      "syncNow": "Sync Now",
+      "standalone": "Standalone Local Mode (1 Device Active)",
+      "standaloneDesc": "No other cashier terminals connected. Scan QR above to add a second cashier."
+    },
+    "backup": {
+      "title": "Data Backup & Recovery (Offline Backup)",
+      "desc": "Save catalog products and sales history to local storage.",
+      "exportBtn": "Export Backup (JSON)",
+      "importBtn": "Restore from File",
+      "successMsg": "Successfully restored {{products}} products and {{orders}} orders.",
+      "errorMsg": "Failed to read backup file. Invalid JSON format."
+    }
   }
 }

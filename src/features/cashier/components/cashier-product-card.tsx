@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, Plus } from 'lucide-react';
@@ -16,6 +17,7 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
   quantityInCart = 0,
   onAddToCart,
 }) => {
+  const { t } = useTranslation();
   const isOutOfStock = product.stock <= 0;
   const isMaxInCart = quantityInCart >= product.stock;
 
@@ -56,12 +58,20 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
           {/* Stock Badges */}
           <div className="absolute top-2 right-2">
             {isOutOfStock ? (
-              <Badge variant="destructive">Habis</Badge>
+              <Badge variant="destructive">{t('products.outOfStock', 'Habis')}</Badge>
             ) : product.stock <= 5 ? (
-              <Badge variant="warning">Sisa {product.stock}</Badge>
+              <Badge variant="warning">
+                {t('products.lowStock', {
+                  count: product.stock,
+                  defaultValue: `Sisa ${product.stock}`,
+                })}
+              </Badge>
             ) : (
               <Badge variant="secondary" className="text-xs font-normal">
-                Stok: {product.stock}
+                {t('products.stock', {
+                  count: product.stock,
+                  defaultValue: `Stok: ${product.stock}`,
+                })}
               </Badge>
             )}
           </div>

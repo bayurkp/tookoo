@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Download, Upload, Database, CheckCircle2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ interface BackupExportCardProps {
 }
 
 export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, onImport }) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
 
@@ -22,11 +24,17 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
       const backupData = JSON.parse(text) as DatabaseBackup;
       const res = await onImport(backupData);
       setImportStatus(
-        `Sukses memulihkan ${res.productsCount} produk dan ${res.ordersCount} transaksi.`
+        t('sync.backup.successMsg', {
+          products: res.productsCount,
+          orders: res.ordersCount,
+          defaultValue: `Sukses memulihkan ${res.productsCount} produk dan ${res.ordersCount} transaksi.`,
+        })
       );
       setTimeout(() => setImportStatus(null), 5000);
     } catch {
-      setImportStatus('Gagal membaca berkas cadangan. Format JSON tidak valid.');
+      setImportStatus(
+        t('sync.backup.errorMsg', 'Gagal membaca berkas cadangan. Format JSON tidak valid.')
+      );
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -43,10 +51,13 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
           </div>
           <div>
             <CardTitle className="text-base font-bold">
-              Cadangan & Pemulihan Data (Offline Backup)
+              {t('sync.backup.title', 'Cadangan & Pemulihan Data (Offline Backup)')}
             </CardTitle>
             <CardDescription className="text-xs">
-              Simpan berkas master produk dan riwayat transaksi ke penyimpanan lokal.
+              {t(
+                'sync.backup.desc',
+                'Simpan berkas master produk dan riwayat transaksi ke penyimpanan lokal.'
+              )}
             </CardDescription>
           </div>
         </div>
@@ -59,10 +70,10 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
             type="button"
             variant="outline"
             onClick={onExport}
-            className="h-10 text-xs font-bold gap-2"
+            className="h-10 text-xs font-bold gap-2 cursor-pointer"
           >
             <Download className="h-4 w-4" />
-            <span>Ekspor Cadangan (JSON)</span>
+            <span>{t('sync.backup.exportBtn', 'Ekspor Cadangan (JSON)')}</span>
           </Button>
 
           {/* Import Button */}
@@ -78,10 +89,10 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
               type="button"
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-10 text-xs font-bold gap-2"
+              className="w-full h-10 text-xs font-bold gap-2 cursor-pointer"
             >
               <Upload className="h-4 w-4" />
-              <span>Pulihkan dari File</span>
+              <span>{t('sync.backup.importBtn', 'Pulihkan dari File')}</span>
             </Button>
           </div>
         </div>

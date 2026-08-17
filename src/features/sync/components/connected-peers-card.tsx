@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Wifi, Smartphone, Laptop, RefreshCw } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,8 @@ interface ConnectedPeersCardProps {
 }
 
 export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, onManualSync }) => {
+  const { t } = useTranslation();
+
   return (
     <Card className="border-border/80 shadow-xs">
       <CardHeader className="p-4 pb-2">
@@ -20,9 +23,11 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
               <Wifi className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-base font-bold">Terminal Terhubung</CardTitle>
+              <CardTitle className="text-base font-bold">
+                {t('sync.peers.title', 'Terminal Terhubung')}
+              </CardTitle>
               <CardDescription className="text-xs">
-                Perangkat kasir aktif di jaringan lokal toko.
+                {t('sync.peers.desc', 'Perangkat kasir aktif di jaringan lokal toko.')}
               </CardDescription>
             </div>
           </div>
@@ -31,10 +36,10 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
               variant="outline"
               size="sm"
               onClick={onManualSync}
-              className="h-8 text-xs gap-1.5"
+              className="h-8 text-xs gap-1.5 cursor-pointer"
             >
               <RefreshCw className="h-3 w-3" />
-              <span>Sinkronkan Sekarang</span>
+              <span>{t('sync.peers.syncNow', 'Sinkronkan Sekarang')}</span>
             </Button>
           )}
         </div>
@@ -45,11 +50,13 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({ peers, o
           <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center flex flex-col items-center justify-center space-y-2">
             <Wifi className="h-8 w-8 text-muted-foreground/40" />
             <p className="text-xs font-medium text-foreground">
-              Mode Lokal Mandiri (1 Perangkat Aktif)
+              {t('sync.peers.standalone', 'Mode Lokal Mandiri (1 Perangkat Aktif)')}
             </p>
             <p className="text-[11px] text-muted-foreground max-w-xs">
-              Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk menambahkan
-              kasir kedua.
+              {t(
+                'sync.peers.standaloneDesc',
+                'Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk menambahkan kasir kedua.'
+              )}
             </p>
           </div>
         ) : (

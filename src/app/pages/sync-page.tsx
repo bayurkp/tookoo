@@ -27,7 +27,10 @@ export const SyncPage: React.FC = () => {
           {t('sync.title', 'Sinkronisasi & Kunci Toko')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          Pairing multi-perangkat kasir peer-to-peer (WebRTC) tanpa server terpusat.
+          {t(
+            'sync.subtitle',
+            'Pairing multi-perangkat kasir peer-to-peer (WebRTC) tanpa server terpusat.'
+          )}
         </p>
       </div>
 

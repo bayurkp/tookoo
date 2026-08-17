@@ -36,7 +36,10 @@ export const OrdersPage: React.FC = () => {
           {t('orders.title', 'Riwayat Transaksi')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          Laporan omzet penjualan harian, riwayat pembayaran, dan pencetakan ulang struk.
+          {t(
+            'orders.subtitle',
+            'Laporan omzet penjualan harian, riwayat pembayaran, dan pencetakan ulang struk.'
+          )}
         </p>
       </div>
 
@@ -48,7 +51,7 @@ export const OrdersPage: React.FC = () => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nomor struk atau kasir..."
+            placeholder={t('orders.searchPlaceholder', 'Cari nomor struk atau kasir...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-card"
@@ -64,7 +67,11 @@ export const OrdersPage: React.FC = () => {
               className="cursor-pointer px-3 py-1.5 text-xs font-semibold"
               onClick={() => setPaymentFilter(method)}
             >
-              {method === 'ALL' ? `Semua (${orders.length})` : method === 'CASH' ? 'Tunai' : method}
+              {method === 'ALL'
+                ? `${t('products.allCategories', 'Semua')} (${orders.length})`
+                : method === 'CASH'
+                  ? t('cashier.payment.cash', 'Tunai')
+                  : method}
             </Badge>
           ))}
         </div>
@@ -83,11 +90,14 @@ export const OrdersPage: React.FC = () => {
             <Receipt className="h-12 w-12 text-muted-foreground/30 mb-3" />
             <p className="font-semibold text-sm">
               {searchQuery || paymentFilter !== 'ALL'
-                ? 'Tidak ada transaksi yang cocok dengan filter.'
-                : 'Belum ada riwayat transaksi.'}
+                ? t('orders.emptyFilter', 'Tidak ada transaksi yang cocok dengan filter.')
+                : t('orders.empty', 'Belum ada riwayat transaksi.')}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Transaksi yang selesai di kasir akan muncul di sini secara otomatis.
+              {t(
+                'orders.emptyHint',
+                'Transaksi yang selesai di kasir akan muncul di sini secara otomatis.'
+              )}
             </p>
           </div>
         ) : (
@@ -137,7 +147,7 @@ export const OrdersPage: React.FC = () => {
                   </p>
                 </div>
                 <Button variant="ghost" size="sm" className="h-8 px-2 text-xs gap-1">
-                  <span>Lihat</span>
+                  <span>{t('common.actions.view', 'Lihat')}</span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </div>

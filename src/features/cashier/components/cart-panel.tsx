@@ -61,7 +61,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
           </CardTitle>
           {itemCount > 0 && (
             <Badge variant="secondary" className="text-xs px-2 py-0">
-              {itemCount} item
+              {t('cashier.cart.itemCount', { count: itemCount })}
             </Badge>
           )}
         </div>
@@ -71,10 +71,10 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
             variant="ghost"
             size="sm"
             onClick={clearCart}
-            className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+            className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive cursor-pointer"
           >
             <Trash2 className="h-3.5 w-3.5 mr-1" />
-            Kosongkan
+            {t('cashier.cart.clear', 'Kosongkan')}
           </Button>
         )}
       </CardHeader>
@@ -174,9 +174,9 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
                   variant="ghost"
                   size="sm"
                   onClick={handleRemoveDiscount}
-                  className="h-5 px-1.5 text-xs text-destructive hover:bg-transparent"
+                  className="h-5 px-1.5 text-xs text-destructive hover:bg-transparent cursor-pointer"
                 >
-                  Hapus
+                  {t('common.actions.delete', 'Hapus')}
                 </Button>
               </div>
             ) : showDiscountInput ? (
@@ -213,7 +213,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
                   className="h-7 text-xs flex-1"
                 />
                 <Button size="sm" onClick={handleApplyDiscount} className="h-7 px-2.5 text-xs">
-                  Pasang
+                  {t('common.actions.apply', 'Pasang')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -221,7 +221,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
                   onClick={() => setShowDiscountInput(false)}
                   className="h-7 px-1 text-xs"
                 >
-                  Batal
+                  {t('common.actions.cancel', 'Batal')}
                 </Button>
               </div>
             ) : (
@@ -229,10 +229,10 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment }) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowDiscountInput(true)}
-                className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+                className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1.5 cursor-pointer"
               >
                 <Tag className="h-3.5 w-3.5" />
-                Tambah Diskon Transaksi
+                {t('cashier.cart.addDiscount', 'Tambah Diskon Transaksi')}
               </Button>
             )}
           </div>

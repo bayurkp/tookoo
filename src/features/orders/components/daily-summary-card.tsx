@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, ShoppingBag, TrendingUp, CreditCard } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
@@ -9,6 +10,7 @@ interface DailySummaryCardProps {
 }
 
 export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) => {
+  const { t } = useTranslation();
   const summary = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -51,7 +53,9 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">Omzet Hari Ini</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              {t('orders.todayRevenue', 'Omzet Hari Ini')}
+            </p>
             <p className="text-xl font-black tracking-tight text-primary">
               {formatCurrency(summary.totalRevenue)}
             </p>
@@ -66,9 +70,11 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">Total Transaksi</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              {t('orders.totalOrders', 'Total Transaksi')}
+            </p>
             <p className="text-xl font-bold tracking-tight text-foreground">
-              {summary.totalOrders} Transaksi
+              {summary.totalOrders} {t('orders.transactionsUnit', 'Transaksi')}
             </p>
           </div>
           <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -81,7 +87,9 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">Rata-rata Transaksi</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              {t('orders.averageReceipt', 'Rata-rata Transaksi')}
+            </p>
             <p className="text-xl font-bold tracking-tight text-foreground">
               {formatCurrency(summary.averageTicket)}
             </p>
@@ -96,7 +104,9 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">QRIS / Non-Tunai</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              {t('orders.nonCashRevenue', 'QRIS / Non-Tunai')}
+            </p>
             <p className="text-xl font-bold tracking-tight text-foreground">
               {formatCurrency(summary.qrisRevenue + summary.transferRevenue)}
             </p>

@@ -13,7 +13,10 @@
       "print": "Cetak Struk",
       "search": "Cari...",
       "filter": "Filter",
-      "retry": "Coba Lagi"
+      "retry": "Coba Lagi",
+      "close": "Tutup",
+      "apply": "Pasang",
+      "view": "Lihat"
     },
     "states": {
       "loading": "Memuat...",
@@ -37,27 +40,46 @@
   },
   "cashier": {
     "title": "Terminal Kasir",
+    "subtitle": "Pilih menu untuk menambahkan ke keranjang transaksi pelanggan.",
     "searchPlaceholder": "Cari nama atau barcode produk...",
     "allCategories": "Semua",
+    "newTransaction": "Transaksi Baru",
     "cart": {
       "title": "Keranjang Belanja",
       "empty": "Keranjang masih kosong",
-      "emptyHint": "Pilih produk dari katalog untuk memulai transaksi.",
+      "emptyHint": "Pilih produk dari katalog untuk memulai transaksi kasir.",
       "subtotal": "Subtotal",
       "discount": "Diskon",
       "total": "Total Bayar",
-      "itemCount": "{{count}} item"
+      "itemCount": "{{count}} item",
+      "clear": "Kosongkan",
+      "addDiscount": "Tambah Diskon Transaksi"
     },
     "payment": {
       "title": "Pembayaran",
+      "description": "Pilih metode pembayaran dan konfirmasi nominal transaksi.",
+      "totalBill": "Total Tagihan",
+      "itemTypes": "{{count}} jenis item",
       "method": "Metode Pembayaran",
       "cash": "Tunai",
       "qris": "QRIS",
-      "transfer": "Transfer Bank",
+      "transfer": "Transfer",
       "amountReceived": "Uang Diterima",
+      "amountReceivedLabel": "Uang Diterima (Rp) *",
       "changeDue": "Kembalian",
+      "changeDueLabel": "Uang Kembalian:",
+      "changeDueUpper": "UANG KEMBALIAN",
       "exactAmount": "Uang Pas",
+      "insufficientCash": "Uang Kurang",
+      "qrisTitle": "Scan QRIS Dinamis Toko",
+      "qrisDesc": "Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar {{amount}}.",
+      "readyToProcess": "Siap Diproses",
+      "transferTitle": "Transfer Bank Manual",
+      "transferDesc": "Verifikasi mutasi rekening masuk sebesar {{amount}} sebelum menyelesaikan transaksi.",
+      "confirm": "Konfirmasi Pembayaran",
+      "processing": "Memproses Transaksi...",
       "successTitle": "Pembayaran Berhasil",
+      "successDesc": "Transaksi tercatat ke memori lokal kasir.",
       "changeDueNotice": "Kembalian: {{amount}}"
     }
   },
@@ -71,9 +93,9 @@
     "stock": "Stok: {{count}}",
     "outOfStock": "Stok Habis",
     "lowStock": "Sisa {{count}}",
-    "empty": "Belum ada produk",
+    "empty": "Belum ada produk terdaftar.",
     "emptyHint": "Tambahkan produk pertama tokomu untuk mulai melayani transaksi kasir.",
-    "emptyFilter": "Tidak ada produk yang cocok dengan pencarian atau filter yang dipilih.",
+    "emptyFilter": "Tidak ada produk yang cocok dengan filter.",
     "form": {
       "createTitle": "Tambah Produk Baru",
       "editTitle": "Edit Produk",
@@ -95,29 +117,72 @@
   },
   "orders": {
     "title": "Riwayat Transaksi",
-    "subtitle": "Pantau seluruh struk transaksi dan rekap omzet penjualan harian.",
+    "subtitle": "Laporan omzet penjualan harian, riwayat pembayaran, dan pencetakan ulang struk.",
+    "searchPlaceholder": "Cari nomor struk atau kasir...",
     "todayRevenue": "Omzet Hari Ini",
     "totalOrders": "Total Transaksi",
-    "averageReceipt": "Rata-rata Struk",
-    "empty": "Belum ada transaksi hari ini",
+    "averageReceipt": "Rata-rata Transaksi",
+    "nonCashRevenue": "QRIS / Non-Tunai",
+    "transactionsUnit": "Transaksi",
+    "empty": "Belum ada riwayat transaksi.",
+    "emptyFilter": "Tidak ada transaksi yang cocok dengan filter.",
+    "emptyHint": "Transaksi yang selesai di kasir akan muncul di sini secara otomatis.",
     "receipt": {
-      "title": "Rincian Struk",
+      "title": "Rincian Struk Transaksi",
       "orderNumber": "No. Struk",
-      "date": "Waktu",
+      "date": "Waktu Transaksi",
       "cashier": "Kasir",
-      "items": "Daftar Belanja",
-      "paymentMethod": "Metode Pembayaran",
-      "total": "Total Transaksi"
+      "items": "Menu Terjual",
+      "paymentMethod": "Metode Bayar",
+      "total": "Total Tagihan",
+      "completed": "SELESAI",
+      "reprint": "Cetak Ulang Struk"
     }
   },
   "sync": {
-    "title": "Sinkronisasi P2P",
-    "subtitle": "Hubungkan perangkat kasir dan HP pemilik secara langsung tanpa server cloud.",
-    "statusCard": "Status Koneksi",
-    "connectedDevices": "Perangkat Terhubung: {{count}}",
-    "storeKeyTitle": "Kunci Toko & QR Pairing",
-    "scanQr": "Scan QR Perangkat",
-    "enterPassphrase": "Input 12 Kata Passphrase",
-    "passphraseHelper": "Gunakan passphrase 12 kata untuk menghubungkan perangkat tanpa kamera."
+    "title": "Sinkronisasi & Kunci Toko",
+    "subtitle": "Pairing multi-perangkat kasir peer-to-peer (WebRTC) tanpa server terpusat.",
+    "storeIdentity": {
+      "title": "Identitas Toko & Kunci Rahasia",
+      "desc": "Kredensial lokal untuk pairing antar terminal kasir tanpa server.",
+      "nameLabel": "Nama Toko",
+      "passphraseLabel": "12 Kata Kunci Rahasia (BIP-39 Passphrase)",
+      "regenerate": "Acak Ulang",
+      "copy": "Salin 12 Kata Rahasia",
+      "copied": "Tersalin ke Clipboard!"
+    },
+    "qrCard": {
+      "title": "QR Code Pairing Toko",
+      "desc": "Pindai dari perangkat kasir lain untuk menghubungkan database lokal.",
+      "direct": "P2P Direct",
+      "helper": "Arahkan kamera terminal kasir baru ke QR di atas atau masukkan 12 kata sandi secara manual.",
+      "scanBtn": "Pindai QR Perangkat Lain"
+    },
+    "scanner": {
+      "title": "Pairing Terminal Kasir",
+      "desc": "Hubungkan perangkat ini ke database toko yang sudah ada.",
+      "cameraTab": "Pindai Kamera",
+      "manualTab": "12 Kata Kunci",
+      "cameraTitle": "Arahkan Kamera ke QR Toko",
+      "cameraDesc": "Pastikan izin kamera aktif pada browser untuk memindai secara langsung.",
+      "storeNameLabel": "Nama Toko (Opsional)",
+      "passphraseLabel": "12 Kata Sandi Toko *",
+      "connectBtn": "Hubungkan Toko"
+    },
+    "peers": {
+      "title": "Terminal Terhubung",
+      "desc": "Perangkat kasir aktif di jaringan lokal toko.",
+      "syncNow": "Sinkronkan Sekarang",
+      "standalone": "Mode Lokal Mandiri (1 Perangkat Aktif)",
+      "standaloneDesc": "Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk menambahkan kasir kedua."
+    },
+    "backup": {
+      "title": "Cadangan & Pemulihan Data (Offline Backup)",
+      "desc": "Simpan berkas master produk dan riwayat transaksi ke penyimpanan lokal.",
+      "exportBtn": "Ekspor Cadangan (JSON)",
+      "importBtn": "Pulihkan dari File",
+      "successMsg": "Sukses memulihkan {{products}} produk dan {{orders}} transaksi.",
+      "errorMsg": "Gagal membaca berkas cadangan. Format JSON tidak valid."
+    }
   }
 }

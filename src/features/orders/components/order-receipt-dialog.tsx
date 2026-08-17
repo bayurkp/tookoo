@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Printer, Receipt, Calendar, CreditCard, User } from 'lucide-react';
 import {
   Dialog,
@@ -23,6 +24,8 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
   open,
   onOpenChange,
 }) => {
+  const { t } = useTranslation();
+
   if (!order) return null;
 
   const handlePrint = () => {
@@ -37,7 +40,9 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             <Receipt className="h-5 w-5" />
           </div>
           <div>
-            <DialogTitle className="text-lg font-bold">Rincian Struk Transaksi</DialogTitle>
+            <DialogTitle className="text-lg font-bold">
+              {t('orders.receipt.title', 'Rincian Struk Transaksi')}
+            </DialogTitle>
             <DialogDescription className="font-mono text-xs text-foreground font-semibold">
               {order.orderNumber}
             </DialogDescription>
@@ -66,18 +71,22 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <User className="h-3.5 w-3.5" />
-            <span>Kasir: {order.cashierName}</span>
+            <span>
+              {t('orders.receipt.cashier', 'Kasir')}: {order.cashierName}
+            </span>
           </div>
           <div className="flex items-center justify-end">
             <Badge variant="success" className="text-xs py-0">
-              SELESAI
+              {t('orders.receipt.completed', 'SELESAI')}
             </Badge>
           </div>
         </div>
 
         {/* Itemized List */}
         <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-          <p className="text-xs font-bold text-foreground">Menu Terjual ({order.items.length})</p>
+          <p className="text-xs font-bold text-foreground">
+            {t('orders.receipt.items', 'Menu Terjual')} ({order.items.length})
+          </p>
           <div className="divide-y divide-border/60 border rounded-lg overflow-hidden bg-card text-xs">
             {order.items.map((item, idx) => (
               <div key={idx} className="p-2.5 flex justify-between items-center">
@@ -96,27 +105,27 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
         {/* Financial Breakdown */}
         <div className="p-3 bg-muted/30 rounded-lg border space-y-1.5 text-xs">
           <div className="flex justify-between text-muted-foreground">
-            <span>Subtotal</span>
+            <span>{t('cashier.cart.subtotal', 'Subtotal')}</span>
             <span>{formatCurrency(order.subtotal)}</span>
           </div>
           {order.discount > 0 && (
             <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
-              <span>Diskon</span>
+              <span>{t('cashier.cart.discount', 'Diskon')}</span>
               <span>-{formatCurrency(order.discount)}</span>
             </div>
           )}
           <div className="flex justify-between font-bold text-sm text-foreground pt-1 border-t">
-            <span>Total Tagihan</span>
+            <span>{t('orders.receipt.total', 'Total Tagihan')}</span>
             <span className="text-primary font-black">{formatCurrency(order.totalAmount)}</span>
           </div>
           {order.paymentMethod === 'CASH' && (
             <>
               <div className="flex justify-between text-muted-foreground pt-1">
-                <span>Uang Diterima</span>
+                <span>{t('cashier.payment.amountReceived', 'Uang Diterima')}</span>
                 <span>{formatCurrency(order.amountPaid)}</span>
               </div>
               <div className="flex justify-between font-semibold text-emerald-600 dark:text-emerald-400">
-                <span>Kembalian</span>
+                <span>{t('cashier.payment.changeDue', 'Kembalian')}</span>
                 <span>{formatCurrency(order.changeDue)}</span>
               </div>
             </>
@@ -128,17 +137,17 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto cursor-pointer"
           >
-            Tutup
+            {t('common.actions.close', 'Tutup')}
           </Button>
           <Button
             type="button"
             onClick={handlePrint}
-            className="w-full sm:w-auto gap-1.5 font-bold"
+            className="w-full sm:w-auto gap-1.5 font-bold cursor-pointer"
           >
             <Printer className="h-4 w-4" />
-            <span>Cetak Ulang Struk</span>
+            <span>{t('orders.receipt.reprint', 'Cetak Ulang Struk')}</span>
           </Button>
         </DialogFooter>
       </div>

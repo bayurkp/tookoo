@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScanLine, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
   Dialog,
@@ -24,6 +25,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   onOpenChange,
   onPairSuccess,
 }) => {
+  const { t } = useTranslation();
   const [manualPassphrase, setManualPassphrase] = useState('');
   const [manualStoreName, setManualStoreName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,7 +35,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     const words = cleaned.split(' ').filter(Boolean);
 
     if (words.length !== 12) {
-      setErrorMessage('Kata kunci harus terdiri dari tepat 12 kata.');
+      setErrorMessage(
+        t('sync.scanner.invalidWordCount', 'Kata kunci harus terdiri dari tepat 12 kata.')
+      );
       return;
     }
 
@@ -55,9 +59,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div className="space-y-4">
         <DialogHeader>
-          <DialogTitle>Pairing Terminal Kasir</DialogTitle>
+          <DialogTitle>{t('sync.scanner.title', 'Pairing Terminal Kasir')}</DialogTitle>
           <DialogDescription>
-            Hubungkan perangkat ini ke database toko yang sudah ada.
+            {t('sync.scanner.desc', 'Hubungkan perangkat ini ke database toko yang sudah ada.')}
           </DialogDescription>
         </DialogHeader>
 
@@ -65,11 +69,11 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="scanner" className="gap-1.5">
               <ScanLine className="h-3.5 w-3.5" />
-              <span>Pindai Kamera</span>
+              <span>{t('sync.scanner.cameraTab', 'Pindai Kamera')}</span>
             </TabsTrigger>
             <TabsTrigger value="manual" className="gap-1.5">
               <KeyRound className="h-3.5 w-3.5" />
-              <span>12 Kata Kunci</span>
+              <span>{t('sync.scanner.manualTab', '12 Kata Kunci')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -80,9 +84,14 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                 <ScanLine className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-semibold text-sm">Arahkan Kamera ke QR Toko</p>
+                <p className="font-semibold text-sm">
+                  {t('sync.scanner.cameraTitle', 'Arahkan Kamera ke QR Toko')}
+                </p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-                  Pastikan izin kamera aktif pada browser untuk memindai secara langsung.
+                  {t(
+                    'sync.scanner.cameraDesc',
+                    'Pastikan izin kamera aktif pada browser untuk memindai secara langsung.'
+                  )}
                 </p>
               </div>
             </div>
@@ -91,7 +100,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
           {/* Manual Passphrase Tab */}
           <TabsContent value="manual" className="pt-2 space-y-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">Nama Toko (Opsional)</label>
+              <label className="text-xs font-semibold text-foreground">
+                {t('sync.scanner.storeNameLabel', 'Nama Toko (Opsional)')}
+              </label>
               <Input
                 value={manualStoreName}
                 onChange={(e) => setManualStoreName(e.target.value)}
@@ -101,7 +112,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">12 Kata Sandi Toko *</label>
+              <label className="text-xs font-semibold text-foreground">
+                {t('sync.scanner.passphraseLabel', '12 Kata Sandi Toko *')}
+              </label>
               <textarea
                 value={manualPassphrase}
                 onChange={(e) => {
@@ -124,12 +137,21 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         </Tabs>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Batal
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="cursor-pointer"
+          >
+            {t('common.actions.cancel', 'Batal')}
           </Button>
-          <Button type="button" onClick={handleManualPair} className="font-bold gap-1.5">
+          <Button
+            type="button"
+            onClick={handleManualPair}
+            className="font-bold gap-1.5 cursor-pointer"
+          >
             <CheckCircle2 className="h-4 w-4" />
-            <span>Hubungkan Toko</span>
+            <span>{t('sync.scanner.connectBtn', 'Hubungkan Toko')}</span>
           </Button>
         </DialogFooter>
       </div>
