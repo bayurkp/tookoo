@@ -197,10 +197,16 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
             </div>
           </div>
 
-          <div className="p-3 bg-muted/50 rounded-xl border border-border/80 font-mono text-xs text-foreground tracking-wide leading-relaxed break-words select-all">
-            {showPassphrase
-              ? settings?.passphrase || t('common.states.loading', 'Memuat...')
-              : '•••••••• •••••••• •••••••• •••••••• •••••••• •••••••• •••••••• •••••••• •••••••• •••••••• •••••••• ••••••••'}
+          <div className="p-3 bg-muted/50 rounded-xl border border-border/80 font-mono text-xs text-foreground tracking-wide leading-relaxed break-words overflow-hidden">
+            <span
+              className={`inline-block transition-all duration-300 ${
+                showPassphrase
+                  ? 'blur-none select-all'
+                  : 'blur-[5px] select-none opacity-60 pointer-events-none'
+              }`}
+            >
+              {settings?.passphrase || t('common.states.loading', 'Memuat...')}
+            </span>
           </div>
 
           {/* Action Buttons for Passphrase */}
