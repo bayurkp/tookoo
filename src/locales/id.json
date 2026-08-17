@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "Tookoo",
-    "tagline": "Solusi Kasir Cerdas & Mandiri",
+    "tagline": "Aplikasi Kasir Mudah & Mandiri untuk Toko",
     "actions": {
       "add": "Tambah Produk",
       "edit": "Edit Produk",
@@ -31,23 +31,23 @@
     "cashier": "Kasir",
     "products": "Produk",
     "orders": "Riwayat",
-    "sync": "Sinkronisasi"
+    "sync": "Sambung Perangkat"
   },
   "status": {
-    "p2pConnected": "P2P Terhubung ({{count}})",
-    "localMode": "Mode Lokal (Siap)",
-    "offline": "Mode Lokal (Offline). Data aman tersimpan."
+    "p2pConnected": "Tersambung ({{count}} Kasir)",
+    "localMode": "Kasir Siap (Lokal)",
+    "offline": "Mode Offline (Data Aman di Perangkat)"
   },
   "cashier": {
     "title": "Terminal Kasir",
-    "subtitle": "Pilih menu untuk menambahkan ke keranjang transaksi pelanggan.",
+    "subtitle": "Pilih menu untuk menambahkan ke keranjang belanja pelanggan.",
     "searchPlaceholder": "Cari nama atau barcode produk...",
     "allCategories": "Semua",
     "newTransaction": "Transaksi Baru",
     "cart": {
       "title": "Keranjang Belanja",
       "empty": "Keranjang masih kosong.",
-      "emptyHint": "Pilih produk dari katalog untuk memulai transaksi kasir.",
+      "emptyHint": "Pilih produk dari daftar menu untuk memulai transaksi penjualan.",
       "subtotal": "Subtotal",
       "discount": "Diskon",
       "total": "Total Bayar",
@@ -57,7 +57,7 @@
     },
     "payment": {
       "title": "Pembayaran",
-      "description": "Pilih metode pembayaran dan konfirmasi nominal transaksi.",
+      "description": "Pilih metode pembayaran dan masukkan nominal uang pelanggan.",
       "totalBill": "Total Tagihan",
       "itemTypes": "{{count}} jenis item",
       "method": "Metode Pembayaran",
@@ -71,21 +71,21 @@
       "changeDueUpper": "KEMBALIAN",
       "exactAmount": "Uang Pas",
       "insufficientCash": "Uang Kurang",
-      "qrisTitle": "Scan QRIS Dinamis Toko",
-      "qrisDesc": "Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar {{amount}}.",
+      "qrisTitle": "Scan QRIS Toko",
+      "qrisDesc": "Pastikan pelanggan telah memindai QRIS dan membayar sebesar {{amount}}.",
       "readyToProcess": "Siap Diproses",
       "transferTitle": "Transfer Bank Manual",
-      "transferDesc": "Verifikasi mutasi rekening masuk sebesar {{amount}} sebelum menyelesaikan transaksi.",
+      "transferDesc": "Pastikan uang transfer pelanggan sebesar {{amount}} sudah masuk ke rekening.",
       "confirm": "Konfirmasi Pembayaran",
-      "processing": "Memproses Transaksi...",
+      "processing": "Memproses Pembayaran...",
       "successTitle": "Pembayaran Berhasil.",
-      "successDesc": "Transaksi tercatat ke memori lokal kasir.",
+      "successDesc": "Transaksi penjualan berhasil dicatat.",
       "changeDueNotice": "Kembalian: {{amount}}."
     }
   },
   "products": {
-    "title": "Kelola Produk",
-    "subtitle": "Daftar master data produk, inventaris stok, dan kategori tokomu.",
+    "title": "Daftar Produk & Stok",
+    "subtitle": "Kelola menu jualan, harga, dan sisa stok toko tokomu.",
     "addProduct": "Tambah Produk",
     "editProduct": "Edit Produk",
     "searchPlaceholder": "Cari produk berdasarkan nama...",
@@ -94,15 +94,15 @@
     "outOfStock": "Stok Habis",
     "lowStock": "Sisa {{count}}",
     "empty": "Belum ada produk terdaftar.",
-    "emptyHint": "Tambahkan produk pertama tokomu untuk mulai melayani transaksi kasir.",
-    "emptyFilter": "Tidak ada produk yang cocok dengan filter pencarian.",
+    "emptyHint": "Tambahkan produk pertama tokomu untuk mulai melayani penjualan kasir.",
+    "emptyFilter": "Tidak ada produk yang cocok dengan pencarian.",
     "form": {
       "createTitle": "Tambah Produk Baru",
       "editTitle": "Edit Produk",
-      "createDesc": "Masukkan rincian produk baru ke dalam katalog tokomu.",
-      "editDesc": "Perbarui rincian harga, stok, atau nama produk.",
+      "createDesc": "Masukkan rincian produk baru ke dalam daftar menu tokomu.",
+      "editDesc": "Ubah rincian harga, stok, atau nama produk.",
       "nameLabel": "Nama Produk *",
-      "namePlaceholder": "Contoh: Kopi Americano",
+      "namePlaceholder": "Contoh: Kopi Susu Aren",
       "categoryLabel": "Kategori *",
       "categoryPlaceholder": "Contoh: Minuman / Makanan",
       "priceLabel": "Harga (Rp) *",
@@ -113,20 +113,20 @@
       "addBtn": "Tambah Produk",
       "savingBtn": "Menyimpan Produk..."
     },
-    "deleteConfirm": "Hapus produk ini?"
+    "deleteConfirm": "Hapus produk ini dari daftar?"
   },
   "orders": {
     "title": "Riwayat Transaksi",
-    "subtitle": "Laporan omzet penjualan harian, riwayat pembayaran, dan pencetakan ulang struk.",
+    "subtitle": "Laporan penjualan harian, riwayat pembayaran, dan cetak ulang struk.",
     "searchPlaceholder": "Cari nomor struk atau kasir...",
     "todayRevenue": "Omzet Hari Ini",
     "totalOrders": "Total Transaksi",
     "averageReceipt": "Rata-rata Struk",
-    "nonCashRevenue": "QRIS / Non-Tunai",
+    "nonCashRevenue": "QRIS / Transfer",
     "transactionsUnit": "Transaksi",
-    "empty": "Belum ada riwayat transaksi hari ini.",
-    "emptyFilter": "Tidak ada transaksi yang cocok dengan filter pencarian.",
-    "emptyHint": "Transaksi yang selesai di kasir akan muncul di sini secara otomatis.",
+    "empty": "Belum ada transaksi hari ini.",
+    "emptyFilter": "Tidak ada transaksi yang cocok dengan pencarian.",
+    "emptyHint": "Transaksi yang selesai di kasir akan otomatis muncul di sini.",
     "receipt": {
       "title": "Rincian Struk Transaksi",
       "orderNumber": "No. Struk",
@@ -140,50 +140,50 @@
     }
   },
   "sync": {
-    "title": "Sinkronisasi & Kunci Toko",
-    "subtitle": "Pairing multi-perangkat kasir peer-to-peer (WebRTC) tanpa server terpusat.",
+    "title": "Sambung Perangkat Toko",
+    "subtitle": "Hubungkan HP pemilik dan beberapa perangkat kasir agar data toko selalu sama.",
     "storeIdentity": {
-      "title": "Identitas Toko & Kunci Rahasia",
-      "desc": "Kredensial lokal untuk pairing antar terminal kasir tanpa server.",
+      "title": "Nama & Kunci Keamanan Toko",
+      "desc": "Kunci keamanan rahasia untuk menyambungkan HP pemilik dan mesin kasir toko.",
       "nameLabel": "Nama Toko",
       "saveBtn": "Simpan Nama",
-      "passphraseLabel": "12 Kata Kunci Rahasia (BIP-39 Passphrase)",
-      "regenerate": "Acak Ulang Kunci",
-      "copy": "Salin 12 Kata Rahasia",
+      "passphraseLabel": "12 Kata Kunci Keamanan Toko",
+      "regenerate": "Ganti Kunci Baru",
+      "copy": "Salin 12 Kata Kunci",
       "copied": "Tersalin ke clipboard."
     },
     "qrCard": {
-      "title": "QR Code Pairing Toko",
-      "desc": "Pindai dari perangkat kasir lain untuk menghubungkan database lokal.",
-      "direct": "P2P Direct",
-      "helper": "Arahkan kamera terminal kasir baru ke QR di atas atau masukkan 12 kata sandi secara manual.",
+      "title": "QR Code Sambung Toko",
+      "desc": "Pindai dari HP atau mesin kasir lain untuk menyamakan data toko.",
+      "direct": "Langsung Antar HP",
+      "helper": "Arahkan kamera HP kasir baru ke QR di atas atau masukkan 12 kata kunci secara manual.",
       "scanBtn": "Pindai QR Perangkat Lain"
     },
     "scanner": {
-      "title": "Pairing Terminal Kasir",
-      "desc": "Hubungkan perangkat ini ke database toko yang sudah ada.",
+      "title": "Sambungkan Perangkat Kasir",
+      "desc": "Hubungkan HP atau perangkat ini ke toko yang sudah ada.",
       "cameraTab": "Pindai Kamera",
       "manualTab": "12 Kata Kunci",
       "cameraTitle": "Arahkan Kamera ke QR Toko",
-      "cameraDesc": "Pastikan izin kamera aktif pada browser untuk memindai secara langsung.",
+      "cameraDesc": "Pastikan izin kamera aktif pada browser untuk memindai kode QR toko.",
       "storeNameLabel": "Nama Toko (Opsional)",
-      "passphraseLabel": "12 Kata Sandi Toko *",
-      "connectBtn": "Hubungkan Terminal"
+      "passphraseLabel": "12 Kata Kunci Toko *",
+      "connectBtn": "Sambungkan ke Toko"
     },
     "peers": {
-      "title": "Terminal Terhubung",
-      "desc": "Perangkat kasir aktif di jaringan lokal toko.",
-      "syncNow": "Sinkronkan Sekarang",
-      "standalone": "Mode Lokal Mandiri (1 Perangkat Aktif)",
-      "standaloneDesc": "Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk menambahkan kasir kedua."
+      "title": "Perangkat Toko Terhubung",
+      "desc": "Daftar HP dan perangkat kasir yang sedang aktif tersambung.",
+      "syncNow": "Samakan Data Sekarang",
+      "standalone": "Mode 1 Kasir (Mandiri)",
+      "standaloneDesc": "Belum ada perangkat lain yang tersambung. Pindai QR di atas untuk menghubungkan HP atau kasir tambahan."
     },
     "backup": {
-      "title": "Cadangan & Pemulihan Data (Offline Backup)",
-      "desc": "Simpan berkas master produk dan riwayat transaksi ke penyimpanan lokal.",
-      "exportBtn": "Ekspor Cadangan (JSON)",
-      "importBtn": "Pulihkan Cadangan",
-      "successMsg": "Data berhasil dipulihkan: {{products}} produk, {{orders}} transaksi.",
-      "errorMsg": "Gagal membaca berkas cadangan. Format JSON tidak valid."
+      "title": "Cadangkan & Pulihkan Data Toko",
+      "desc": "Simpan salinan data produk dan riwayat transaksi ke berkas file agar data tokomu selalu aman.",
+      "exportBtn": "Unduh Berkas Cadangan",
+      "importBtn": "Pulihkan dari Berkas File",
+      "successMsg": "Data berhasil dipulihkan: {{products}} produk dan {{orders}} transaksi.",
+      "errorMsg": "Gagal membaca berkas cadangan. Pastikan berkas yang dipilih adalah berkas cadangan Tookoo yang benar."
     }
   }
 }

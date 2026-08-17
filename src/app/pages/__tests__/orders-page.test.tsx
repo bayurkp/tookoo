@@ -23,7 +23,7 @@ describe('OrdersPage', () => {
     render(<OrdersPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText(/Belum ada riwayat transaksi/i)).toBeInTheDocument();
+      expect(screen.getByText(/Belum ada transaksi/i)).toBeInTheDocument();
     });
   });
 

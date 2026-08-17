@@ -16,9 +16,7 @@ test.describe('Smoke & Navigation E2E Suite', () => {
     // Navigate to Products Page
     await page.getByRole('link', { name: /Produk|Products/i }).click();
     await expect(page).toHaveURL(/.*products/);
-    await expect(page.getByRole('heading', { level: 2 })).toContainText(
-      /Kelola Produk|Manage Products/i
-    );
+    await expect(page.getByRole('heading', { level: 2 })).toContainText(/Daftar Produk|Products/i);
 
     // Navigate to Orders History Page
     await page.getByRole('link', { name: /Riwayat|History/i }).click();
@@ -28,9 +26,11 @@ test.describe('Smoke & Navigation E2E Suite', () => {
     );
 
     // Navigate to Sync Page
-    await page.getByRole('link', { name: /Sinkronisasi|Sync/i }).click();
+    await page.getByRole('link', { name: /Sambung Perangkat|Connect Devices/i }).click();
     await expect(page).toHaveURL(/.*sync/);
-    await expect(page.getByRole('heading', { level: 2 })).toContainText(/Sinkronisasi|Sync/i);
+    await expect(page.getByRole('heading', { level: 2 })).toContainText(
+      /Sambung Perangkat|Connect Store Devices/i
+    );
   });
 
   test('switches language between ID and EN dynamically', async ({ page }) => {

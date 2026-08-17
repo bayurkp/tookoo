@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "Tookoo",
-    "tagline": "Smart & Self-Sovereign POS Solution",
+    "tagline": "Simple & Independent Point of Sale for Stores",
     "actions": {
       "add": "Add Product",
       "edit": "Edit Product",
@@ -31,23 +31,23 @@
     "cashier": "Cashier",
     "products": "Products",
     "orders": "History",
-    "sync": "Sync"
+    "sync": "Connect Devices"
   },
   "status": {
-    "p2pConnected": "P2P Connected ({{count}})",
-    "localMode": "Local Mode (Ready)",
-    "offline": "Local Store Mode (Offline). Data safely stored on device."
+    "p2pConnected": "Connected ({{count}} Devices)",
+    "localMode": "Terminal Ready (Local)",
+    "offline": "Offline Mode (Data Safe on Device)"
   },
   "cashier": {
     "title": "Cashier Terminal",
-    "subtitle": "Select items to add them to customer order cart.",
+    "subtitle": "Select items to add them to customer shopping cart.",
     "searchPlaceholder": "Search product name or barcode...",
     "allCategories": "All",
     "newTransaction": "New Transaction",
     "cart": {
       "title": "Shopping Cart",
       "empty": "Cart is empty.",
-      "emptyHint": "Select products from catalog to start cashier transaction.",
+      "emptyHint": "Select products from menu catalog to start customer transaction.",
       "subtotal": "Subtotal",
       "discount": "Discount",
       "total": "Total Due",
@@ -57,7 +57,7 @@
     },
     "payment": {
       "title": "Payment",
-      "description": "Choose payment method and confirm transaction amount.",
+      "description": "Choose payment method and enter cash amount received.",
       "totalBill": "Total Bill",
       "itemTypes": "{{count}} item types",
       "method": "Payment Method",
@@ -71,21 +71,21 @@
       "changeDueUpper": "CHANGE DUE",
       "exactAmount": "Exact Amount",
       "insufficientCash": "Insufficient Cash",
-      "qrisTitle": "Scan Dynamic Store QRIS",
+      "qrisTitle": "Store QRIS Payment",
       "qrisDesc": "Ensure customer has scanned QRIS and paid {{amount}}.",
       "readyToProcess": "Ready to Process",
-      "transferTitle": "Manual Bank Transfer",
-      "transferDesc": "Verify bank transfer receipt of {{amount}} before completing.",
+      "transferTitle": "Bank Transfer",
+      "transferDesc": "Verify customer bank transfer receipt of {{amount}} before completing.",
       "confirm": "Confirm Payment",
-      "processing": "Processing Transaction...",
+      "processing": "Processing Payment...",
       "successTitle": "Payment Successful.",
-      "successDesc": "Transaction saved to local cashier storage.",
+      "successDesc": "Transaction saved to store records.",
       "changeDueNotice": "Change Due: {{amount}}."
     }
   },
   "products": {
-    "title": "Manage Products",
-    "subtitle": "Product master catalog, stock inventory, and store categories.",
+    "title": "Products & Stock",
+    "subtitle": "Manage catalog items, pricing, and available store stock.",
     "addProduct": "Add Product",
     "editProduct": "Edit Product",
     "searchPlaceholder": "Search products by name...",
@@ -94,13 +94,13 @@
     "outOfStock": "Out of Stock",
     "lowStock": "{{count}} left in stock",
     "empty": "No products registered yet.",
-    "emptyHint": "Add your first product to start serving cashier sales.",
+    "emptyHint": "Add your first product to start serving customer sales.",
     "emptyFilter": "No products match the search filter.",
     "form": {
       "createTitle": "Add New Product",
       "editTitle": "Edit Product",
-      "createDesc": "Enter new product details into your store catalog.",
-      "editDesc": "Update price, stock, or product name.",
+      "createDesc": "Enter product details into your store menu catalog.",
+      "editDesc": "Update price, stock count, or product name.",
       "nameLabel": "Product Name *",
       "namePlaceholder": "e.g. Americano Coffee",
       "categoryLabel": "Category *",
@@ -113,16 +113,16 @@
       "addBtn": "Add Product",
       "savingBtn": "Saving Product..."
     },
-    "deleteConfirm": "Delete this product?"
+    "deleteConfirm": "Delete this product from catalog?"
   },
   "orders": {
     "title": "Transaction History",
-    "subtitle": "Daily revenue analytics, payment history, and receipt reprinting.",
+    "subtitle": "Daily revenue analytics, payment records, and receipt reprinting.",
     "searchPlaceholder": "Search receipt number or cashier...",
     "todayRevenue": "Today's Revenue",
     "totalOrders": "Total Transactions",
     "averageReceipt": "Average Receipt",
-    "nonCashRevenue": "QRIS / Non-Cash",
+    "nonCashRevenue": "QRIS / Transfer",
     "transactionsUnit": "Transactions",
     "empty": "No transactions recorded today.",
     "emptyFilter": "No transactions match the search filter.",
@@ -140,50 +140,50 @@
     }
   },
   "sync": {
-    "title": "Sync & Store Keys",
-    "subtitle": "Multi-terminal peer-to-peer (WebRTC) pairing without a central server.",
+    "title": "Connect Store Devices",
+    "subtitle": "Link owner phone and cashier devices together to keep store data synced.",
     "storeIdentity": {
-      "title": "Store Identity & Secret Key",
-      "desc": "Local credentials for serverless peer cashier pairing.",
+      "title": "Store Name & Security Key",
+      "desc": "Secret security words to link owner phone and cashier devices.",
       "nameLabel": "Store Name",
       "saveBtn": "Save Name",
-      "passphraseLabel": "12-Word Secret Passphrase (BIP-39)",
-      "regenerate": "Regenerate Key",
-      "copy": "Copy 12-Word Passphrase",
+      "passphraseLabel": "12 Store Security Words",
+      "regenerate": "Generate New Words",
+      "copy": "Copy 12 Security Words",
       "copied": "Copied to clipboard."
     },
     "qrCard": {
-      "title": "Store Pairing QR Code",
-      "desc": "Scan from another cashier device to link local databases.",
-      "direct": "P2P Direct",
-      "helper": "Point new cashier terminal camera to the QR above or enter 12-word passphrase manually.",
+      "title": "Store Link QR Code",
+      "desc": "Scan from another phone or cashier device to link store data.",
+      "direct": "Direct Link",
+      "helper": "Point the camera of your new cashier device to the QR above or enter 12 security words manually.",
       "scanBtn": "Scan Other Device QR"
     },
     "scanner": {
-      "title": "Pair Cashier Terminal",
-      "desc": "Link this device to an existing store database.",
+      "title": "Connect Cashier Device",
+      "desc": "Link this device to your existing store.",
       "cameraTab": "Camera Scan",
       "manualTab": "12 Words",
       "cameraTitle": "Point Camera to Store QR",
-      "cameraDesc": "Ensure camera permissions are allowed on browser to scan directly.",
+      "cameraDesc": "Allow camera access in your browser to scan the store QR code directly.",
       "storeNameLabel": "Store Name (Optional)",
-      "passphraseLabel": "12-Word Store Passphrase *",
-      "connectBtn": "Connect Terminal"
+      "passphraseLabel": "12 Store Security Words *",
+      "connectBtn": "Connect to Store"
     },
     "peers": {
-      "title": "Connected Terminals",
-      "desc": "Active cashier devices in store local network.",
-      "syncNow": "Sync Now",
-      "standalone": "Standalone Local Mode (1 Device Active)",
-      "standaloneDesc": "No other cashier terminals connected. Scan QR above to add a second cashier."
+      "title": "Connected Store Devices",
+      "desc": "List of active connected owner phones and cashier terminals.",
+      "syncNow": "Sync Data Now",
+      "standalone": "Single Terminal Mode",
+      "standaloneDesc": "No other devices connected yet. Scan the QR code above to link an additional phone or cashier."
     },
     "backup": {
-      "title": "Data Backup & Recovery (Offline Backup)",
-      "desc": "Save catalog products and sales history to local storage.",
-      "exportBtn": "Export Backup (JSON)",
-      "importBtn": "Restore Backup",
-      "successMsg": "Data restored: {{products}} products, {{orders}} orders.",
-      "errorMsg": "Failed to read backup file. Invalid JSON format."
+      "title": "Store Backup & Restore",
+      "desc": "Save a backup copy of your catalog and sales records to keep your store data safe.",
+      "exportBtn": "Download Backup File",
+      "importBtn": "Restore from File",
+      "successMsg": "Data restored: {{products}} products and {{orders}} orders.",
+      "errorMsg": "Failed to read backup file. Please ensure you selected a valid Tookoo backup file."
     }
   }
 }

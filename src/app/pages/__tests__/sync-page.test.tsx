@@ -23,10 +23,12 @@ describe('SyncPage', () => {
     render(<SyncPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText('Identitas Toko & Kunci Rahasia')).toBeInTheDocument();
-      expect(screen.getByText('QR Code Pairing Toko')).toBeInTheDocument();
-      expect(screen.getByText('Terminal Terhubung')).toBeInTheDocument();
-      expect(screen.getByText(/Cadangan & Pemulihan Data/i)).toBeInTheDocument();
+      expect(screen.getByText(/Nama & Kunci Keamanan Toko|Identitas Toko/i)).toBeInTheDocument();
+      expect(screen.getByText(/QR Code Sambung Toko|QR Code Pairing Toko/i)).toBeInTheDocument();
+      expect(screen.getByText(/Perangkat Toko Terhubung|Terminal Terhubung/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Cadangkan & Pulihkan Data|Cadangan & Pemulihan Data/i)
+      ).toBeInTheDocument();
     });
 
     // Open scanner modal
@@ -35,6 +37,8 @@ describe('SyncPage', () => {
     });
     fireEvent.click(scanBtn);
 
-    expect(screen.getByText('Pairing Terminal Kasir')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Sambungkan Perangkat Kasir|Pairing Terminal Kasir/i)
+    ).toBeInTheDocument();
   });
 });

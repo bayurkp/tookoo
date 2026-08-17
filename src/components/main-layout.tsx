@@ -25,7 +25,7 @@ export const MainLayout: React.FC = () => {
             <h1 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-1.5">
               {t('common.appName')}
               <span className="text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                Local-First
+                POS Kasir
               </span>
             </h1>
           </div>
@@ -36,7 +36,7 @@ export const MainLayout: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={toggleLanguage}
-            className="h-8 px-2.5 text-xs font-medium gap-1.5 text-muted-foreground hover:text-foreground"
+            className="h-8 px-2.5 text-xs font-medium gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
             title="Ganti Bahasa / Switch Language"
           >
             <Languages className="h-3.5 w-3.5" />
@@ -109,7 +109,7 @@ export const MainLayout: React.FC = () => {
           </nav>
 
           <div className="text-xs text-muted-foreground text-center py-2 border-t">
-            Tookoo POS v0.1.0 • P2P Mesh
+            Tookoo POS • Kasir Mandiri
           </div>
         </aside>
 

@@ -22,7 +22,7 @@ describe('ProductsPage', () => {
   it('shows empty state when no products exist and opens form dialog', async () => {
     render(<ProductsPage />, { wrapper: createWrapper() });
 
-    expect(screen.getByText(/Kelola Produk/i)).toBeInTheDocument();
+    expect(screen.getByText(/Daftar Produk|Kelola Produk/i)).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText(/Belum ada produk/i)).toBeInTheDocument();
     });
