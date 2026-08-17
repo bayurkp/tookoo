@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ScanLine, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
   Dialog,
+  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
@@ -57,7 +58,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="space-y-4">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t('sync.scanner.title', 'Pairing Terminal Kasir')}</DialogTitle>
           <DialogDescription>
@@ -154,7 +155,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
             <span>{t('sync.scanner.connectBtn', 'Hubungkan Toko')}</span>
           </Button>
         </DialogFooter>
-      </div>
+      </DialogContent>
     </Dialog>
   );
 };

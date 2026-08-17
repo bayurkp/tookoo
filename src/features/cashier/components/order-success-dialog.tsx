@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Printer, PlusCircle } from 'lucide-react';
 import {
   Dialog,
+  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
@@ -36,7 +37,7 @@ export const OrderSuccessDialog: React.FC<OrderSuccessDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="space-y-4">
+      <DialogContent className="sm:max-w-[425px]">
         {/* Success Header */}
         <div className="flex flex-col items-center text-center space-y-2 pt-2">
           <div className="h-12 w-12 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
@@ -137,7 +138,7 @@ export const OrderSuccessDialog: React.FC<OrderSuccessDialogProps> = ({
             <span>{t('cashier.newTransaction', 'Transaksi Baru')}</span>
           </Button>
         </DialogFooter>
-      </div>
+      </DialogContent>
     </Dialog>
   );
 };

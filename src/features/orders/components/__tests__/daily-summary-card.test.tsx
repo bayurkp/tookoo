@@ -42,6 +42,7 @@ describe('DailySummaryCard', () => {
     render(<DailySummaryCard orders={mockOrders} />);
 
     expect(screen.getByText('Omzet Hari Ini')).toBeInTheDocument();
-    expect(screen.getByText('2 Transaksi')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('Transaksi')).toBeInTheDocument();
   });
 });

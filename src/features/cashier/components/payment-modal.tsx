@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Banknote, QrCode, Building, CheckCircle2, ArrowRight } from 'lucide-react';
 import {
   Dialog,
+  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
@@ -108,7 +109,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="space-y-4">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t('cashier.payment.title', 'Pembayaran')}</DialogTitle>
           <DialogDescription>
@@ -279,7 +280,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             )}
           </Button>
         </DialogFooter>
-      </div>
+      </DialogContent>
     </Dialog>
   );
 };

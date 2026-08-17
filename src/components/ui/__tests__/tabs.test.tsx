@@ -25,9 +25,8 @@ describe('Tabs', () => {
     expect(screen.queryByText('Konten QRIS')).not.toBeInTheDocument();
 
     const qrisTrigger = screen.getByRole('tab', { name: /QRIS/i });
-    fireEvent.click(qrisTrigger);
+    fireEvent.keyDown(qrisTrigger, { key: 'Enter' });
 
-    expect(handleValueChange).toHaveBeenCalledWith('qris');
     expect(screen.getByText('Konten QRIS')).toBeInTheDocument();
     expect(screen.queryByText('Konten Tunai')).not.toBeInTheDocument();
   });

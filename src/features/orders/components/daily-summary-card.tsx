@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DollarSign, ShoppingBag, TrendingUp, CreditCard } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { TrendingUp, ShoppingBag, CreditCard, DollarSign } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/utils/format-currency';
 import type { Order } from '@/types/order.types';
 
@@ -11,6 +12,7 @@ interface DailySummaryCardProps {
 
 export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) => {
   const { t } = useTranslation();
+
   const summary = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -25,96 +27,115 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
     const totalOrders = todayOrders.length;
     const averageTicket = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
-    const cashRevenue = todayOrders
-      .filter((o) => o.paymentMethod === 'CASH')
-      .reduce((sum, o) => sum + o.totalAmount, 0);
-
-    const qrisRevenue = todayOrders
-      .filter((o) => o.paymentMethod === 'QRIS')
-      .reduce((sum, o) => sum + o.totalAmount, 0);
-
-    const transferRevenue = todayOrders
-      .filter((o) => o.paymentMethod === 'TRANSFER')
+    const nonCashRevenue = todayOrders
+      .filter((o) => o.paymentMethod === 'QRIS' || o.paymentMethod === 'TRANSFER')
       .reduce((sum, o) => sum + o.totalAmount, 0);
 
     return {
       totalRevenue,
       totalOrders,
       averageTicket,
-      cashRevenue,
-      qrisRevenue,
-      transferRevenue,
+      nonCashRevenue,
     };
   }, [orders]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* Total Revenue */}
-      <Card className="border-border/80 shadow-xs">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              {t('orders.todayRevenue', 'Omzet Hari Ini')}
-            </p>
-            <p className="text-xl font-black tracking-tight text-primary">
-              {formatCurrency(summary.totalRevenue)}
-            </p>
+      {/* 1. Total Omzet */}
+      <Card className="relative overflow-hidden bg-gradient-to-t from-primary/5 to-card border-border/80 shadow-xs">
+        <CardHeader className="p-4 pb-2 relative">
+          <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {t('orders.todayRevenue', 'Omzet Hari Ini')}
+          </CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight text-primary tabular-nums">
+            {formatCurrency(summary.totalRevenue)}
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+            >
+              <DollarSign className="h-3 w-3 text-primary" />
+              <span>Hari Ini</span>
+            </Badge>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-            <DollarSign className="h-5 w-5" />
-          </div>
-        </CardContent>
+        </CardHeader>
+        <CardFooter className="p-4 pt-1 text-xs text-muted-foreground flex items-center gap-1.5">
+          <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Total pemasukan kasir hari ini</span>
+        </CardFooter>
       </Card>
 
-      {/* Total Orders */}
-      <Card className="border-border/80 shadow-xs">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              {t('orders.totalOrders', 'Total Transaksi')}
-            </p>
-            <p className="text-xl font-bold tracking-tight text-foreground">
-              {summary.totalOrders} {t('orders.transactionsUnit', 'Transaksi')}
-            </p>
+      {/* 2. Total Transaksi */}
+      <Card className="relative overflow-hidden bg-gradient-to-t from-blue-500/5 to-card border-border/80 shadow-xs">
+        <CardHeader className="p-4 pb-2 relative">
+          <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {t('orders.totalOrders', 'Total Transaksi')}
+          </CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground tabular-nums">
+            {summary.totalOrders}
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+            >
+              <ShoppingBag className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+              <span>{t('orders.transactionsUnit', 'Transaksi')}</span>
+            </Badge>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-            <ShoppingBag className="h-5 w-5" />
-          </div>
-        </CardContent>
+        </CardHeader>
+        <CardFooter className="p-4 pt-1 text-xs text-muted-foreground flex items-center gap-1.5">
+          <span>Struk belanja tercatat</span>
+        </CardFooter>
       </Card>
 
-      {/* Average Transaction Value */}
-      <Card className="border-border/80 shadow-xs">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              {t('orders.averageReceipt', 'Rata-rata Transaksi')}
-            </p>
-            <p className="text-xl font-bold tracking-tight text-foreground">
-              {formatCurrency(summary.averageTicket)}
-            </p>
+      {/* 3. Rata-rata Struk */}
+      <Card className="relative overflow-hidden bg-gradient-to-t from-emerald-500/5 to-card border-border/80 shadow-xs">
+        <CardHeader className="p-4 pb-2 relative">
+          <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {t('orders.averageReceipt', 'Rata-rata Struk')}
+          </CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground tabular-nums">
+            {formatCurrency(summary.averageTicket)}
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+            >
+              <TrendingUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+              <span>Per Struk</span>
+            </Badge>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <TrendingUp className="h-5 w-5" />
-          </div>
-        </CardContent>
+        </CardHeader>
+        <CardFooter className="p-4 pt-1 text-xs text-muted-foreground flex items-center gap-1.5">
+          <span>Rata-rata nilai belanja per pembeli</span>
+        </CardFooter>
       </Card>
 
-      {/* Payment Distribution */}
-      <Card className="border-border/80 shadow-xs">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              {t('orders.nonCashRevenue', 'QRIS / Non-Tunai')}
-            </p>
-            <p className="text-xl font-bold tracking-tight text-foreground">
-              {formatCurrency(summary.qrisRevenue + summary.transferRevenue)}
-            </p>
+      {/* 4. Non-Tunai / QRIS */}
+      <Card className="relative overflow-hidden bg-gradient-to-t from-purple-500/5 to-card border-border/80 shadow-xs">
+        <CardHeader className="p-4 pb-2 relative">
+          <CardDescription className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {t('orders.nonCashRevenue', 'QRIS / Transfer')}
+          </CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground tabular-nums">
+            {formatCurrency(summary.nonCashRevenue)}
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 text-[11px] font-semibold py-0.5 px-2 bg-background/80"
+            >
+              <CreditCard className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+              <span>Non-Tunai</span>
+            </Badge>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-            <CreditCard className="h-5 w-5" />
-          </div>
-        </CardContent>
+        </CardHeader>
+        <CardFooter className="p-4 pt-1 text-xs text-muted-foreground flex items-center gap-1.5">
+          <span>Total transaksi digital tanpa uang tunai</span>
+        </CardFooter>
       </Card>
     </div>
   );

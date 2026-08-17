@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Printer, Receipt, Calendar, CreditCard, User } from 'lucide-react';
 import {
   Dialog,
+  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
@@ -34,7 +35,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="space-y-4">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="flex flex-row items-center gap-2 space-y-0">
           <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
             <Receipt className="h-5 w-5" />
@@ -150,7 +151,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             <span>{t('orders.receipt.reprint', 'Cetak Ulang Struk')}</span>
           </Button>
         </DialogFooter>
-      </div>
+      </DialogContent>
     </Dialog>
   );
 };
