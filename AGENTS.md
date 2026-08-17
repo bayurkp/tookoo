@@ -35,6 +35,42 @@ User interaction in UI Route
 - **No Barrel Files:** Hindari `index.ts` barrel files untuk memaksimalkan *tree-shaking* dan performa bundling Vite. Impor langsung ke file spesifik (contoh: `import { Button } from '@/components/ui/button';`).
 - **No Raw Data Mutation:** Data mutation strictly follows `get`, `upsert`, and `delete`.
 
+### Feature Module Structure (`src/features/<feature-name>/`):
+```text
+src/features/<feature-name>/
+├── api/          # TanStack Query & Dexie mutation declarations
+├── components/   # UI components scoped exclusively to this feature
+├── hooks/        # Custom React hooks for this feature
+├── stores/       # Zustand store scoped to this feature (if any)
+├── types/        # TypeScript types & Zod schemas for this feature
+└── utils/        # Helper pure logic scoped to this feature
+```
+
+### Boundary Enforcement (ESLint `import/no-restricted-paths`):
+```javascript
+'import/no-restricted-paths': [
+  'error',
+  {
+    zones: [
+      // 1. Forbid cross-feature imports
+      { target: './src/features/cashier', from: './src/features', except: ['./cashier'] },
+      { target: './src/features/products', from: './src/features', except: ['./products'] },
+      { target: './src/features/orders', from: './src/features', except: ['./orders'] },
+      { target: './src/features/sync', from: './src/features', except: ['./sync'] },
+
+      // 2. Enforce unidirectional flow (Features cannot import from App)
+      { target: './src/features', from: './src/app' },
+
+      // 3. Enforce shared isolation (Shared modules cannot import from Features or App)
+      {
+        target: ['./src/components', './src/hooks', './src/lib', './src/types', './src/utils', './src/stores'],
+        from: ['./src/features', './src/app'],
+      },
+    ],
+  },
+]
+```
+
 ---
 
 ## 2. Technology Stack
