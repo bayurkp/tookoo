@@ -18,14 +18,16 @@ function signalingPlugin(): Plugin {
       server.ws.on('tookoo:signal', (payload, client) => {
         // Broadcast signaling payload to all other connected browser instances
         server.ws.clients.forEach((c) => {
-          if (c !== client && c.readyState === 1) {
-            c.send(
-              JSON.stringify({
+          if (c !== client) {
+            try {
+              c.send({
                 type: 'custom',
                 event: 'tookoo:signal',
                 data: payload,
-              })
-            );
+              });
+            } catch {
+              // ignore if client closed
+            }
           }
         });
       });
