@@ -248,10 +248,58 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-## 8. Code & Quality Standards
+## 8. Project Standards & Tooling
 
-- **Absolute Imports:** Wajib menggunakan alias `@/*`. Dilarang relative imports bertingkat (`../../../`).
-- **Strict Kebab-Case:** Seluruh nama file wajib berformat `kebab-case.tsx` atau `kebab-case.ts`.
+### 1. ESLint & Static Analysis
+- Menjaga kebersihan dan keseragaman kode dengan konfigurasi aturan ketat.
+- Mencegah kesalahan umum dan pelanggaran arsitektur sejak awal penulisan kode.
+
+### 2. Prettier
+- Menjaga konsistensi format penulisan kode di seluruh *codebase*.
+- Konfigurasi `.prettierrc` wajib diaktifkan bersama fitur *format on save*.
+
+### 3. TypeScript (Strict Mode)
+- Wajib menggunakan TypeScript Strict Mode tanpa tipe `any`.
+- Saat melakukan *refactoring*, selalu perbarui deklarasi tipe data (`types/`) terlebih dahulu sebelum memperbaiki implementasi kode.
+
+### 4. Husky & Git Hooks
+- Menjalankan validasi otomatis sebelum *commit* (*pre-commit hooks*): *linting*, *formatting*, dan *type-checking* untuk mencegah kode rusak masuk ke repositori.
+
+### 5. Absolute Imports (`@/*`)
+- Wajib menggunakan alias `@/*` untuk seluruh *internal imports*.
+- Dilarang keras menggunakan *relative imports* bertingkat (seperti `../../../../components/ui/button`).
+- Konfigurasi di `tsconfig.json` & `vite.config.ts`:
+  ```json
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+  ```
+
+### 6. File & Folder Naming Conventions (`eslint-plugin-check-file`)
+- Seluruh nama berkas dan folder (kecuali `__tests__`) wajib menggunakan format **`kebab-case`**.
+- Penegakan aturan via ESLint:
+  ```javascript
+  'check-file/filename-naming-convention': [
+    'error',
+    {
+      '**/*.{ts,tsx}': 'KEBAB_CASE',
+    },
+    {
+      ignoreMiddleExtensions: true, // mendukung ekstensi ganda seperti .test.tsx, .spec.ts
+    },
+  ],
+  'check-file/folder-naming-convention': [
+    'error',
+    {
+      'src/**/!(__tests__)': 'KEBAB_CASE',
+    },
+  ],
+  ```
+
+### 7. Core Quality Principles
 - **Zero Runtime CSS:** Gunakan utilitas Tailwind CSS murni.
 - **Children Prop Pattern:** Terapkan pola `children` pada komponen pembungkus untuk isolasi Virtual DOM.
 - **Error Boundaries:** Pasang `react-error-boundary` di level route dan widget penting dengan UI fallback yang ramah bagi kasir.
