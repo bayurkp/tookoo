@@ -306,9 +306,29 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 4 — Testing Standards
+# Part 4 — Security & Access Control
 
-## 9. Testing Strategy & Execution
+## 9. Authentication & Store Identity
+- **Self-Sovereign Store Pairing:** Tookoo tidak mengandalkan server auth terpusat. Identitas dan akses toko diamankan melalui Store Secret Key yang dihasilkan saat inisialisasi toko dan dibagikan secara aman via QR Code atau 12 Kata Passphrase (BIP-39 mnemonic).
+- **Session & Key Storage:** Kunci toko disimpan di IndexedDB/Dexie table `settings` (bukan di plain `localStorage` yang rentan XSS) dan di-load ke memory state saat aplikasi aktif.
+
+## 10. Authorization (RBAC & PBAC)
+- **Role-Based Access Control (RBAC):**
+  - `OWNER`: Akses penuh ke pengaturan toko, generate QR pairing, rekap laporan omzet, export data, dan reset toko.
+  - `CASHIER` / `STAFF`: Dibatasi pada operasional kasir (katalog produk, keranjang belanja, proses pembayaran, cetak struk).
+- **Permission-Based Access Control (PBAC):**
+  - Fitur sensitif seperti penghapusan produk atau pembatalan transaksi diproteksi berdasarkan hak akses peran aktif.
+
+## 11. Client-Side Security & XSS Mitigation
+- **Input Sanitization & Schema Validation:** Seluruh input pengguna (nama produk, kategori, harga, nama kasir) WAJIB divalidasi ketat menggunakan skema Zod sebelum diproses ke database.
+- **No Sensitive Data in URLs:** Secret key atau data sensitif dilarang ditaruh di query params URL (`useSearchParams`).
+- **Safe Rendering:** Dilarang menggunakan `dangerouslySetInnerHTML` tanpa sanitasi HTML yang teruji.
+
+---
+
+# Part 5 — Testing Standards
+
+## 12. Testing Strategy & Execution
 
 1. **Unit Testing (Vitest):**
    - Letak: Berdampingan di folder `__tests__/` atau di `src/utils/__tests__/`.
@@ -322,7 +342,7 @@ Saat menerima pesan sinkronisasi dari peer lain via WebRTC:
 
 ---
 
-# Part 5 — The Golden Do's & Don'ts
+# Part 6 — The Golden Do's & Don'ts
 
 ### ✅ DO'S
 - Selalu gunakan `crypto.randomUUID()` untuk ID entitas baru.
