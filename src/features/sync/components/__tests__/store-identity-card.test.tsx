@@ -41,4 +41,28 @@ describe('StoreIdentityCard', () => {
     fireEvent.click(saveDeviceBtn);
     expect(handleUpdateDeviceName).toHaveBeenCalledWith('Kasir Utama');
   });
+
+  it('opens confirmation modal before regenerating passphrase', () => {
+    const handleRegen = vi.fn();
+
+    render(
+      <StoreIdentityCard
+        settings={mockSettings}
+        onUpdateStoreName={vi.fn()}
+        onUpdateDeviceName={vi.fn()}
+        onRegeneratePassphrase={handleRegen}
+      />
+    );
+
+    const regenBtn = screen.getByRole('button', { name: /Ganti Kunci Baru/i });
+    fireEvent.click(regenBtn);
+
+    expect(screen.getByText(/Ganti Kunci Keamanan Toko\?/i)).toBeInTheDocument();
+    expect(screen.getByText(/memutuskan sambungan seluruh perangkat kasir lain/i)).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole('button', { name: /Ya, Ganti Kunci Baru/i });
+    fireEvent.click(confirmBtn);
+
+    expect(handleRegen).toHaveBeenCalledTimes(1);
+  });
 });
