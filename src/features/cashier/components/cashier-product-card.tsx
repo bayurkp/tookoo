@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Plus } from 'lucide-react';
+import { Package, Plus, Scissors, Coffee, Sparkles } from 'lucide-react';
 import { formatCurrency } from '@/utils/format-currency';
 import type { Product } from '@/types/product.types';
 
@@ -18,13 +18,17 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
   onAddToCart,
 }) => {
   const { t } = useTranslation();
-  const isOutOfStock = product.stock <= 0;
-  const isMaxInCart = quantityInCart >= product.stock;
+  const isService = product.productType === 'SERVICE';
+  const minStock = product.minStock ?? 5;
+  const isOutOfStock = !isService && product.stock <= 0;
+  const isLowStock = !isService && product.stock > 0 && product.stock <= minStock;
+  const isMaxInCart = !isService && quantityInCart >= product.stock;
+  const hasVariants = Boolean(product.variants && product.variants.length > 0);
 
   return (
     <Card
       onClick={() => {
-        if (!isOutOfStock && !isMaxInCart) {
+        if (!isOutOfStock && (!isMaxInCart || hasVariants)) {
           onAddToCart(product);
         }
       }}
@@ -46,7 +50,13 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
             />
           ) : (
             <div className="h-10 w-10 rounded-lg bg-background border border-border text-muted-foreground flex items-center justify-center">
-              <Package className="h-5 w-5" />
+              {isService ? (
+                <Scissors className="h-5 w-5 text-primary" />
+              ) : product.productType === 'FNB' ? (
+                <Coffee className="h-5 w-5 text-primary" />
+              ) : (
+                <Package className="h-5 w-5" />
+              )}
             </div>
           )}
 
@@ -61,26 +71,24 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
 
           {/* Stock Badges */}
           <div className="absolute top-2.5 right-2.5">
-            {isOutOfStock ? (
-              <Badge variant="destructive" className="font-semibold text-[11px]">
+            {isService ? (
+              <Badge variant="outline" className="bg-background/90 text-primary border-primary/30 font-semibold text-[10px] backdrop-blur-xs">
+                Jasa
+              </Badge>
+            ) : isOutOfStock ? (
+              <Badge variant="destructive" className="font-semibold text-[10px]">
                 {t('products.outOfStock', 'Habis')}
               </Badge>
-            ) : product.stock <= 5 ? (
-              <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10 font-semibold text-[11px]">
-                {t('products.lowStock', {
-                  count: product.stock,
-                  defaultValue: `Sisa ${product.stock}`,
-                })}
+            ) : isLowStock ? (
+              <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 font-semibold text-[10px] backdrop-blur-xs">
+                Sisa {product.stock}
               </Badge>
             ) : (
               <Badge
                 variant="outline"
-                className="bg-background text-[11px] font-medium py-0.5"
+                className="bg-background/90 text-[10px] font-medium py-0.5 backdrop-blur-xs"
               >
-                {t('products.stock', {
-                  count: product.stock,
-                  defaultValue: `Stok: ${product.stock}`,
-                })}
+                Stok: {product.stock}
               </Badge>
             )}
           </div>
@@ -88,12 +96,17 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
 
         {/* Content */}
         <CardContent className="p-3.5 space-y-1">
-          <p
-            className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors"
-            title={product.name}
-          >
-            {product.name}
-          </p>
+          <div className="flex items-center gap-1">
+            <p
+              className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors flex-1"
+              title={product.name}
+            >
+              {product.name}
+            </p>
+            {hasVariants && (
+              <Sparkles className="h-3 w-3 text-primary shrink-0" title="Memiliki Varian" />
+            )}
+          </div>
           <div className="flex items-center justify-between">
             <span className="text-primary font-bold text-base tracking-tight">
               {formatCurrency(product.price)}
@@ -107,3 +120,5 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
     </Card>
   );
 };
+
+export default CashierProductCard;

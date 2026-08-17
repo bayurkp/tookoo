@@ -46,7 +46,7 @@ describe('ProductFormDialog', () => {
 
     expect(screen.getByText(/Edit.*Produk/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('Cappuccino Hot');
-    expect(screen.getByLabelText(/Kategori Utama/i)).toHaveValue('Kopi');
+    expect(screen.getByLabelText(/^kategori produk/i)).toHaveValue('Kopi');
   });
 
   it('validates required fields on empty submit', async () => {

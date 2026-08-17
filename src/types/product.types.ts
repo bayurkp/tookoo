@@ -4,8 +4,11 @@ export interface ProductVariantOption {
   id: string; // UUID v4
   name: string; // e.g. "Ukuran Reguler", "Ukuran Large", "Warna Merah", "Size XL"
   sku?: string;
+  barcode?: string;
   price: number; // Base price for this variant
+  costPrice?: number; // Cost price (HPP / COGS) for this variant
   stock: number; // Available inventory stock for this variant
+  minStock?: number; // Low stock threshold for this variant
 }
 
 export interface ProductModifierOption {
@@ -29,12 +32,15 @@ export interface Product {
   category: string;
   productType?: ProductType;
   subType?: string; // Sub-category e.g. "Kopi Susu", "Snack", "Aksesoris"
-  price: number; // Base price
-  stock: number; // Base stock
+  price: number; // Base selling price
+  costPrice?: number; // Harga Modal (HPP / COGS)
+  stock: number; // Base stock quantity
+  minStock?: number; // Low stock alert threshold (default 5)
   sku?: string;
   barcode?: string;
   description?: string;
   imageUrl?: string;
+  isActive?: boolean; // Active status toggle (default true)
   variants?: ProductVariantOption[];
   modifierGroups?: ProductModifierGroup[];
   createdAt: number; // Timestamp ms

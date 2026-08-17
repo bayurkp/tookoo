@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { db } from '@/lib/db';
 import { ProductsPage } from '../products-page';
+import { useAuthStore } from '@/stores/auth-store';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -17,6 +18,7 @@ const createWrapper = () => {
 describe('ProductsPage', () => {
   beforeEach(async () => {
     await db.products.clear();
+    useAuthStore.setState({ currentRole: 'OWNER' });
   });
 
   it('shows empty state when no products exist and opens form dialog', async () => {
@@ -70,5 +72,38 @@ describe('ProductsPage', () => {
 
     expect(screen.queryByText('Kopi Hitam')).not.toBeInTheDocument();
     expect(screen.getByText('Donat Cokelat')).toBeInTheDocument();
+  });
+
+  it('opens AlertDialog and deletes product upon confirmation', async () => {
+    await db.products.put({
+      id: 'p-del',
+      name: 'Produk Dihapus',
+      category: 'Lainnya',
+      price: 15000,
+      stock: 3,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      deletedAt: null,
+    });
+
+    render(<ProductsPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Produk Dihapus')).toBeInTheDocument();
+    });
+
+    const deleteBtn = screen.getByLabelText('Delete');
+    fireEvent.click(deleteBtn);
+
+    // AlertDialog should appear
+    expect(screen.getByText(/Hapus Produk Ini\?/i)).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole('button', { name: /Ya, Hapus Produk/i });
+    fireEvent.click(confirmBtn);
+
+    await waitFor(async () => {
+      const productInDb = await db.products.get('p-del');
+      expect(productInDb?.deletedAt).not.toBeNull();
+    });
   });
 });

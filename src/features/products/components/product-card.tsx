@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, Package, Sparkles, Layers } from 'lucide-react';
+import { Pencil, Trash2, Package, Sparkles, Layers, Scissors, Coffee } from 'lucide-react';
 import { formatCurrency } from '@/utils/format-currency';
 import type { Product } from '@/types/product.types';
 
@@ -15,9 +15,14 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) => {
   const variantCount = product.variants?.length || 0;
   const modifierCount = product.modifierGroups?.length || 0;
+  const isService = product.productType === 'SERVICE';
+  const minStock = product.minStock ?? 5;
+  const isLowStock = !isService && product.stock > 0 && product.stock <= minStock;
+  const isOutOfStock = !isService && product.stock <= 0;
+  const isInactive = product.isActive === false;
 
   return (
-    <Card className="group overflow-hidden border border-border bg-card hover:border-foreground/30 transition-colors flex flex-col justify-between rounded-xl shadow-none">
+    <Card className={`group overflow-hidden border bg-card hover:border-foreground/30 transition-colors flex flex-col justify-between rounded-xl shadow-none ${isInactive ? 'opacity-70 bg-muted/20' : ''}`}>
       <div>
         {/* Product Image / Placeholder */}
         <div className="h-36 w-full bg-muted/40 relative flex items-center justify-center overflow-hidden border-b border-border">
@@ -25,29 +30,43 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="h-full w-full object-cover"
+              className={`h-full w-full object-cover ${isInactive ? 'grayscale' : ''}`}
               loading="lazy"
             />
           ) : (
             <div className="h-12 w-12 rounded-lg bg-background border border-border text-muted-foreground flex items-center justify-center">
-              <Package className="h-6 w-6" />
+              {isService ? (
+                <Scissors className="h-6 w-6" />
+              ) : product.productType === 'FNB' ? (
+                <Coffee className="h-6 w-6" />
+              ) : (
+                <Package className="h-6 w-6" />
+              )}
             </div>
           )}
 
-          {/* Stock Badges */}
-          <div className="absolute top-2.5 right-2.5">
-            {product.stock <= 0 ? (
-              <Badge variant="destructive" className="text-[10px] font-semibold">
+          {/* Status & Stock Badges */}
+          <div className="absolute top-2.5 right-2.5 flex flex-col items-end gap-1">
+            {isInactive ? (
+              <Badge variant="outline" className="bg-background/90 text-muted-foreground text-[10px] font-bold border-muted-foreground/40 backdrop-blur-xs">
+                Non-aktif
+              </Badge>
+            ) : isService ? (
+              <Badge variant="outline" className="text-primary border-primary/30 bg-background/90 backdrop-blur-xs text-[10px] font-semibold">
+                Jasa
+              </Badge>
+            ) : isOutOfStock ? (
+              <Badge variant="destructive" className="text-[10px] font-semibold shadow-xs">
                 Stok Habis
               </Badge>
-            ) : product.stock <= 5 ? (
-              <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10 text-[10px] font-semibold">
+            ) : isLowStock ? (
+              <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 backdrop-blur-xs text-[10px] font-semibold">
                 Sisa {product.stock}
               </Badge>
             ) : (
               <Badge
                 variant="outline"
-                className="bg-background text-[10px] font-medium py-0.5"
+                className="bg-background/90 backdrop-blur-xs text-[10px] font-medium py-0.5"
               >
                 Stok: {product.stock}
               </Badge>
@@ -94,14 +113,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
             {modifierCount > 0 && (
               <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground font-medium bg-muted px-1.5 py-0.5 rounded">
                 <Layers className="h-2.5 w-2.5" />
-                <span>{modifierCount} Topping</span>
+                <span>{modifierCount} Modifier</span>
               </span>
             )}
           </div>
 
-          <p className="text-primary font-bold text-base tracking-tight">
-            {formatCurrency(product.price)}
-          </p>
+          <div className="flex items-baseline justify-between pt-0.5">
+            <p className="text-primary font-bold text-base tracking-tight">
+              {formatCurrency(product.price)}
+            </p>
+            {product.costPrice && product.costPrice > 0 && (
+              <span className="text-[10px] text-muted-foreground">
+                HPP: {formatCurrency(product.costPrice)}
+              </span>
+            )}
+          </div>
         </CardContent>
       </div>
 

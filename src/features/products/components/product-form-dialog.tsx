@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  Upload,
   X,
   Image as ImageIcon,
   Loader2,
@@ -12,6 +11,14 @@ import {
   Sparkles,
   Info,
   DollarSign,
+  Package,
+  Coffee,
+  Scissors,
+  CheckCircle2,
+  AlertCircle,
+  Tag,
+  Barcode,
+  TrendingUp,
 } from 'lucide-react';
 import {
   Dialog,
@@ -32,6 +39,7 @@ import {
 import { productFormSchema, type ProductFormInput } from '../types/product-form.types';
 import { useUpsertProduct } from '../hooks/use-products';
 import { compressImageToWebP } from '@/utils/image-compressor';
+import { formatCurrency } from '@/utils/format-currency';
 import { generateUUID } from '@/utils/uuid';
 import type { Product, ProductType } from '@/types/product.types';
 
@@ -40,6 +48,8 @@ interface ProductFormDialogProps {
   onOpenChange: (open: boolean) => void;
   productToEdit?: Product | null;
 }
+
+const QUICK_CATEGORIES = ['Minuman', 'Makanan', 'Retail', 'Pakaian', 'Elektronik', 'Jasa / Servis'];
 
 export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
   open,
@@ -64,14 +74,17 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     defaultValues: {
       name: '',
       category: '',
-      productType: 'FNB',
+      productType: 'RETAIL',
       subType: '',
       price: 0,
+      costPrice: 0,
       stock: 0,
+      minStock: 5,
       sku: '',
       barcode: '',
       description: '',
       imageUrl: '',
+      isActive: true,
       variants: [],
       modifierGroups: [],
     },
@@ -97,7 +110,14 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
 
   const currentImageUrl = watch('imageUrl');
   const currentProductType = watch('productType');
+  const currentIsActive = watch('isActive');
+  const currentPrice = Number(watch('price')) || 0;
+  const currentCostPrice = Number(watch('costPrice')) || 0;
   const watchedModifierGroups = watch('modifierGroups') || [];
+
+  // Calculate profit margin in real-time
+  const profit = currentPrice - currentCostPrice;
+  const marginPercentage = currentPrice > 0 ? ((profit / currentPrice) * 100).toFixed(1) : '0';
 
   useEffect(() => {
     if (open) {
@@ -106,14 +126,17 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         reset({
           name: productToEdit.name,
           category: productToEdit.category || '',
-          productType: productToEdit.productType || 'FNB',
+          productType: productToEdit.productType || 'RETAIL',
           subType: productToEdit.subType || '',
           price: productToEdit.price,
+          costPrice: productToEdit.costPrice || 0,
           stock: productToEdit.stock,
+          minStock: productToEdit.minStock ?? 5,
           sku: productToEdit.sku || '',
           barcode: productToEdit.barcode || '',
           description: productToEdit.description || '',
           imageUrl: productToEdit.imageUrl || '',
+          isActive: productToEdit.isActive !== false,
           variants: productToEdit.variants || [],
           modifierGroups: productToEdit.modifierGroups || [],
         });
@@ -121,14 +144,17 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         reset({
           name: '',
           category: '',
-          productType: 'FNB',
+          productType: 'RETAIL',
           subType: '',
           price: 0,
+          costPrice: 0,
           stock: 0,
+          minStock: 5,
           sku: '',
           barcode: '',
           description: '',
           imageUrl: '',
+          isActive: true,
           variants: [],
           modifierGroups: [],
         });
@@ -166,8 +192,12 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     appendVariant({
       id: generateUUID(),
       name: '',
-      price: Number(watch('price')) || 0,
+      sku: '',
+      barcode: '',
+      price: currentPrice || 0,
+      costPrice: currentCostPrice || 0,
       stock: Number(watch('stock')) || 0,
+      minStock: 5,
     });
   };
 
@@ -213,8 +243,11 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
           id: v.id || generateUUID(),
           name: v.name.trim(),
           sku: v.sku?.trim() || undefined,
+          barcode: v.barcode?.trim() || undefined,
           price: Number(v.price),
+          costPrice: v.costPrice ? Number(v.costPrice) : undefined,
           stock: Number(v.stock),
+          minStock: v.minStock ? Number(v.minStock) : 5,
         }));
 
       const cleanModifierGroups = (data.modifierGroups || [])
@@ -240,463 +273,717 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         productType: data.productType as ProductType,
         subType: data.subType?.trim() || undefined,
         price: Number(data.price),
-        stock: Number(data.stock),
+        costPrice: data.costPrice ? Number(data.costPrice) : undefined,
+        stock: data.productType === 'SERVICE' ? 999999 : Number(data.stock),
+        minStock: data.minStock ? Number(data.minStock) : 5,
         sku: data.sku?.trim() || undefined,
         barcode: data.barcode?.trim() || undefined,
         description: data.description?.trim() || undefined,
         imageUrl: data.imageUrl || undefined,
+        isActive: data.isActive !== false,
         variants: cleanVariants.length > 0 ? cleanVariants : undefined,
         modifierGroups: cleanModifierGroups.length > 0 ? cleanModifierGroups : undefined,
       });
+
       onOpenChange(false);
     } catch (err) {
-      console.error('Failed to save product:', err);
+      console.error('Failed to upsert product:', err);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[560px] p-0 overflow-hidden max-h-[90vh] flex flex-col">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full overflow-hidden">
-          {/* Header */}
-          <DialogHeader className="p-4 pb-3 border-b bg-muted/20 shrink-0">
-            <DialogTitle className="text-base font-bold">
-              {productToEdit ? 'Edit Rincian Produk' : 'Tambah Produk Baru'}
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              {productToEdit
-                ? 'Perbarui harga, stok, varian rasa/ukuran, atau modifier topping.'
-                : 'Lengkapi info produk, kategori, varian, dan pilihan tambahan.'}
-            </DialogDescription>
-          </DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="p-5 pb-3 border-b bg-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="text-lg font-bold">
+                {productToEdit ? 'Edit Produk' : 'Tambah Produk Baru'}
+              </DialogTitle>
+              <DialogDescription className="text-xs">
+                {productToEdit
+                  ? 'Perbarui rincian tipe, harga, varian, dan stok katalog produk.'
+                  : 'Lengkapi identitas produk, tipe sistem, harga modal, varian, dan modifier.'}
+              </DialogDescription>
+            </div>
+            {/* Active Status Badge Toggle */}
+            <button
+              type="button"
+              onClick={() => setValue('isActive', !currentIsActive)}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                currentIsActive
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-muted border-border text-muted-foreground'
+              }`}
+            >
+              {currentIsActive ? (
+                <>
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>Aktif Dijual</span>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>Non-aktif</span>
+                </>
+              )}
+            </button>
+          </div>
+        </DialogHeader>
 
-          {/* Form Tabs */}
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0">
           <Tabs
             value={activeTab}
             onValueChange={(val) => setActiveTab(val as any)}
-            className="flex-1 flex flex-col overflow-hidden"
+            className="flex-1 flex flex-col min-h-0"
           >
-            <div className="px-4 pt-2 border-b shrink-0 bg-card">
-              <TabsList className="grid grid-cols-4 w-full h-8">
-                <TabsTrigger value="basic" className="text-xs gap-1 cursor-pointer">
-                  <Info className="h-3 w-3" />
-                  <span>Info Dasar</span>
+            <div className="px-5 pt-3 border-b bg-muted/20">
+              <TabsList className="grid grid-cols-4 w-full h-10">
+                <TabsTrigger value="basic" className="text-xs font-semibold gap-1.5">
+                  <Info className="h-3.5 w-3.5" />
+                  <span>1. Identitas</span>
                 </TabsTrigger>
-                <TabsTrigger value="pricing" className="text-xs gap-1 cursor-pointer">
-                  <DollarSign className="h-3 w-3" />
-                  <span>Harga & Stok</span>
+                <TabsTrigger value="pricing" className="text-xs font-semibold gap-1.5">
+                  <DollarSign className="h-3.5 w-3.5" />
+                  <span>2. Harga & Stok</span>
                 </TabsTrigger>
-                <TabsTrigger value="variants" className="text-xs gap-1 cursor-pointer">
-                  <Sparkles className="h-3 w-3" />
-                  <span>Varian ({variantFields.length})</span>
+                <TabsTrigger value="variants" className="text-xs font-semibold gap-1.5">
+                  <Layers className="h-3.5 w-3.5" />
+                  <span>3. Varian ({variantFields.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="modifiers" className="text-xs gap-1 cursor-pointer">
-                  <Layers className="h-3 w-3" />
-                  <span>Topping ({modifierGroupFields.length})</span>
+                <TabsTrigger value="modifiers" className="text-xs font-semibold gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>4. Modifier ({modifierGroupFields.length})</span>
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            {/* Scrollable Content Body */}
-            <div className="flex-1 overflow-y-auto p-4 text-xs">
-              {/* Tab 1: Info Dasar */}
-              <TabsContent value="basic" className="space-y-3.5 m-0">
-                {/* Photo Upload */}
-                <Field>
-                  <FieldLabel>Foto Produk (Otomatis WebP)</FieldLabel>
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 rounded-xl border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
-                      {currentImageUrl ? (
-                        <>
-                          <img
-                            src={currentImageUrl}
-                            alt="Pratinjau"
-                            className="h-full w-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleRemoveImage}
-                            className="absolute top-0.5 right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center cursor-pointer shadow-xs"
-                          >
-                            <X className="h-2.5 w-2.5" />
-                          </button>
-                        </>
-                      ) : (
-                        <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                        id="product-image-file"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={isCompressing}
-                        onClick={() => fileInputRef.current?.click()}
-                        className="h-8 text-xs gap-1.5 cursor-pointer w-full"
-                      >
-                        {isCompressing ? (
-                          <>
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            <span>Mengompresi...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="h-3 w-3" />
-                            <span>Unggah Foto Produk</span>
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </Field>
+            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              {/* TAB 1: IDENTITAS & TIPE PRODUK */}
+              <TabsContent value="basic" className="space-y-4 m-0">
+                {/* 1. Tipe Produk (Pembeda Sistem) */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground">
+                    Tipe Produk (Pembeda Sistem) *
+                  </label>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {/* Retail Option */}
+                    <button
+                      type="button"
+                      onClick={() => setValue('productType', 'RETAIL')}
+                      className={`p-3 rounded-xl border text-left transition-colors cursor-pointer flex flex-col gap-1 ${
+                        currentProductType === 'RETAIL'
+                          ? 'border-primary bg-primary/5 text-foreground ring-1 ring-primary'
+                          : 'border-border hover:bg-muted/40 text-muted-foreground'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                        <Package className="h-4 w-4 text-primary" />
+                        <span>Produk Fisik (Retail)</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground leading-tight">
+                        Barang berwujud, stok berkurang otomatis setiap terjual.
+                      </p>
+                    </button>
 
-                {/* Product Type Selector */}
-                <Field>
-                  <FieldLabel>Tipe Produk</FieldLabel>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { type: 'FNB', label: '🍜 F&B (Kuliner)' },
-                      { type: 'RETAIL', label: '🛍️ Retail (Barang)' },
-                      { type: 'SERVICE', label: '✂️ Jasa / Layanan' },
-                    ].map((item) => (
-                      <button
-                        key={item.type}
-                        type="button"
-                        onClick={() => setValue('productType', item.type as ProductType)}
-                        className={`p-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
-                          currentProductType === item.type
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-card hover:bg-muted text-foreground border-border'
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </Field>
+                    {/* F&B Option */}
+                    <button
+                      type="button"
+                      onClick={() => setValue('productType', 'FNB')}
+                      className={`p-3 rounded-xl border text-left transition-colors cursor-pointer flex flex-col gap-1 ${
+                        currentProductType === 'FNB'
+                          ? 'border-primary bg-primary/5 text-foreground ring-1 ring-primary'
+                          : 'border-border hover:bg-muted/40 text-muted-foreground'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                        <Coffee className="h-4 w-4 text-primary" />
+                        <span>Olahan (F&B)</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground leading-tight">
+                        Dibuat langsung saat dipesan dengan pilihan varian & topping.
+                      </p>
+                    </button>
 
-                {/* Name */}
+                    {/* Service Option */}
+                    <button
+                      type="button"
+                      onClick={() => setValue('productType', 'SERVICE')}
+                      className={`p-3 rounded-xl border text-left transition-colors cursor-pointer flex flex-col gap-1 ${
+                        currentProductType === 'SERVICE'
+                          ? 'border-primary bg-primary/5 text-foreground ring-1 ring-primary'
+                          : 'border-border hover:bg-muted/40 text-muted-foreground'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                        <Scissors className="h-4 w-4 text-primary" />
+                        <span>Non-Fisik (Jasa)</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground leading-tight">
+                        Layanan/jasa tanpa batasan stok inventaris fisik.
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Nama Produk */}
                 <Field data-invalid={Boolean(errors.name)}>
-                  <FieldLabel htmlFor="name">Nama Produk *</FieldLabel>
+                  <FieldLabel htmlFor="product-name" className="text-xs font-bold">
+                    Nama Produk *
+                  </FieldLabel>
                   <Input
-                    id="name"
-                    placeholder="Contoh: Kopi Susu Gula Aren"
-                    aria-invalid={Boolean(errors.name)}
+                    id="product-name"
+                    placeholder="Contoh: Kopi Susu Gula Aren / Kemeja Flanel"
                     {...register('name')}
-                    className="h-9 text-xs"
+                    aria-invalid={Boolean(errors.name)}
+                    className="h-10 text-sm"
                   />
                   <FieldError errors={[{ message: errors.name?.message }]} />
                 </Field>
 
-                {/* Category & SubType */}
-                <div className="grid grid-cols-2 gap-3">
+                {/* 3. Kategori & Sub-Kategori */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field data-invalid={Boolean(errors.category)}>
-                    <FieldLabel htmlFor="category">Kategori Utama *</FieldLabel>
+                    <FieldLabel htmlFor="product-category" className="text-xs font-bold">
+                      Kategori Produk *
+                    </FieldLabel>
                     <Input
-                      id="category"
-                      placeholder="Contoh: Minuman"
-                      aria-invalid={Boolean(errors.category)}
+                      id="product-category"
+                      placeholder="Contoh: Minuman / Pakaian"
                       {...register('category')}
-                      className="h-9 text-xs"
+                      aria-invalid={Boolean(errors.category)}
+                      className="h-9 text-sm"
                     />
                     <FieldError errors={[{ message: errors.category?.message }]} />
                   </Field>
 
                   <Field>
-                    <FieldLabel htmlFor="subType">Sub-Kategori / Jenis</FieldLabel>
+                    <FieldLabel htmlFor="product-subtype" className="text-xs font-bold">
+                      Sub-Kategori (Opsional)
+                    </FieldLabel>
                     <Input
-                      id="subType"
-                      placeholder="Contoh: Kopi Signature"
+                      id="product-subtype"
+                      placeholder="Contoh: Kopi / Kaos / Snack"
                       {...register('subType')}
-                      className="h-9 text-xs"
+                      className="h-9 text-sm"
                     />
                   </Field>
                 </div>
 
-                {/* SKU & Barcode */}
-                <div className="grid grid-cols-2 gap-3">
-                  <Field>
-                    <FieldLabel htmlFor="sku">Kode SKU</FieldLabel>
-                    <Input
-                      id="sku"
-                      placeholder="Contoh: KOP-001"
-                      {...register('sku')}
-                      className="h-9 text-xs"
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="barcode">Barcode</FieldLabel>
-                    <Input
-                      id="barcode"
-                      placeholder="Scan Barcode EAN-13"
-                      {...register('barcode')}
-                      className="h-9 text-xs"
-                    />
-                  </Field>
+                {/* Quick Category Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-[11px] text-muted-foreground mr-1">Kategori Cepat:</span>
+                  {QUICK_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setValue('category', cat, { shouldValidate: true })}
+                      className="px-2 py-0.5 rounded-md text-[11px] bg-muted hover:bg-muted/80 text-foreground border border-border/60 transition-colors cursor-pointer"
+                    >
+                      {cat}
+                    </button>
+                  ))}
                 </div>
 
-                {/* Description */}
+                {/* 4. Foto Produk (WebP Upload) */}
                 <Field>
-                  <FieldLabel htmlFor="description">Deskripsi Singkat</FieldLabel>
-                  <Input
-                    id="description"
-                    placeholder="Contoh: Perpaduan espresso robusta arabika dengan susu segar"
+                  <FieldLabel className="text-xs font-bold">Foto Produk (WebP Otomatis)</FieldLabel>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+
+                  {currentImageUrl ? (
+                    <div className="flex items-center gap-3 p-3 bg-muted/40 rounded-xl border border-border/80">
+                      <img
+                        src={currentImageUrl}
+                        alt="Preview"
+                        className="h-16 w-16 object-cover rounded-lg border shadow-xs"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-foreground">Foto Produk Terpasang</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                          Telah dioptimasi ke WebP (&lt;100KB) untuk performa instan offline.
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRemoveImage}
+                        className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-border/80 hover:border-primary/60 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-muted/20 hover:bg-muted/40 text-center"
+                    >
+                      {isCompressing ? (
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      ) : (
+                        <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                      )}
+                      <div>
+                        <p className="text-xs font-semibold text-foreground">
+                          {isCompressing ? 'Mengompres Foto...' : 'Klik untuk Unggah Foto Produk'}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          Format PNG, JPG, WebP otomatis dikompresi ringan untuk IndexedDB.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </Field>
+
+                {/* 5. Deskripsi Produk */}
+                <Field>
+                  <FieldLabel htmlFor="product-desc" className="text-xs font-bold">
+                    Deskripsi Singkat (Opsional)
+                  </FieldLabel>
+                  <textarea
+                    id="product-desc"
+                    rows={2}
+                    placeholder="Catatan komposisi atau rincian spesifikasi barang..."
                     {...register('description')}
-                    className="h-9 text-xs"
+                    className="w-full rounded-md border border-input bg-background p-2.5 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   />
                 </Field>
               </TabsContent>
 
-              {/* Tab 2: Harga & Stok Dasar */}
+              {/* TAB 2: HARGA, MODAL & STOK */}
               <TabsContent value="pricing" className="space-y-4 m-0">
-                <div className="p-3 bg-muted/40 rounded-xl border text-xs text-muted-foreground space-y-1">
-                  <p className="font-semibold text-foreground">Harga & Stok Dasar Produk</p>
-                  <p>
-                    Jika produk tidak memiliki varian ukuran/warna, harga dan stok ini yang akan digunakan saat kasir checkout.
-                  </p>
+                {/* Profit Margin Insight Banner */}
+                <div className="p-3.5 bg-primary/5 rounded-xl border border-primary/20 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <TrendingUp className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">Estimasi Keuntungan Bersih</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Harga Jual ({formatCurrency(currentPrice)}) - Modal ({formatCurrency(currentCostPrice)})
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-sm font-extrabold ${profit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                      {formatCurrency(profit)}
+                    </p>
+                    <p className="text-[10px] font-semibold text-muted-foreground">
+                      Margin: {marginPercentage}%
+                    </p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                {/* Harga Jual & Harga Modal (HPP) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field data-invalid={Boolean(errors.price)}>
-                    <FieldLabel htmlFor="price">Harga Jual Dasar (Rp) *</FieldLabel>
+                    <FieldLabel htmlFor="product-price" className="text-xs font-bold">
+                      Harga Jual Pelanggan (Rp) *
+                    </FieldLabel>
                     <Input
-                      id="price"
+                      id="product-price"
                       type="number"
+                      min="0"
+                      step="500"
                       placeholder="0"
-                      aria-invalid={Boolean(errors.price)}
                       {...register('price')}
-                      className="h-9 text-xs font-bold"
+                      aria-invalid={Boolean(errors.price)}
+                      className="h-10 text-sm font-bold"
                     />
                     <FieldError errors={[{ message: errors.price?.message }]} />
                   </Field>
 
-                  <Field data-invalid={Boolean(errors.stock)}>
-                    <FieldLabel htmlFor="stock">Total Stok Tersedia *</FieldLabel>
+                  <Field data-invalid={Boolean(errors.costPrice)}>
+                    <FieldLabel htmlFor="product-cost-price" className="text-xs font-bold">
+                      Harga Modal (HPP / COGS) (Rp)
+                    </FieldLabel>
                     <Input
-                      id="stock"
+                      id="product-cost-price"
                       type="number"
+                      min="0"
+                      step="500"
                       placeholder="0"
-                      aria-invalid={Boolean(errors.stock)}
+                      {...register('costPrice')}
+                      className="h-10 text-sm"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Untuk menghitung laporan laba bersih dan margin penjualan.
+                    </p>
+                  </Field>
+                </div>
+
+                {/* Stok & Batas Stok Menipis */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t">
+                  <Field data-invalid={Boolean(errors.stock)}>
+                    <FieldLabel htmlFor="product-stock" className="text-xs font-bold flex items-center justify-between">
+                      <span>Jumlah Stok Tersedia *</span>
+                      {currentProductType === 'SERVICE' && (
+                        <span className="text-[10px] text-primary font-normal">Tipe Jasa: Tidak Terbatas</span>
+                      )}
+                    </FieldLabel>
+                    <Input
+                      id="product-stock"
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      disabled={currentProductType === 'SERVICE'}
                       {...register('stock')}
-                      className="h-9 text-xs font-bold"
+                      aria-invalid={Boolean(errors.stock)}
+                      className="h-10 text-sm font-bold"
                     />
                     <FieldError errors={[{ message: errors.stock?.message }]} />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel htmlFor="product-min-stock" className="text-xs font-bold">
+                      Batas Peringatan Stok Menipis
+                    </FieldLabel>
+                    <Input
+                      id="product-min-stock"
+                      type="number"
+                      min="0"
+                      placeholder="5"
+                      disabled={currentProductType === 'SERVICE'}
+                      {...register('minStock')}
+                      className="h-10 text-sm"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Sistem akan memberi tanda warna oranye/merah saat stok &le; angka ini.
+                    </p>
+                  </Field>
+                </div>
+
+                {/* SKU & Barcode */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t">
+                  <Field>
+                    <FieldLabel htmlFor="product-sku" className="text-xs font-bold flex items-center gap-1.5">
+                      <Tag className="h-3.5 w-3.5 text-primary" />
+                      <span>Kode SKU (Pelacakan)</span>
+                    </FieldLabel>
+                    <Input
+                      id="product-sku"
+                      placeholder="Contoh: KPS-REG-01"
+                      {...register('sku')}
+                      className="h-9 text-sm font-mono uppercase"
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel htmlFor="product-barcode" className="text-xs font-bold flex items-center gap-1.5">
+                      <Barcode className="h-3.5 w-3.5 text-primary" />
+                      <span>Kode Barcode (Scan Retail)</span>
+                    </FieldLabel>
+                    <Input
+                      id="product-barcode"
+                      placeholder="Contoh: 899276100123"
+                      {...register('barcode')}
+                      className="h-9 text-sm font-mono"
+                    />
                   </Field>
                 </div>
               </TabsContent>
 
-              {/* Tab 3: Varian Produk */}
-              <TabsContent value="variants" className="space-y-3 m-0">
-                <div className="flex items-center justify-between">
+              {/* TAB 3: VARIAN PRODUK */}
+              <TabsContent value="variants" className="space-y-4 m-0">
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/80">
                   <div>
-                    <p className="font-bold text-xs text-foreground">Daftar Varian Produk</p>
+                    <p className="text-xs font-bold text-foreground">Satu Produk, Banyak Pilihan Varian</p>
                     <p className="text-[11px] text-muted-foreground">
-                      Contoh: Ukuran (Reguler/Large) atau Warna (Merah/Hitam) dengan harga & stok tersendiri.
+                      Contoh: Ukuran S, M, L / Panas, Dingin / Warna Merah, Hitam dengan harga & stok tersendiri.
                     </p>
                   </div>
                   <Button
                     type="button"
-                    size="sm"
                     variant="outline"
+                    size="sm"
                     onClick={handleAddVariantOption}
-                    className="h-7 px-2 text-xs gap-1 cursor-pointer"
+                    className="gap-1.5 text-xs font-bold shrink-0 cursor-pointer"
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-3.5 w-3.5" />
                     <span>Tambah Varian</span>
                   </Button>
                 </div>
 
                 {variantFields.length === 0 ? (
-                  <div className="p-6 text-center border border-dashed rounded-xl bg-card text-muted-foreground">
-                    <Sparkles className="h-6 w-6 mx-auto mb-2 text-muted-foreground/50" />
-                    <p className="font-medium text-xs">Belum ada varian produk</p>
-                    <p className="text-[11px] mt-0.5">
-                      Klik "Tambah Varian" untuk membuat pilihan ukuran, rasa, atau tipe.
+                  <div className="p-8 text-center border-2 border-dashed border-border/80 rounded-xl space-y-2">
+                    <Layers className="h-8 w-8 text-muted-foreground/40 mx-auto" />
+                    <p className="text-xs font-bold text-foreground">Belum Ada Varian</p>
+                    <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+                      Jika produk ini dijual dalam satu jenis standar saja, Anda dapat melewati tab varian ini.
                     </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddVariantOption}
+                      className="text-xs gap-1.5 mt-2 cursor-pointer"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Buat Varian Pertama</span>
+                    </Button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    {variantFields.map((field, idx) => (
+                  <div className="space-y-3">
+                    {variantFields.map((field, index) => (
                       <div
                         key={field.id}
-                        className="p-3 rounded-xl border bg-card flex items-center gap-2"
+                        className="p-3.5 bg-card rounded-xl border border-border/80 space-y-3 shadow-xs"
                       >
-                        <div className="flex-1 grid grid-cols-3 gap-2">
+                        <div className="flex items-center justify-between pb-2 border-b">
+                          <span className="text-xs font-bold text-primary">
+                            Varian #{index + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeVariant(index)}
+                            className="h-6 px-2 text-destructive hover:bg-destructive/10 text-xs cursor-pointer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 mr-1" />
+                            <span>Hapus</span>
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="text-[10px] text-muted-foreground">Nama Varian *</label>
+                            <label className="text-[11px] font-semibold text-foreground">
+                              Nama Varian *
+                            </label>
                             <Input
-                              placeholder="Reguler / Large"
-                              {...register(`variants.${idx}.name` as const)}
-                              className="h-7 text-xs"
+                              placeholder="Contoh: Ukuran L / Panas / Merah"
+                              {...register(`variants.${index}.name` as const)}
+                              className="h-8 text-xs mt-1"
                             />
                           </div>
+
                           <div>
-                            <label className="text-[10px] text-muted-foreground">Harga (Rp) *</label>
+                            <label className="text-[11px] font-semibold text-foreground">
+                              Harga Jual Varian (Rp) *
+                            </label>
                             <Input
                               type="number"
+                              min="0"
+                              step="500"
                               placeholder="0"
-                              {...register(`variants.${idx}.price` as const)}
-                              className="h-7 text-xs"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-[10px] text-muted-foreground">Stok *</label>
-                            <Input
-                              type="number"
-                              placeholder="0"
-                              {...register(`variants.${idx}.stock` as const)}
-                              className="h-7 text-xs"
+                              {...register(`variants.${index}.price` as const)}
+                              className="h-8 text-xs font-bold mt-1"
                             />
                           </div>
                         </div>
 
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeVariant(idx)}
-                          className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive shrink-0 mt-3 cursor-pointer"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                          <div>
+                            <label className="text-[10px] font-medium text-muted-foreground">
+                              Modal HPP (Rp)
+                            </label>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="500"
+                              placeholder="0"
+                              {...register(`variants.${index}.costPrice` as const)}
+                              className="h-7 text-[11px] mt-0.5"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-muted-foreground">
+                              Stok Varian
+                            </label>
+                            <Input
+                              type="number"
+                              min="0"
+                              placeholder="0"
+                              {...register(`variants.${index}.stock` as const)}
+                              className="h-7 text-[11px] font-bold mt-0.5"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-muted-foreground">
+                              SKU Varian
+                            </label>
+                            <Input
+                              placeholder="SKU-VAR"
+                              {...register(`variants.${index}.sku` as const)}
+                              className="h-7 text-[11px] font-mono mt-0.5"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-medium text-muted-foreground">
+                              Barcode Varian
+                            </label>
+                            <Input
+                              placeholder="Barcode"
+                              {...register(`variants.${index}.barcode` as const)}
+                              className="h-7 text-[11px] font-mono mt-0.5"
+                            />
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
               </TabsContent>
 
-              {/* Tab 4: Modifiers / Topping */}
-              <TabsContent value="modifiers" className="space-y-3 m-0">
-                <div className="flex items-center justify-between">
+              {/* TAB 4: MODIFIER & TOPPING */}
+              <TabsContent value="modifiers" className="space-y-4 m-0">
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/80">
                   <div>
-                    <p className="font-bold text-xs text-foreground">Grup Modifier & Topping</p>
+                    <p className="text-xs font-bold text-foreground">Modifier, Topping & Kustomisasi Tambahan</p>
                     <p className="text-[11px] text-muted-foreground">
-                      Contoh: Topping Tambahan (Boba, Keju) atau Opsi Wajib (Level Gula, Level Pedas).
+                      Contoh: Topping Boba (+Rp3.000), Level Pedas (Gratis Rp0), Extra Kertas Kado (+Rp5.000).
                     </p>
                   </div>
                   <Button
                     type="button"
-                    size="sm"
                     variant="outline"
+                    size="sm"
                     onClick={handleAddModifierGroup}
-                    className="h-7 px-2 text-xs gap-1 cursor-pointer"
+                    className="gap-1.5 text-xs font-bold shrink-0 cursor-pointer"
                   >
-                    <Plus className="h-3 w-3" />
-                    <span>Tambah Grup Topping</span>
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Tambah Grup Modifier</span>
                   </Button>
                 </div>
 
                 {modifierGroupFields.length === 0 ? (
-                  <div className="p-6 text-center border border-dashed rounded-xl bg-card text-muted-foreground">
-                    <Layers className="h-6 w-6 mx-auto mb-2 text-muted-foreground/50" />
-                    <p className="font-medium text-xs">Belum ada modifier / topping</p>
-                    <p className="text-[11px] mt-0.5">
-                      Tambahkan opsi ekstra seperti Topping, Level Gula, atau Tambahan Sambal.
+                  <div className="p-8 text-center border-2 border-dashed border-border/80 rounded-xl space-y-2">
+                    <Sparkles className="h-8 w-8 text-muted-foreground/40 mx-auto" />
+                    <p className="text-xs font-bold text-foreground">Belum Ada Modifier</p>
+                    <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+                      Gunakan modifier jika produk Anda memerlukan opsi kustomisasi tambahan (seperti topping, level kepedasan, atau bungkus kado).
                     </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddModifierGroup}
+                      className="text-xs gap-1.5 mt-2 cursor-pointer"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Buat Grup Modifier Pertama</span>
+                    </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {modifierGroupFields.map((groupField, gIdx) => {
-                      const group = watchedModifierGroups[gIdx];
-                      const options = group?.options || [];
-
+                  <div className="space-y-4">
+                    {modifierGroupFields.map((field, groupIndex) => {
+                      const group = watchedModifierGroups[groupIndex] || { options: [] };
                       return (
                         <div
-                          key={groupField.id}
-                          className="p-3 rounded-xl border bg-card space-y-2.5"
+                          key={field.id}
+                          className="p-4 bg-card rounded-xl border border-border/80 space-y-3 shadow-xs"
                         >
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex-1 grid grid-cols-2 gap-2">
-                              <Input
-                                placeholder="Nama Grup (cth: Topping Ekstra)"
-                                {...register(`modifierGroups.${gIdx}.name` as const)}
-                                className="h-7 text-xs font-semibold"
-                              />
-                              <div className="flex items-center gap-2">
-                                <label className="flex items-center gap-1.5 text-[11px] cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    {...register(`modifierGroups.${gIdx}.required` as const)}
-                                    className="rounded border-border"
-                                  />
-                                  <span>Wajib Pilih</span>
-                                </label>
-                              </div>
-                            </div>
-
+                          <div className="flex items-center justify-between pb-2 border-b">
+                            <span className="text-xs font-bold text-primary">
+                              Grup Modifier #{groupIndex + 1}
+                            </span>
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              onClick={() => removeModifierGroup(gIdx)}
-                              className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive shrink-0 cursor-pointer"
+                              onClick={() => removeModifierGroup(groupIndex)}
+                              className="h-6 px-2 text-destructive hover:bg-destructive/10 text-xs cursor-pointer"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <Trash2 className="h-3.5 w-3.5 mr-1" />
+                              <span>Hapus Grup</span>
                             </Button>
                           </div>
 
-                          {/* Options inside this group */}
-                          <div className="space-y-1.5 pl-2 border-l-2 border-primary/20">
-                            {options.map((opt, oIdx) => (
-                              <div key={opt.id || oIdx} className="flex items-center gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="sm:col-span-2">
+                              <label className="text-[11px] font-semibold text-foreground">
+                                Nama Grup Modifier *
+                              </label>
+                              <Input
+                                placeholder="Contoh: Pilihan Topping / Level Pedas / Packaging"
+                                {...register(`modifierGroups.${groupIndex}.name` as const)}
+                                className="h-8 text-xs mt-1"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-[11px] font-semibold text-foreground">
+                                Tipe Pilihan
+                              </label>
+                              <select
+                                {...register(`modifierGroups.${groupIndex}.maxSelect` as const, {
+                                  valueAsNumber: true,
+                                })}
+                                className="w-full h-8 rounded-md border border-input bg-background px-2 text-xs mt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                              >
+                                <option value={1}>Pilihan Tunggal (Pilih 1 Saja)</option>
+                                <option value={5}>Pilihan Bebas (Bisa Banyak)</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Options in this group */}
+                          <div className="space-y-2 pt-2 border-t border-border/60">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-bold text-foreground">
+                                Opsi Pilihan & Penyesuaian Harga
+                              </span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAddModifierOptionToGroup(groupIndex)}
+                                className="h-6 px-2 text-primary hover:bg-primary/10 text-xs cursor-pointer"
+                              >
+                                <Plus className="h-3 w-3 mr-1" />
+                                <span>Tambah Opsi</span>
+                              </Button>
+                            </div>
+
+                            {(group.options || []).map((opt, optIndex) => (
+                              <div
+                                key={opt.id || optIndex}
+                                className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg border border-border/50"
+                              >
                                 <Input
-                                  placeholder="Nama Opsi (cth: Boba)"
-                                  value={opt.name}
-                                  onChange={(e) => {
-                                    const newGroups = [...watchedModifierGroups];
-                                    if (newGroups[gIdx]?.options?.[oIdx]) {
-                                      newGroups[gIdx].options[oIdx].name = e.target.value;
-                                      setValue('modifierGroups', newGroups);
-                                    }
-                                  }}
+                                  placeholder="Contoh: Ekstra Keju / Boba / Kertas Kado"
+                                  {...register(
+                                    `modifierGroups.${groupIndex}.options.${optIndex}.name` as const
+                                  )}
                                   className="h-7 text-xs flex-1"
                                 />
-                                <div className="w-28 flex items-center gap-1">
-                                  <span className="text-[10px] text-muted-foreground">+Rp</span>
+                                <div className="flex items-center gap-1 shrink-0">
+                                  <span className="text-[10px] text-muted-foreground font-semibold">+Rp</span>
                                   <Input
                                     type="number"
+                                    min="0"
+                                    step="500"
                                     placeholder="0"
-                                    value={opt.price}
-                                    onChange={(e) => {
-                                      const newGroups = [...watchedModifierGroups];
-                                      if (newGroups[gIdx]?.options?.[oIdx]) {
-                                        newGroups[gIdx].options[oIdx].price = Number(e.target.value) || 0;
-                                        setValue('modifierGroups', newGroups);
-                                      }
-                                    }}
-                                    className="h-7 text-xs font-semibold"
+                                    {...register(
+                                      `modifierGroups.${groupIndex}.options.${optIndex}.price` as const,
+                                      { valueAsNumber: true }
+                                    )}
+                                    className="h-7 w-24 text-xs font-bold"
                                   />
                                 </div>
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleRemoveModifierOptionFromGroup(gIdx, oIdx)}
-                                  className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive cursor-pointer"
+                                  onClick={() =>
+                                    handleRemoveModifierOptionFromGroup(groupIndex, optIndex)
+                                  }
+                                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive shrink-0 cursor-pointer"
                                 >
-                                  <X className="h-3 w-3" />
+                                  <X className="h-3.5 w-3.5" />
                                 </Button>
                               </div>
                             ))}
-
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleAddModifierOptionToGroup(gIdx)}
-                              className="h-6 px-2 text-[11px] text-primary hover:text-primary gap-1 cursor-pointer"
-                            >
-                              <Plus className="h-3 w-3" />
-                              <span>Tambah Pilihan</span>
-                            </Button>
                           </div>
                         </div>
                       );
@@ -707,27 +994,29 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             </div>
           </Tabs>
 
-          {/* Dialog Footer */}
-          <DialogFooter className="p-4 pt-3 border-t bg-muted/20 flex flex-row items-center justify-end gap-2 shrink-0">
+          <DialogFooter className="p-4 border-t bg-card flex-row justify-between sm:justify-between items-center gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isSubmitting || isCompressing}
-              className="cursor-pointer"
+              disabled={isSubmitting}
+              className="cursor-pointer text-xs"
             >
               Batal
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || isCompressing}
-              className="font-bold cursor-pointer"
+              disabled={isSubmitting}
+              className="font-bold gap-1.5 cursor-pointer text-xs"
             >
-              {isSubmitting
-                ? 'Menyimpan...'
-                : productToEdit
-                ? 'Simpan Perubahan'
-                : 'Tambah Produk'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                <span>{productToEdit ? 'Simpan Perubahan' : 'Tambah Produk'}</span>
+              )}
             </Button>
           </DialogFooter>
         </form>

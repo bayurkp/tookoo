@@ -43,25 +43,44 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
 
   // Atomic transaction: Check stock, decrement product stock, save order
   await db.transaction('rw', db.orders, db.products, async () => {
-    // 1. Validate stocks
+    // 1. Validate stocks (only for non-SERVICE products)
     for (const item of input.items) {
       const product = await db.products.get(item.productId);
       if (!product || product.deletedAt !== null) {
         throw new Error(`Produk ${item.name} tidak ditemukan atau telah dihapus`);
       }
-      if (product.stock < item.qty) {
-        throw new Error(
-          `Stok tidak mencukupi untuk ${item.name}. Tersedia: ${product.stock}, Diminta: ${item.qty}`
-        );
+      if (product.productType !== 'SERVICE') {
+        if (item.variantName && product.variants && product.variants.length > 0) {
+          const variant = product.variants.find((v) => v.name === item.variantName);
+          if (variant && variant.stock < item.qty) {
+            throw new Error(
+              `Stok varian "${item.variantName}" tidak mencukupi untuk ${product.name}. Tersedia: ${variant.stock}, Diminta: ${item.qty}`
+            );
+          }
+        } else if (product.stock < item.qty) {
+          throw new Error(
+            `Stok tidak mencukupi untuk ${item.name}. Tersedia: ${product.stock}, Diminta: ${item.qty}`
+          );
+        }
       }
     }
 
-    // 2. Decrement stocks
+    // 2. Decrement stocks (skip for SERVICE products)
     for (const item of input.items) {
       const product = await db.products.get(item.productId);
-      if (product) {
+      if (product && product.productType !== 'SERVICE') {
+        let updatedVariants = product.variants;
+        if (item.variantName && product.variants && product.variants.length > 0) {
+          updatedVariants = product.variants.map((v) => {
+            if (v.name === item.variantName) {
+              return { ...v, stock: Math.max(0, v.stock - item.qty) };
+            }
+            return v;
+          });
+        }
         await db.products.update(item.productId, {
-          stock: product.stock - item.qty,
+          stock: Math.max(0, product.stock - item.qty),
+          variants: updatedVariants,
           updatedAt: now,
         });
       }

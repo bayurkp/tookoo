@@ -58,24 +58,40 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
     return map;
   }, [cartItems]);
 
+  const activeProducts = useMemo(() => {
+    return products.filter((p) => p.isActive !== false);
+  }, [products]);
+
   const categories = useMemo(() => {
     const set = new Set<string>();
-    products.forEach((p) => {
+    activeProducts.forEach((p) => {
       if (p.category) set.add(p.category);
     });
     return Array.from(set);
-  }, [products]);
+  }, [activeProducts]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
+    return activeProducts.filter((p) => {
+      const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.barcode && p.barcode.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (p.subType && p.subType.toLowerCase().includes(searchQuery.toLowerCase()));
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        (p.category && p.category.toLowerCase().includes(q)) ||
+        (p.subType && p.subType.toLowerCase().includes(q)) ||
+        (p.sku && p.sku.toLowerCase().includes(q)) ||
+        (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+        (p.variants &&
+          p.variants.some(
+            (v) =>
+              v.name.toLowerCase().includes(q) ||
+              (v.sku && v.sku.toLowerCase().includes(q)) ||
+              (v.barcode && v.barcode.toLowerCase().includes(q))
+          ));
+
       const matchesCategory = selectedCategory === 'ALL' || p.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [products, searchQuery, selectedCategory]);
+  }, [activeProducts, searchQuery, selectedCategory]);
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && filteredProducts.length === 1) {
