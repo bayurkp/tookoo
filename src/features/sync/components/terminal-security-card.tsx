@@ -82,11 +82,8 @@ export const TerminalSecurityCard: React.FC<TerminalSecurityCardProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Role Switcher */}
           <div className="p-3 rounded-lg border border-border/80 space-y-2 bg-card">
-            <div className="flex items-center justify-between">
+            <div>
               <span className="text-xs font-bold text-foreground">Peran Perangkat Ini</span>
-              <Badge variant={currentRole === 'OWNER' ? 'default' : 'secondary'} className="text-[11px] py-0">
-                {currentRole}
-              </Badge>
             </div>
 
             <div className="grid grid-cols-3 gap-1 pt-1">

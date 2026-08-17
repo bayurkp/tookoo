@@ -16,6 +16,7 @@ import {
   Volume1,
   UserCheck,
   User,
+  Users,
   KeyRound,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -585,16 +586,10 @@ export const SettingsPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Role Selector Card */}
               <div className="p-4 rounded-lg border border-border/80 space-y-3">
-                <div className="flex items-center justify-between">
+                <div>
                   <span className="text-xs font-bold text-foreground">Peran Terminal Ini</span>
-                  <Badge
-                    variant={currentRole === 'OWNER' ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {currentRole === 'OWNER' ? 'Pemilik (Owner)' : 'Kasir (Staff)'}
-                  </Badge>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleSwitchRole('OWNER')}
@@ -605,7 +600,20 @@ export const SettingsPage: React.FC = () => {
                     }`}
                   >
                     <UserCheck className="h-4 w-4" />
-                    <span className="text-xs">Pemilik Toko</span>
+                    <span className="text-xs">Pemilik</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchRole('MANAGER')}
+                    className={`p-2.5 rounded-lg border text-center flex flex-col items-center gap-1.5 transition-colors cursor-pointer ${
+                      currentRole === 'MANAGER'
+                        ? 'border-primary bg-primary/5 text-primary font-bold'
+                        : 'border-border hover:bg-muted/40 text-muted-foreground'
+                    }`}
+                  >
+                    <Users className="h-4 w-4" />
+                    <span className="text-xs">Manajer</span>
                   </button>
 
                   <button
@@ -618,7 +626,7 @@ export const SettingsPage: React.FC = () => {
                     }`}
                   >
                     <User className="h-4 w-4" />
-                    <span className="text-xs">Kasir / Staf</span>
+                    <span className="text-xs">Kasir</span>
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground">
