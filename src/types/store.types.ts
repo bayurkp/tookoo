@@ -1,3 +1,5 @@
+import type { CurrencyCode } from '@/types/currency.types';
+
 export type UserRole = 'OWNER' | 'MANAGER' | 'CASHIER';
 
 export type AppPermission =
@@ -11,6 +13,7 @@ export type AppPermission =
 export interface StoreSettings {
   id: string; // UUID v4 (Store ID)
   storeName: string;
+  currency?: CurrencyCode; // e.g. 'IDR', 'USD', 'SGD', 'MYR', 'EUR', 'JPY', 'GBP'
   deviceName?: string; // e.g. "Kasir Utama (Tablet)", "HP Kasir 2"
   storeAddress?: string;
   receiptFooter?: string;

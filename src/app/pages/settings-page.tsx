@@ -30,6 +30,8 @@ import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuthStore } from '@/stores/auth-store';
 import { sounds } from '@/utils/audio';
+import { SUPPORTED_CURRENCIES, DEFAULT_CURRENCY } from '@/utils/currency-config';
+import type { CurrencyCode } from '@/types/currency.types';
 import type { UserRole } from '@/types/store.types';
 
 export const SettingsPage: React.FC = () => {
@@ -40,6 +42,7 @@ export const SettingsPage: React.FC = () => {
 
   // Form local state
   const [storeName, setStoreName] = useState('');
+  const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CURRENCY);
   const [storeAddress, setStoreAddress] = useState('');
   const [receiptFooter, setReceiptFooter] = useState('');
   const [deviceName, setDeviceName] = useState('');
@@ -64,6 +67,7 @@ export const SettingsPage: React.FC = () => {
   useEffect(() => {
     if (settings) {
       setStoreName(settings.storeName || '');
+      setCurrency(settings.currency || DEFAULT_CURRENCY);
       setStoreAddress(settings.storeAddress || '');
       setReceiptFooter(settings.receiptFooter || '');
       setDeviceName(settings.deviceName || '');
@@ -83,6 +87,7 @@ export const SettingsPage: React.FC = () => {
 
     updateSettings({
       storeName: storeName.trim(),
+      currency,
       storeAddress: storeAddress.trim() || undefined,
       receiptFooter: receiptFooter.trim() || undefined,
     });
@@ -247,6 +252,29 @@ export const SettingsPage: React.FC = () => {
                     )}
                     disabled={isSettingsLoading}
                   />
+                </Field>
+
+                {/* Store Currency */}
+                <Field className="sm:col-span-2">
+                  <FieldLabel htmlFor="store-currency">
+                    {t('settings.storeProfile.currency', 'Mata Uang & Format Uang Toko')}
+                  </FieldLabel>
+                  <select
+                    id="store-currency"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                    disabled={isSettingsLoading}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-semibold ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                  >
+                    {Object.values(SUPPORTED_CURRENCIES).map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.name} — {c.symbol}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Format pemisah ribuan (&ldquo;{SUPPORTED_CURRENCIES[currency].thousandSeparator}&rdquo;) dan desimal ({SUPPORTED_CURRENCIES[currency].decimalDigits} digit) akan otomatis diterapkan di kasir, produk, dan laporan keuangan.
+                  </p>
                 </Field>
               </FieldGroup>
 

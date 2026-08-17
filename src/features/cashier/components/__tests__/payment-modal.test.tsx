@@ -43,6 +43,6 @@ describe('PaymentModal', () => {
     });
 
     expect(screen.getByText('Pembayaran')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('30000')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('30.000')).toBeInTheDocument();
   });
 });

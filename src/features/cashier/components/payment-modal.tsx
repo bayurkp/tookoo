@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Banknote, QrCode, Building, CheckCircle2, ArrowRight } from 'lucide-react';
 import {
@@ -11,11 +11,13 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '../stores/cart-store';
 import { useCashierCheckout } from '../hooks/use-cashier-checkout';
+import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { getCurrencyConfig } from '@/utils/currency-config';
 import { formatCurrency } from '@/utils/format-currency';
 import { sounds } from '@/utils/audio';
 import type { PaymentMethod } from '../types/cart.types';
@@ -33,6 +35,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   onPaymentSuccess,
 }) => {
   const { t } = useTranslation();
+  const { settings } = useP2pSync();
   const items = useCartStore((state) => state.items);
   const getSubtotal = useCartStore((state) => state.getSubtotal);
   const getDiscountAmount = useCartStore((state) => state.getDiscountAmount);
@@ -45,34 +48,50 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const total = getTotal();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
-  const [cashTendered, setCashTendered] = useState<string>('');
+  const [cashTendered, setCashTendered] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const currencyConfig = getCurrencyConfig(settings?.currency);
 
   useEffect(() => {
     if (open) {
-      setCashTendered(String(total));
+      setCashTendered(total);
       setPaymentMethod('CASH');
       setErrorMessage(null);
     }
   }, [open, total]);
 
-  const numericCashTendered = Number(cashTendered) || 0;
-  const changeDue = Math.max(0, numericCashTendered - total);
-  const isCashInsufficient = paymentMethod === 'CASH' && numericCashTendered < total;
+  const changeDue = Math.max(0, cashTendered - total);
+  const isCashInsufficient = paymentMethod === 'CASH' && cashTendered < total;
 
-  const quickCashOptions = [
-    { label: 'Uang Pas', value: total },
-    { label: '10.000', value: 10000 },
-    { label: '20.000', value: 20000 },
-    { label: '50.000', value: 50000 },
-    { label: '100.000', value: 10000 },
-    { label: '200.000', value: 200000 },
-  ].filter((opt) => opt.value >= total || opt.label === 'Uang Pas');
+  // Dynamic quick nominal cash suggestions
+  const quickCashOptions = useMemo(() => {
+    const list: { label: string; value: number }[] = [
+      { label: 'Uang Pas', value: total },
+    ];
+
+    currencyConfig.quickNominals.forEach((nom) => {
+      if (nom >= total && !list.some((item) => item.value === nom)) {
+        list.push({ label: formatCurrency(nom, settings?.currency), value: nom });
+      }
+    });
+
+    // If total exceeds max quick nominal, suggest rounded nearest step
+    if (list.length === 1 && total > 0) {
+      const step = currencyConfig.decimalDigits === 0 ? 50000 : 50;
+      const nextRound = Math.ceil(total / step) * step;
+      if (nextRound > total) {
+        list.push({ label: formatCurrency(nextRound, settings?.currency), value: nextRound });
+      }
+    }
+
+    return list;
+  }, [total, currencyConfig, settings?.currency]);
 
   const handleProcessPayment = async () => {
     if (items.length === 0) return;
 
-    if (paymentMethod === 'CASH' && numericCashTendered < total) {
+    if (paymentMethod === 'CASH' && cashTendered < total) {
       setErrorMessage('Nominal uang diterima kurang dari total tagihan.');
       return;
     }
@@ -91,7 +110,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         subtotal: item.unitPrice * item.quantity,
       }));
 
-      const finalAmountPaid = paymentMethod === 'CASH' ? numericCashTendered : total;
+      const finalAmountPaid = paymentMethod === 'CASH' ? cashTendered : total;
       const finalChangeDue = paymentMethod === 'CASH' ? changeDue : 0;
 
       const order = await checkoutMutation.mutateAsync({
@@ -133,7 +152,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               {t('cashier.payment.totalBill', 'Total Tagihan')}
             </p>
             <p className="text-2xl font-black text-primary tracking-tight">
-              {formatCurrency(total)}
+              {formatCurrency(total, settings?.currency)}
             </p>
           </div>
           <Badge variant="outline" className="bg-background text-xs">
@@ -166,17 +185,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Cash Tab Content */}
           <TabsContent value="CASH" className="space-y-3 pt-2">
-            <Field data-invalid={Boolean(errorMessage || (cashTendered && Number(cashTendered) < total))}>
+            <Field data-invalid={Boolean(errorMessage || (cashTendered > 0 && cashTendered < total))}>
               <FieldLabel htmlFor="cashTendered">
-                {t('cashier.payment.amountReceivedLabel', 'Uang Diterima (Rp) *')}
+                {t('cashier.payment.amountReceivedLabel', 'Uang Diterima *')}
               </FieldLabel>
-              <Input
+              <CurrencyInput
                 id="cashTendered"
-                type="number"
                 value={cashTendered}
-                aria-invalid={Boolean(errorMessage || (cashTendered && Number(cashTendered) < total))}
-                onChange={(e) => {
-                  setCashTendered(e.target.value);
+                currencyCode={settings?.currency}
+                onValueChange={(val) => {
+                  setCashTendered(val);
                   setErrorMessage(null);
                 }}
                 className="text-lg font-bold"
@@ -192,12 +210,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setCashTendered(String(opt.value))}
+                  onClick={() => setCashTendered(opt.value)}
                   className="text-xs h-7 px-2"
                 >
                   {opt.label === 'Uang Pas'
                     ? t('cashier.payment.exactAmount', 'Uang Pas')
-                    : formatCurrency(opt.value)}
+                    : opt.label}
                 </Button>
               ))}
             </div>
@@ -214,7 +232,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               >
                 {isCashInsufficient
                   ? t('cashier.payment.insufficientCash', 'Uang Kurang')
-                  : formatCurrency(changeDue)}
+                  : formatCurrency(changeDue, settings?.currency)}
               </span>
             </div>
           </TabsContent>
@@ -228,8 +246,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </p>
               <p className="text-xs text-muted-foreground">
                 {t('cashier.payment.qrisDesc', {
-                  amount: formatCurrency(total),
-                  defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total)}.`,
+                  amount: formatCurrency(total, settings?.currency),
+                  defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total, settings?.currency)}.`,
                 })}
               </p>
               <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1 mt-2 font-medium">
@@ -248,8 +266,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </p>
               <p className="text-xs text-muted-foreground">
                 {t('cashier.payment.transferDesc', {
-                  amount: formatCurrency(total),
-                  defaultValue: `Verifikasi mutasi rekening masuk sebesar ${formatCurrency(total)} sebelum menyelesaikan transaksi.`,
+                  amount: formatCurrency(total, settings?.currency),
+                  defaultValue: `Verifikasi mutasi rekening masuk sebesar ${formatCurrency(total, settings?.currency)} sebelum menyelesaikan transaksi.`,
                 })}
               </p>
             </div>

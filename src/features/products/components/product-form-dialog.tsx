@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   X,
@@ -31,6 +31,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import {
   Field,
   FieldLabel,
@@ -585,36 +586,44 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field data-invalid={Boolean(errors.price)}>
                     <FieldLabel htmlFor="product-price" className="text-xs font-bold">
-                      Harga Jual Pelanggan (Rp) *
+                      Harga Jual Pelanggan *
                     </FieldLabel>
-                    <Input
-                      id="product-price"
-                      type="number"
-                      min="0"
-                      step="500"
-                      placeholder="0"
-                      {...register('price')}
-                      aria-invalid={Boolean(errors.price)}
-                      className="h-10 text-sm font-bold"
+                    <Controller
+                      control={control}
+                      name="price"
+                      render={({ field }) => (
+                        <CurrencyInput
+                          id="product-price"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="0"
+                          aria-invalid={Boolean(errors.price)}
+                          className="h-10 text-sm font-bold"
+                        />
+                      )}
                     />
                     <FieldError errors={[{ message: errors.price?.message }]} />
                   </Field>
 
                   <Field data-invalid={Boolean(errors.costPrice)}>
                     <FieldLabel htmlFor="product-cost-price" className="text-xs font-bold">
-                      Harga Modal (HPP / COGS) (Rp)
+                      Harga Modal (HPP / COGS)
                     </FieldLabel>
-                    <Input
-                      id="product-cost-price"
-                      type="number"
-                      min="0"
-                      step="500"
-                      placeholder="0"
-                      {...register('costPrice')}
-                      className="h-10 text-sm"
+                    <Controller
+                      control={control}
+                      name="costPrice"
+                      render={({ field }) => (
+                        <CurrencyInput
+                          id="product-cost-price"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="0"
+                          className="h-10 text-sm"
+                        />
+                      )}
                     />
                     <p className="text-[10px] text-muted-foreground mt-0.5">
-                      Untuk menghitung laporan laba bersih dan margin penjualan.
+                      Untuk menghitung laporan laba kotor dan margin penjualan.
                     </p>
                   </Field>
                 </div>
@@ -766,15 +775,19 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
 
                           <div>
                             <label className="text-[11px] font-semibold text-foreground">
-                              Harga Jual Varian (Rp) *
+                              Harga Jual Varian *
                             </label>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="500"
-                              placeholder="0"
-                              {...register(`variants.${index}.price` as const)}
-                              className="h-8 text-xs font-bold mt-1"
+                            <Controller
+                              control={control}
+                              name={`variants.${index}.price` as const}
+                              render={({ field }) => (
+                                <CurrencyInput
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  placeholder="0"
+                                  className="h-8 text-xs font-bold mt-1"
+                                />
+                              )}
                             />
                           </div>
                         </div>
@@ -782,15 +795,19 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                           <div>
                             <label className="text-[10px] font-medium text-muted-foreground">
-                              Modal HPP (Rp)
+                              Modal HPP
                             </label>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="500"
-                              placeholder="0"
-                              {...register(`variants.${index}.costPrice` as const)}
-                              className="h-7 text-[11px] mt-0.5"
+                            <Controller
+                              control={control}
+                              name={`variants.${index}.costPrice` as const}
+                              render={({ field }) => (
+                                <CurrencyInput
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  placeholder="0"
+                                  className="h-7 text-[11px] mt-0.5"
+                                />
+                              )}
                             />
                           </div>
 
@@ -958,17 +975,19 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                                   className="h-7 text-xs flex-1"
                                 />
                                 <div className="flex items-center gap-1 shrink-0">
-                                  <span className="text-[10px] text-muted-foreground font-semibold">+Rp</span>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    step="500"
-                                    placeholder="0"
-                                    {...register(
-                                      `modifierGroups.${groupIndex}.options.${optIndex}.price` as const,
-                                      { valueAsNumber: true }
+                                  <Controller
+                                    control={control}
+                                    name={
+                                      `modifierGroups.${groupIndex}.options.${optIndex}.price` as const
+                                    }
+                                    render={({ field }) => (
+                                      <CurrencyInput
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        placeholder="0"
+                                        className="h-7 w-28 text-xs font-bold"
+                                      />
                                     )}
-                                    className="h-7 w-24 text-xs font-bold"
                                   />
                                 </div>
                                 <Button
