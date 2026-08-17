@@ -92,3 +92,11 @@ export const generatePassphrase = (wordCount = 12): string => {
 export const normalizePassphrase = (input: string): string => {
   return input.trim().toLowerCase().replace(/\s+/g, ' ');
 };
+
+/**
+ * Validates whether a given passphrase contains exactly 12 words
+ */
+export const validatePassphrase = (input: string): boolean => {
+  const words = normalizePassphrase(input).split(' ').filter(Boolean);
+  return words.length === 12 && words.every((w) => w.length >= 2);
+};

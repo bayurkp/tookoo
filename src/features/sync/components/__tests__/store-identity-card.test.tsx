@@ -33,8 +33,12 @@ describe('StoreIdentityCard', () => {
     expect(screen.getByDisplayValue('Kasir Utama')).toBeInTheDocument();
     expect(screen.getByText(/ocean forest monkey/i)).toBeInTheDocument();
 
-    const saveNameBtn = screen.getByRole('button', { name: /Simpan Nama/i });
+    const saveNameBtn = screen.getByRole('button', { name: /Simpan Nama Toko/i });
     fireEvent.click(saveNameBtn);
     expect(handleUpdateName).toHaveBeenCalledWith('Tookoo Coffee Shop');
+
+    const saveDeviceBtn = screen.getByRole('button', { name: /Simpan Nama Perangkat/i });
+    fireEvent.click(saveDeviceBtn);
+    expect(handleUpdateDeviceName).toHaveBeenCalledWith('Kasir Utama');
   });
 });

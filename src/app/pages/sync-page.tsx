@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { StoreIdentityCard } from '@/features/sync/components/store-identity-card';
-import { QrPairingCard } from '@/features/sync/components/qr-pairing-card';
+import { ConnectStoreCard } from '@/features/sync/components/connect-store-card';
 import { QrScannerModal } from '@/features/sync/components/qr-scanner-modal';
 import { ConnectedPeersCard } from '@/features/sync/components/connected-peers-card';
 import { TerminalSecurityCard } from '@/features/sync/components/terminal-security-card';
@@ -12,6 +13,7 @@ import type { UserRole } from '@/types/store.types';
 
 export const SyncPage: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     settings,
     peers,
@@ -32,6 +34,23 @@ export const SyncPage: React.FC = () => {
 
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
+  // Auto-pair if URL contains ?pair=...
+  useEffect(() => {
+    const pairParam = searchParams.get('pair');
+    const storeParam = searchParams.get('store');
+    if (pairParam && pairParam.trim().split(/\s+/).length === 12) {
+      updateSettings({
+        passphrase: pairParam.trim(),
+        storeName: storeParam ? decodeURIComponent(storeParam) : settings?.storeName || 'Toko Cabang',
+      });
+      // Clear search params
+      setSearchParams({}, { replace: true });
+      setTimeout(() => {
+        syncAllDataNow();
+      }, 600);
+    }
+  }, [searchParams, setSearchParams, updateSettings, syncAllDataNow, settings?.storeName]);
+
   const handlePairSuccess = (payload: StorePairingPayload) => {
     updateSettings({
       storeName: payload.storeName,
@@ -51,58 +70,60 @@ export const SyncPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 pb-12">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight">
-          {t('sync.title', 'Sinkronisasi')}
+          {t('sync.title', 'Sinkronisasi Perangkat')}
         </h2>
         <p className="text-muted-foreground text-sm">
           {t(
             'sync.subtitle',
-            'Sinkronisasi multi-terminal kasir peer-to-peer (WebRTC), kelola izin akses (RBAC), whitelist, dan blacklist perangkat.'
+            'Hubungkan beberapa HP dan mesin kasir untuk jualan bersama secara offline & real-time.'
           )}
         </p>
       </div>
 
-      {/* Grid Cards Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column: Identity, Security & QR Code */}
-        <div className="space-y-6 flex flex-col">
-          <StoreIdentityCard
-            settings={settings}
-            onUpdateStoreName={updateStoreName}
-            onUpdateDeviceName={updateDeviceName}
-            onRegeneratePassphrase={regeneratePassphrase}
-          />
-          <TerminalSecurityCard
-            settings={settings}
-            onUpdateRole={handleUpdateRole}
-            onUpdatePin={handleUpdatePin}
-          />
-          <QrPairingCard settings={settings} onOpenScanner={() => setIsScannerOpen(true)} />
-        </div>
+      {/* 1. Store Identity & Current Passphrase / Current Store QR */}
+      <StoreIdentityCard
+        settings={settings}
+        onUpdateStoreName={updateStoreName}
+        onUpdateDeviceName={updateDeviceName}
+        onRegeneratePassphrase={regeneratePassphrase}
+      />
 
-        {/* Right Column: Peers & Whitelist/Blacklist, and Backup */}
-        <div className="space-y-6 flex flex-col">
-          <ConnectedPeersCard
-            peers={peers}
-            blacklistedDeviceIds={settings?.blacklistedDeviceIds}
-            whitelistedDeviceIds={settings?.whitelistedDeviceIds}
-            whitelistOnly={settings?.whitelistOnly}
-            isSyncing={isSyncing}
-            onManualSync={syncAllDataNow}
-            onBlacklistDevice={blacklistDevice}
-            onUnblacklistDevice={unblacklistDevice}
-            onWhitelistDevice={whitelistDevice}
-            onUnwhitelistDevice={unwhitelistDevice}
-            onToggleWhitelistOnly={toggleWhitelistOnly}
-          />
-          <BackupExportCard onExport={exportBackup} onImport={importBackup} />
-        </div>
-      </div>
+      {/* 2. Connect to Another Store (Direct 12 Words Typing or Camera QR Scan) */}
+      <ConnectStoreCard
+        onPairSuccess={handlePairSuccess}
+        onOpenScanner={() => setIsScannerOpen(true)}
+      />
 
-      {/* Scanner & Manual Pairing Modal */}
+      {/* 3. Connected Devices / Peers & Sync Now */}
+      <ConnectedPeersCard
+        peers={peers}
+        blacklistedDeviceIds={settings?.blacklistedDeviceIds}
+        whitelistedDeviceIds={settings?.whitelistedDeviceIds}
+        whitelistOnly={settings?.whitelistOnly}
+        isSyncing={isSyncing}
+        onManualSync={syncAllDataNow}
+        onBlacklistDevice={blacklistDevice}
+        onUnblacklistDevice={unblacklistDevice}
+        onWhitelistDevice={whitelistDevice}
+        onUnwhitelistDevice={unwhitelistDevice}
+        onToggleWhitelistOnly={toggleWhitelistOnly}
+      />
+
+      {/* 4. Terminal Role & Security (Owner, Manager, Cashier + PIN) */}
+      <TerminalSecurityCard
+        settings={settings}
+        onUpdateRole={handleUpdateRole}
+        onUpdatePin={handleUpdatePin}
+      />
+
+      {/* 5. Offline Backup & Restore */}
+      <BackupExportCard onExport={exportBackup} onImport={importBackup} />
+
+      {/* Scanner Modal for Camera */}
       <QrScannerModal
         open={isScannerOpen}
         onOpenChange={setIsScannerOpen}

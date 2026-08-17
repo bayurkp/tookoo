@@ -49,17 +49,17 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
   return (
     <Card className="border-border/80 shadow-none">
       <CardHeader className="p-4 pb-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <Wifi className="h-4 w-4" />
             </div>
             <div>
               <CardTitle className="text-base font-bold">
-                {t('sync.peers.title', 'Terminal & Perangkat Kasir')}
+                {t('sync.peers.title', 'Perangkat Kasir Terhubung')}
               </CardTitle>
               <CardDescription className="text-xs">
-                {t('sync.peers.desc', 'Perangkat kasir aktif di jaringan lokal toko.')}
+                {t('sync.peers.desc', 'Daftar terminal kasir yang sedang aktif tersambung di toko Anda.')}
               </CardDescription>
             </div>
           </div>
@@ -69,10 +69,10 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
               size="sm"
               onClick={onManualSync}
               disabled={isSyncing}
-              className="h-8 text-xs gap-1.5 cursor-pointer"
+              className="h-8 text-xs font-semibold gap-1.5 cursor-pointer shrink-0"
             >
-              <RefreshCw className={`h-3 w-3 ${isSyncing ? 'animate-spin text-primary' : ''}`} />
-              <span>{isSyncing ? 'Menyinkronkan...' : t('sync.peers.syncNow', 'Sinkronkan Sekarang')}</span>
+              <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? 'animate-spin text-primary' : ''}`} />
+              <span>{isSyncing ? 'Menyinkronkan...' : 'Samakan Data Sekarang'}</span>
             </Button>
           )}
         </div>
@@ -128,13 +128,10 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
               <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center flex flex-col items-center justify-center space-y-2">
                 <Wifi className="h-8 w-8 text-muted-foreground/40" />
                 <p className="text-xs font-medium text-foreground">
-                  {t('sync.peers.standalone', 'Mode Lokal Mandiri (1 Perangkat Aktif)')}
+                  Mode 1 Kasir (Mandiri)
                 </p>
                 <p className="text-[11px] text-muted-foreground max-w-xs">
-                  {t(
-                    'sync.peers.standaloneDesc',
-                    'Belum ada terminal kasir lain yang terhubung. Pindai QR di atas untuk menambahkan kasir kedua.'
-                  )}
+                  Belum ada terminal kasir lain yang terhubung. Sambungkan HP atau tablet kasir lain dengan memindai kode QR atau memasukkan 12 kata kunci.
                 </p>
               </div>
             ) : (
@@ -145,35 +142,35 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
                   return (
                     <div
                       key={peer.peerId}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-card text-xs"
+                      className="flex items-center justify-between p-3 rounded-lg border bg-card text-xs gap-2"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-                          {peer.deviceName.includes('Laptop') ? (
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                          {peer.deviceName.toLowerCase().includes('laptop') ? (
                             <Laptop className="h-4 w-4 text-foreground" />
                           ) : (
                             <Smartphone className="h-4 w-4 text-foreground" />
                           )}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <p className="font-semibold text-foreground">{peer.deviceName}</p>
+                            <p className="font-semibold text-foreground truncate">{peer.deviceName}</p>
                             {isWhitelisted && (
-                              <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-600 bg-amber-500/10">
+                              <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-600 bg-amber-500/10 shrink-0">
                                 <Star className="h-2.5 w-2.5 mr-0.5 fill-amber-500" />
                                 Tepercaya
                               </Badge>
                             )}
                           </div>
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-[11px] text-muted-foreground font-mono truncate">
                             ID: {peer.peerId.slice(0, 8)}...
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0">
-                          {t('sync.connected', 'Terhubung')}
+                          Terhubung
                         </Badge>
 
                         {/* Whitelist action */}
@@ -217,7 +214,6 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
         {/* 2. Tab Whitelist (Perangkat Tepercaya) */}
         {activeTab === 'WHITELIST' && (
           <div className="space-y-3">
-            {/* Whitelist-only policy toggle */}
             <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 flex items-center justify-between gap-3">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
@@ -230,8 +226,8 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
                 </div>
                 <p className="text-[11px] text-muted-foreground">
                   {whitelistOnly
-                    ? 'Hanya perangkat di daftar Tepercaya yang diizinkan melakukan sinkronisasi data.'
-                    : 'Semua perangkat dengan passphrase toko dapat terhubung (Mode Terbuka).'}
+                    ? 'Hanya perangkat di daftar Tepercaya yang diizinkan menyinkronkan data.'
+                    : 'Semua perangkat dengan kata kunci toko dapat terhubung secara otomatis.'}
                 </p>
               </div>
               {onToggleWhitelistOnly && (
@@ -240,7 +236,7 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
                   variant={whitelistOnly ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => onToggleWhitelistOnly(!whitelistOnly)}
-                  className="h-7 text-xs px-3 cursor-pointer shrink-0"
+                  className="h-7 text-xs px-3 cursor-pointer shrink-0 font-semibold"
                 >
                   {whitelistOnly ? 'Aktif' : 'Nonaktif'}
                 </Button>
@@ -249,7 +245,7 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
 
             {whitelistedDeviceIds.length === 0 ? (
               <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center text-xs text-muted-foreground">
-                Belum ada perangkat yang dimasukkan ke daftar tepercaya. Klik tombol &ldquo;Tepercaya&rdquo; pada terminal aktif untuk menambahkannya.
+                Belum ada perangkat di daftar tepercaya. Klik tombol &ldquo;Tepercaya&rdquo; pada perangkat yang aktif untuk menambahkannya.
               </div>
             ) : (
               <div className="space-y-1.5">

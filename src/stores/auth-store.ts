@@ -47,6 +47,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return true;
     }
 
+    // Permissions for Manager
+    if (currentRole === 'MANAGER') {
+      switch (permission) {
+        case 'MANAGE_STORE_SETTINGS':
+        case 'RESET_STORE':
+          return false;
+        default:
+          return true;
+      }
+    }
+
     // Permissions allowed for standard Cashier staff
     switch (permission) {
       case 'VIEW_REVENUE_REPORTS':

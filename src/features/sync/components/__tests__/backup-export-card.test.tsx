@@ -10,7 +10,7 @@ describe('BackupExportCard', () => {
     render(<BackupExportCard onExport={handleExport} onImport={handleImport} />);
 
     const exportBtn = screen.getByRole('button', {
-      name: /Unduh Berkas Cadangan|Ekspor Cadangan/i,
+      name: /Ekspor Berkas Cadangan/i,
     });
     fireEvent.click(exportBtn);
 

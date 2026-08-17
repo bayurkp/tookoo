@@ -141,24 +141,27 @@
     }
   },
   "sync": {
-    "title": "Synchronization",
-    "subtitle": "Peer-to-peer (WebRTC) multi-terminal sync, access control (RBAC), device whitelist, and blacklist management.",
+    "title": "Device Synchronization",
+    "subtitle": "Connect multiple phones and cashier terminals to sell together offline & in real-time.",
     "storeIdentity": {
-      "title": "Store Name & Security Key",
-      "desc": "Secret security words to link owner phone and cashier devices.",
+      "title": "Store Info & Security Key",
+      "desc": "Store credentials and 12 secret words to connect your cashier devices.",
       "nameLabel": "Store Name",
-      "saveBtn": "Save Name",
-      "passphraseLabel": "12 Store Security Words",
-      "regenerate": "Generate New Words",
+      "deviceLabel": "This Device Name",
+      "saveStoreName": "Save Store Name",
+      "saveDeviceName": "Save Device Name",
+      "passphraseLabel": "Store Security Key (12 Mnemonic Words)",
+      "regenerate": "Generate New Key",
       "copy": "Copy 12 Security Words",
+      "shareLink": "Copy Store Link",
       "copied": "Copied to clipboard."
     },
-    "qrCard": {
-      "title": "Store Link QR Code",
-      "desc": "Scan from another phone or cashier device to link store data.",
-      "direct": "Direct Link",
-      "helper": "Point the camera of your new cashier device to the QR above or enter 12 security words manually.",
-      "scanBtn": "Scan Other Device QR"
+    "connectCard": {
+      "title": "Connect to Another Store",
+      "desc": "Type the main store's 12 security words or scan the QR code to join this terminal.",
+      "passphraseLabel": "Type / Paste 12 Store Security Words",
+      "connectBtn": "Connect to Store",
+      "scanBtn": "Open Camera QR Scanner"
     },
     "scanner": {
       "title": "Connect Cashier Device",
@@ -167,24 +170,30 @@
       "manualTab": "12 Words",
       "cameraTitle": "Point Camera to Store QR",
       "cameraDesc": "Allow camera access in your browser to scan the store QR code directly.",
+      "startCamera": "Start Camera",
+      "stopCamera": "Stop Camera",
       "storeNameLabel": "Store Name (Optional)",
       "passphraseLabel": "12 Store Security Words *",
       "connectBtn": "Connect to Store"
     },
+    "security": {
+      "title": "Terminal Role & Security PIN",
+      "desc": "Set this device's role and protect sensitive menus with an Owner PIN."
+    },
     "peers": {
-      "title": "Connected Store Devices",
-      "desc": "List of active connected owner phones and cashier terminals.",
+      "title": "Connected Cashier Devices",
+      "desc": "List of active cashier terminals currently connected in your store.",
       "syncNow": "Sync Data Now",
       "standalone": "Single Terminal Mode",
-      "standaloneDesc": "No other devices connected yet. Scan the QR code above to link an additional phone or cashier."
+      "standaloneDesc": "No other cashier terminals connected yet. Connect another phone or tablet by scanning the QR code or entering 12 words."
     },
     "backup": {
-      "title": "Store Backup & Restore",
+      "title": "Data Backup & Restore",
       "desc": "Save a backup copy of your catalog and sales records to keep your store data safe.",
-      "exportBtn": "Download Backup File",
-      "importBtn": "Restore from Backup File",
+      "exportBtn": "Export Backup File",
+      "importBtn": "Restore from File",
       "successMsg": "Successfully restored {{products}} products and {{orders}} transactions.",
-      "errorMsg": "Failed to read backup file. Please ensure you selected a valid Tookoo JSON backup."
+      "errorMsg": "Failed to read backup file. Invalid JSON format."
     }
   },
   "settings": {

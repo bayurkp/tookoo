@@ -46,17 +46,17 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
     <Card className="border-border/80 shadow-none">
       <CardHeader className="p-4 pb-2">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Database className="h-4 w-4" />
           </div>
           <div>
             <CardTitle className="text-base font-bold">
-              {t('sync.backup.title', 'Cadangan & Pemulihan Data (Offline Backup)')}
+              {t('sync.backup.title', 'Cadangan & Pemulihan Data')}
             </CardTitle>
             <CardDescription className="text-xs">
               {t(
                 'sync.backup.desc',
-                'Simpan berkas master produk dan riwayat transaksi ke penyimpanan lokal.'
+                'Simpan salinan data produk dan riwayat transaksi ke berkas file agar data tokomu selalu aman.'
               )}
             </CardDescription>
           </div>
@@ -70,10 +70,10 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
             type="button"
             variant="outline"
             onClick={onExport}
-            className="h-10 text-xs font-bold gap-2 cursor-pointer"
+            className="h-9 text-xs font-bold gap-2 cursor-pointer"
           >
             <Download className="h-4 w-4" />
-            <span>{t('sync.backup.exportBtn', 'Ekspor Cadangan (JSON)')}</span>
+            <span>Ekspor Berkas Cadangan</span>
           </Button>
 
           {/* Import Button */}
@@ -89,16 +89,16 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
               type="button"
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-10 text-xs font-bold gap-2 cursor-pointer"
+              className="w-full h-9 text-xs font-bold gap-2 cursor-pointer"
             >
               <Upload className="h-4 w-4" />
-              <span>{t('sync.backup.importBtn', 'Pulihkan dari File')}</span>
+              <span>Pulihkan dari Berkas</span>
             </Button>
           </div>
         </div>
 
         {importStatus && (
-          <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+          <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2 font-medium">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{importStatus}</span>
           </div>
@@ -107,3 +107,5 @@ export const BackupExportCard: React.FC<BackupExportCardProps> = ({ onExport, on
     </Card>
   );
 };
+
+export default BackupExportCard;

@@ -141,50 +141,59 @@
     }
   },
   "sync": {
-    "title": "Sinkronisasi",
-    "subtitle": "Sinkronisasi multi-terminal kasir peer-to-peer (WebRTC), kelola izin akses (RBAC), whitelist, dan blacklist perangkat.",
+    "title": "Sinkronisasi Perangkat",
+    "subtitle": "Hubungkan beberapa HP dan mesin kasir untuk jualan bersama secara offline & real-time.",
     "storeIdentity": {
-      "title": "Nama & Kunci Keamanan Toko",
-      "desc": "Kunci keamanan rahasia untuk menyambungkan HP pemilik dan mesin kasir toko.",
+      "title": "Informasi Toko & Kunci Keamanan",
+      "desc": "Identitas toko dan 12 kata kunci rahasia untuk menghubungkan perangkat kasir Anda.",
       "nameLabel": "Nama Toko",
-      "saveBtn": "Simpan Nama",
-      "passphraseLabel": "12 Kata Kunci Keamanan Toko",
+      "deviceLabel": "Nama Perangkat Ini",
+      "saveStoreName": "Simpan Nama Toko",
+      "saveDeviceName": "Simpan Nama Perangkat",
+      "passphraseLabel": "Kunci Keamanan Toko (12 Kata Mnemonic)",
       "regenerate": "Ganti Kunci Baru",
       "copy": "Salin 12 Kata Kunci",
+      "shareLink": "Salin Tautan Toko",
       "copied": "Tersalin ke clipboard."
     },
-    "qrCard": {
-      "title": "QR Code Sambung Toko",
-      "desc": "Pindai dari HP atau mesin kasir lain untuk menyamakan data toko.",
-      "direct": "Langsung Antar HP",
-      "helper": "Arahkan kamera HP kasir baru ke QR di atas atau masukkan 12 kata kunci secara manual.",
-      "scanBtn": "Pindai QR Perangkat Lain"
+    "connectCard": {
+      "title": "Sambungkan ke Toko Lain",
+      "desc": "Ketik 12 kata kunci toko utama atau pindai kode QR untuk menggabungkan terminal ini.",
+      "passphraseLabel": "Ketik / Tempel 12 Kata Kunci Toko",
+      "connectBtn": "Hubungkan ke Toko",
+      "scanBtn": "Buka Kamera Pindai QR"
     },
     "scanner": {
       "title": "Sambungkan Perangkat Kasir",
       "desc": "Hubungkan HP atau perangkat ini ke toko yang sudah ada.",
       "cameraTab": "Pindai Kamera",
       "manualTab": "12 Kata Kunci",
-      "cameraTitle": "Arahkan Kamera ke QR Toko",
-      "cameraDesc": "Pastikan izin kamera aktif pada browser untuk memindai kode QR toko.",
+      "cameraTitle": "Pindai QR Toko dengan Kamera",
+      "cameraDesc": "Arahkan kamera ke QR Code toko di layar laptop atau HP utama.",
+      "startCamera": "Nyalakan Kamera",
+      "stopCamera": "Matikan Kamera",
       "storeNameLabel": "Nama Toko (Opsional)",
       "passphraseLabel": "12 Kata Kunci Toko *",
       "connectBtn": "Sambungkan ke Toko"
     },
+    "security": {
+      "title": "Peran Terminal & Keamanan PIN",
+      "desc": "Tentukan peran perangkat ini dan amankan menu sensitif dengan PIN Pemilik."
+    },
     "peers": {
-      "title": "Perangkat Toko Terhubung",
-      "desc": "Daftar HP dan perangkat kasir yang sedang aktif tersambung.",
+      "title": "Perangkat Kasir Terhubung",
+      "desc": "Daftar terminal kasir yang sedang aktif tersambung di toko Anda.",
       "syncNow": "Samakan Data Sekarang",
       "standalone": "Mode 1 Kasir (Mandiri)",
-      "standaloneDesc": "Belum ada perangkat lain yang tersambung. Pindai QR di atas untuk menghubungkan HP atau kasir tambahan."
+      "standaloneDesc": "Belum ada terminal kasir lain yang terhubung. Sambungkan HP atau tablet kasir lain dengan memindai kode QR atau memasukkan 12 kata kunci."
     },
     "backup": {
-      "title": "Cadangkan & Pulihkan Data Toko",
+      "title": "Cadangkan & Pemulihan Data",
       "desc": "Simpan salinan data produk dan riwayat transaksi ke berkas file agar data tokomu selalu aman.",
-      "exportBtn": "Unduh Berkas Cadangan",
-      "importBtn": "Pulihkan dari Berkas File",
+      "exportBtn": "Ekspor Berkas Cadangan",
+      "importBtn": "Pulihkan dari Berkas",
       "successMsg": "Data berhasil dipulihkan: {{products}} produk dan {{orders}} transaksi.",
-      "errorMsg": "Gagal membaca berkas cadangan. Pastikan berkas yang dipilih adalah berkas cadangan Tookoo yang benar."
+      "errorMsg": "Gagal membaca berkas cadangan. Format JSON tidak valid."
     }
   },
   "settings": {

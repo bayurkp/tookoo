@@ -1,4 +1,4 @@
-export type UserRole = 'OWNER' | 'CASHIER';
+export type UserRole = 'OWNER' | 'MANAGER' | 'CASHIER';
 
 export type AppPermission =
   | 'MANAGE_PRODUCTS'
@@ -16,7 +16,7 @@ export interface StoreSettings {
   receiptFooter?: string;
   defaultCashier?: string;
   ownerPin?: string; // 4-6 digit security PIN for owner operations
-  activeRole?: UserRole; // Current role of this terminal ('OWNER' | 'CASHIER')
+  activeRole?: UserRole; // Current role of this terminal ('OWNER' | 'MANAGER' | 'CASHIER')
   blacklistedDeviceIds?: string[]; // List of blocked device IDs
   whitelistedDeviceIds?: string[]; // List of explicitly trusted device IDs
   whitelistOnly?: boolean; // When true, only whitelisted devices are allowed to sync
