@@ -1,18 +1,10 @@
-import { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout } from '@/components/main-layout';
-
-const CashierPage = lazy(() => import('@/app/pages/cashier-page'));
-const ProductsPage = lazy(() => import('@/app/pages/products-page'));
-const OrdersPage = lazy(() => import('@/app/pages/orders-page'));
-const SyncPage = lazy(() => import('@/app/pages/sync-page'));
-const SettingsPage = lazy(() => import('@/app/pages/settings-page'));
-
-const SuspenseFallback = () => (
-  <div className="flex h-full w-full items-center justify-center p-8">
-    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-  </div>
-);
+import CashierPage from '@/app/pages/cashier-page';
+import ProductsPage from '@/app/pages/products-page';
+import OrdersPage from '@/app/pages/orders-page';
+import SyncPage from '@/app/pages/sync-page';
+import SettingsPage from '@/app/pages/settings-page';
 
 export const router = createBrowserRouter([
   {
@@ -21,44 +13,26 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <Suspense fallback={<SuspenseFallback />}>
-            <CashierPage />
-          </Suspense>
-        ),
+        element: <CashierPage />,
       },
       {
         path: 'products',
-        element: (
-          <Suspense fallback={<SuspenseFallback />}>
-            <ProductsPage />
-          </Suspense>
-        ),
+        element: <ProductsPage />,
       },
       {
         path: 'orders',
-        element: (
-          <Suspense fallback={<SuspenseFallback />}>
-            <OrdersPage />
-          </Suspense>
-        ),
+        element: <OrdersPage />,
       },
       {
         path: 'sync',
-        element: (
-          <Suspense fallback={<SuspenseFallback />}>
-            <SyncPage />
-          </Suspense>
-        ),
+        element: <SyncPage />,
       },
       {
         path: 'settings',
-        element: (
-          <Suspense fallback={<SuspenseFallback />}>
-            <SettingsPage />
-          </Suspense>
-        ),
+        element: <SettingsPage />,
       },
     ],
   },
 ]);
+
+export default router;

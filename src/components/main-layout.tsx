@@ -10,7 +10,7 @@ export const MainLayout: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex h-screen w-full flex-col bg-background text-foreground overflow-hidden">
+      <div className="flex h-screen h-[100dvh] w-full flex-col bg-background text-foreground overflow-hidden">
         {/* Top Header */}
         <header className="flex h-16 items-center justify-between border-b px-4 sm:px-6 bg-card/80 backdrop-blur z-20 shrink-0">
           <div className="flex items-center gap-3">
