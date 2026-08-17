@@ -31,13 +31,7 @@ describe('OrderReceiptDialog', () => {
   it('renders order receipt breakdown and triggers print', () => {
     const printSpy = vi.spyOn(window, 'print').mockImplementation(() => {});
 
-    render(
-      <OrderReceiptDialog
-        order={mockOrder}
-        open={true}
-        onOpenChange={() => {}}
-      />
-    );
+    render(<OrderReceiptDialog order={mockOrder} open={true} onOpenChange={() => {}} />);
 
     expect(screen.getByText('TK-20260817-0099')).toBeInTheDocument();
     expect(screen.getByText('Caramel Macchiato')).toBeInTheDocument();

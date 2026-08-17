@@ -21,8 +21,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
 
     const totalRevenue = todayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
     const totalOrders = todayOrders.length;
-    const averageTicket =
-      totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+    const averageTicket = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
     const cashRevenue = todayOrders
       .filter((o) => o.paymentMethod === 'CASH')
@@ -52,9 +51,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              Omzet Hari Ini
-            </p>
+            <p className="text-xs font-medium text-muted-foreground">Omzet Hari Ini</p>
             <p className="text-xl font-black tracking-tight text-primary">
               {formatCurrency(summary.totalRevenue)}
             </p>
@@ -69,9 +66,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              Total Transaksi
-            </p>
+            <p className="text-xs font-medium text-muted-foreground">Total Transaksi</p>
             <p className="text-xl font-bold tracking-tight text-foreground">
               {summary.totalOrders} Transaksi
             </p>
@@ -86,9 +81,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              Rata-rata Transaksi
-            </p>
+            <p className="text-xs font-medium text-muted-foreground">Rata-rata Transaksi</p>
             <p className="text-xl font-bold tracking-tight text-foreground">
               {formatCurrency(summary.averageTicket)}
             </p>
@@ -103,9 +96,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
       <Card className="border-border/80 shadow-xs">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              QRIS / Non-Tunai
-            </p>
+            <p className="text-xs font-medium text-muted-foreground">QRIS / Non-Tunai</p>
             <p className="text-xl font-bold tracking-tight text-foreground">
               {formatCurrency(summary.qrisRevenue + summary.transferRevenue)}
             </p>

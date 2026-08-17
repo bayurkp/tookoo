@@ -37,9 +37,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
             <Receipt className="h-5 w-5" />
           </div>
           <div>
-            <DialogTitle className="text-lg font-bold">
-              Rincian Struk Transaksi
-            </DialogTitle>
+            <DialogTitle className="text-lg font-bold">Rincian Struk Transaksi</DialogTitle>
             <DialogDescription className="font-mono text-xs text-foreground font-semibold">
               {order.orderNumber}
             </DialogDescription>
@@ -79,9 +77,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
 
         {/* Itemized List */}
         <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-          <p className="text-xs font-bold text-foreground">
-            Menu Terjual ({order.items.length})
-          </p>
+          <p className="text-xs font-bold text-foreground">Menu Terjual ({order.items.length})</p>
           <div className="divide-y divide-border/60 border rounded-lg overflow-hidden bg-card text-xs">
             {order.items.map((item, idx) => (
               <div key={idx} className="p-2.5 flex justify-between items-center">
@@ -91,9 +87,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
                     {item.qty}x @ {formatCurrency(item.price)}
                   </p>
                 </div>
-                <p className="font-bold text-foreground">
-                  {formatCurrency(item.subtotal)}
-                </p>
+                <p className="font-bold text-foreground">{formatCurrency(item.subtotal)}</p>
               </div>
             ))}
           </div>
@@ -113,9 +107,7 @@ export const OrderReceiptDialog: React.FC<OrderReceiptDialogProps> = ({
           )}
           <div className="flex justify-between font-bold text-sm text-foreground pt-1 border-t">
             <span>Total Tagihan</span>
-            <span className="text-primary font-black">
-              {formatCurrency(order.totalAmount)}
-            </span>
+            <span className="text-primary font-black">{formatCurrency(order.totalAmount)}</span>
           </div>
           {order.paymentMethod === 'CASH' && (
             <>

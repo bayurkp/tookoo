@@ -23,8 +23,7 @@ export const OrdersPage: React.FC = () => {
       const matchesSearch =
         order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.cashierName.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesPayment =
-        paymentFilter === 'ALL' || order.paymentMethod === paymentFilter;
+      const matchesPayment = paymentFilter === 'ALL' || order.paymentMethod === paymentFilter;
       return matchesSearch && matchesPayment;
     });
   }, [orders, searchQuery, paymentFilter]);
@@ -37,8 +36,7 @@ export const OrdersPage: React.FC = () => {
           {t('orders.title', 'Riwayat Transaksi')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          Laporan omzet penjualan harian, riwayat pembayaran, dan pencetakan ulang
-          struk.
+          Laporan omzet penjualan harian, riwayat pembayaran, dan pencetakan ulang struk.
         </p>
       </div>
 
@@ -66,11 +64,7 @@ export const OrdersPage: React.FC = () => {
               className="cursor-pointer px-3 py-1.5 text-xs font-semibold"
               onClick={() => setPaymentFilter(method)}
             >
-              {method === 'ALL'
-                ? `Semua (${orders.length})`
-                : method === 'CASH'
-                  ? 'Tunai'
-                  : method}
+              {method === 'ALL' ? `Semua (${orders.length})` : method === 'CASH' ? 'Tunai' : method}
             </Badge>
           ))}
         </div>
