@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Html5Qrcode } from 'html5-qrcode';
-import { ScanLine, KeyRound, CheckCircle2, AlertCircle, Camera, RefreshCw } from 'lucide-react';
+import { ScanLine, KeyRound, CheckCircle2, AlertCircle, Camera, RefreshCw, StopCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -37,9 +37,13 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   const [isInitializing, setIsInitializing] = useState(false);
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const isStoppingRef = useRef(false);
 
   // Stop camera scanner safely
   const stopCamera = async () => {
+    if (isStoppingRef.current) return;
+    isStoppingRef.current = true;
+
     if (scannerRef.current) {
       try {
         if (scannerRef.current.isScanning) {
@@ -47,11 +51,14 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         }
         scannerRef.current.clear();
       } catch (err) {
-        console.warn('Error stopping QR scanner:', err);
+        console.warn('Error clearing QR scanner:', err);
       }
       scannerRef.current = null;
-      setIsCameraActive(false);
     }
+
+    setIsCameraActive(false);
+    setIsInitializing(false);
+    isStoppingRef.current = false;
   };
 
   // Start camera scanner
@@ -60,18 +67,33 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     setIsInitializing(true);
 
     try {
-      // Ensure any previous scanner instance is cleared
+      // Ensure any previous scanner is stopped cleanly
       await stopCamera();
+
+      // Wait a tick for DOM to settle
+      await new Promise((r) => setTimeout(r, 100));
+
+      const readerElement = document.getElementById('tookoo-qr-reader');
+      if (!readerElement) {
+        throw new Error('Viewfinder element not found');
+      }
 
       const scanner = new Html5Qrcode('tookoo-qr-reader');
       scannerRef.current = scanner;
 
+      const qrConfig = {
+        fps: 15,
+        qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+          const edge = Math.max(150, Math.floor(minEdge * 0.75));
+          return { width: edge, height: edge };
+        },
+        aspectRatio: 1.0,
+      };
+
       await scanner.start(
         { facingMode: 'environment' },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-        },
+        qrConfig,
         async (decodedText) => {
           try {
             const payload = JSON.parse(decodedText) as StorePairingPayload;
@@ -96,6 +118,19 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         }
       );
 
+      // Force video element to play inline on iOS Safari
+      const video = readerElement.querySelector('video');
+      if (video) {
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
+        video.muted = true;
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        video.style.borderRadius = '0.75rem';
+        video.play().catch(() => {});
+      }
+
       setIsCameraActive(true);
     } catch (err) {
       console.error('Failed to start camera scanner:', err);
@@ -103,7 +138,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
       setErrorMessage(
         t(
           'sync.scanner.cameraPermissionDenied',
-          'Izin kamera tidak diberikan atau kamera tidak tersedia. Silakan izinkan akses kamera di pengaturan browser Safari/Chrome Anda, atau gunakan tab 12 Kata Kunci.'
+          'Kamera tidak dapat dimulai. Pastikan izin kamera aktif di Safari/Chrome, atau gunakan tab 12 Kata Kunci.'
         )
       );
     } finally {
@@ -183,14 +218,16 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
           {/* Camera Scanner Tab */}
           <TabsContent value="scanner" className="pt-2 space-y-3">
-            <div className="relative min-h-[260px] border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-center overflow-hidden bg-muted/20">
+            <div className="relative w-full aspect-square max-h-[280px] border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center text-center overflow-hidden bg-muted/30">
+              {/* Always rendered in DOM with valid geometry */}
               <div
                 id="tookoo-qr-reader"
-                className={`w-full h-full min-h-[260px] ${isCameraActive ? 'block' : 'hidden'}`}
+                className="w-full h-full flex items-center justify-center overflow-hidden rounded-xl"
               />
 
+              {/* Placeholder when camera is inactive */}
               {!isCameraActive && (
-                <div className="p-6 flex flex-col items-center justify-center space-y-3">
+                <div className="absolute inset-0 p-6 flex flex-col items-center justify-center space-y-3 bg-card/95 z-10">
                   <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
                     <Camera className="h-6 w-6" />
                   </div>
@@ -201,7 +238,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                     <p className="text-xs text-muted-foreground mt-1 max-w-xs">
                       {t(
                         'sync.scanner.cameraDesc',
-                        'Tekan tombol di bawah untuk meminta izin kamera dan mulai memindai.'
+                        'Arahkan kamera ke QR Code toko di layar laptop atau HP utama.'
                       )}
                     </p>
                   </div>
@@ -225,6 +262,21 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                 </div>
               )}
             </div>
+
+            {isCameraActive && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={stopCamera}
+                  className="text-xs gap-1.5 cursor-pointer"
+                >
+                  <StopCircle className="h-3.5 w-3.5 text-destructive" />
+                  <span>Matikan Kamera</span>
+                </Button>
+              </div>
+            )}
 
             {errorMessage && (
               <div className="flex items-start gap-1.5 text-xs text-destructive bg-destructive/10 p-2.5 rounded-md font-medium">
