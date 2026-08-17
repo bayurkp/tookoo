@@ -28,6 +28,7 @@
           var isDark =
             theme === 'dark' ||
             (theme === 'system' &&
+              window.matchMedia &&
               window.matchMedia('(prefers-color-scheme: dark)').matches);
           if (isDark) {
             document.documentElement.classList.add('dark');
@@ -36,6 +37,17 @@
           }
         } catch (e) {}
       })();
+
+      // Global safety net for mobile debugging
+      window.addEventListener('error', function (event) {
+        var root = document.getElementById('root');
+        if (root && root.innerHTML.trim() === '') {
+          var errDiv = document.createElement('div');
+          errDiv.style.cssText = 'padding: 24px; font-family: sans-serif; text-align: center; color: #ef4444;';
+          errDiv.innerHTML = '<h3>Memuat Aplikasi...</h3><p style="font-size: 12px; color: #64748b;">Jika layar tidak berubah, silakan segarkan peramban Anda.</p>';
+          root.appendChild(errDiv);
+        }
+      });
     </script>
   </head>
   <body class="bg-background text-foreground antialiased selection:bg-primary/20">
