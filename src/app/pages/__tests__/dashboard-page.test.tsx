@@ -67,6 +67,8 @@ describe('DashboardPage', () => {
       discount: 0,
       totalAmount: 60000,
       paymentMethod: 'CASH',
+      amountPaid: 60000,
+      changeDue: 0,
       cashierName: 'Kasir Utama',
       createdAt: Date.now(),
       updatedAt: Date.now(),
