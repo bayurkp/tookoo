@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -8,11 +8,37 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Lightweight Zero-Config WebSocket P2P Signaling Relay Plugin for Tookoo
+ */
+function signalingPlugin(): Plugin {
+  return {
+    name: 'tookoo-signaling-plugin',
+    configureServer(server) {
+      server.ws.on('tookoo:signal', (payload, client) => {
+        // Broadcast signaling payload to all other connected browser instances
+        server.ws.clients.forEach((c) => {
+          if (c !== client && c.readyState === 1) {
+            c.send(
+              JSON.stringify({
+                type: 'custom',
+                event: 'tookoo:signal',
+                data: payload,
+              })
+            );
+          }
+        });
+      });
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    signalingPlugin(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],

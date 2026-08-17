@@ -33,8 +33,47 @@ export const useP2pSync = () => {
       updateStoreSettings(updates),
     onSuccess: (updated) => {
       queryClient.setQueryData(['settings'], updated);
+      if (updated.passphrase && updated.id) {
+        p2pEngine.updateIdentity(
+          updated.passphrase,
+          updated.id,
+          updated.deviceName || 'Terminal Kasir'
+        );
+      }
     },
   });
+
+  // Sync all local products and orders to all connected peers
+  const syncAllDataNow = useCallback(async () => {
+    setIsSyncing(true);
+    try {
+      const products = await db.products.toArray();
+      const orders = await db.orders.toArray();
+      const deviceId = settingsRef.current?.id || 'host-device';
+
+      for (const product of products) {
+        p2pEngine.broadcast({
+          action: 'UPSERT',
+          collection: 'products',
+          data: product,
+          updatedAt: product.updatedAt,
+          deviceId,
+        });
+      }
+
+      for (const order of orders) {
+        p2pEngine.broadcast({
+          action: 'UPSERT',
+          collection: 'orders',
+          data: order,
+          updatedAt: order.updatedAt,
+          deviceId,
+        });
+      }
+    } finally {
+      setTimeout(() => setIsSyncing(false), 1000);
+    }
+  }, []);
 
   // Handle incoming P2P message
   const handleIncomingMessage = useCallback(
@@ -81,7 +120,7 @@ export const useP2pSync = () => {
         return;
       }
 
-      // 4. Apply normal sync mutation
+      // 4. Apply normal sync mutation (UPSERT / DELETE)
       const applied = await applySyncMessage(msg);
       if (applied) {
         queryClient.invalidateQueries({ queryKey: [msg.collection] });
@@ -91,56 +130,67 @@ export const useP2pSync = () => {
   );
 
   // Handle peer connection state change
-  const handlePeerStatus = useCallback((peerId: string, status: 'CONNECTED' | 'DISCONNECTED') => {
-    const currentSettings = settingsRef.current;
-    const currentBlacklist = currentSettings?.blacklistedDeviceIds || [];
-    const currentWhitelist = currentSettings?.whitelistedDeviceIds || [];
-    const isWhitelistOnly = Boolean(currentSettings?.whitelistOnly);
+  const handlePeerStatus = useCallback(
+    (peerId: string, status: 'CONNECTED' | 'DISCONNECTED', deviceName?: string) => {
+      const currentSettings = settingsRef.current;
+      const currentBlacklist = currentSettings?.blacklistedDeviceIds || [];
+      const currentWhitelist = currentSettings?.whitelistedDeviceIds || [];
+      const isWhitelistOnly = Boolean(currentSettings?.whitelistOnly);
 
-    // Check blacklist & whitelist before accepting connection
-    if (currentBlacklist.includes(peerId)) {
-      return;
-    }
-    if (isWhitelistOnly && !currentWhitelist.includes(peerId)) {
-      return;
-    }
-
-    setPeers((prev) => {
-      if (status === 'CONNECTED') {
-        const currentDeviceName = currentSettings?.deviceName || 'Kasir Utama';
-        p2pEngine.broadcast({
-          action: 'HANDSHAKE',
-          collection: 'settings',
-          data: { deviceName: currentDeviceName },
-          updatedAt: Date.now(),
-          deviceId: currentSettings?.id || 'host-device',
-        });
-
-        const existing = prev.find((p) => p.peerId === peerId);
-        if (existing) {
-          return prev.map((p) => (p.peerId === peerId ? { ...p, status } : p));
-        }
-        return [
-          ...prev,
-          {
-            peerId,
-            deviceName: 'Terminal Kasir',
-            connectedAt: Date.now(),
-            status,
-          },
-        ];
+      // Check blacklist & whitelist before accepting connection
+      if (currentBlacklist.includes(peerId)) {
+        return;
       }
-      return prev.filter((p) => p.peerId !== peerId);
-    });
-  }, []);
+      if (isWhitelistOnly && !currentWhitelist.includes(peerId)) {
+        return;
+      }
 
-  // Initialize P2P Listener
+      setPeers((prev) => {
+        if (status === 'CONNECTED') {
+          const resolvedName = deviceName || 'Terminal Kasir';
+          const existing = prev.find((p) => p.peerId === peerId);
+          if (existing) {
+            return prev.map((p) =>
+              p.peerId === peerId ? { ...p, status, deviceName: resolvedName } : p
+            );
+          }
+          return [
+            ...prev,
+            {
+              peerId,
+              deviceName: resolvedName,
+              connectedAt: Date.now(),
+              status,
+            },
+          ];
+        }
+        return prev.filter((p) => p.peerId !== peerId);
+      });
+    },
+    []
+  );
+
+  // Initialize P2P Engine & Listeners
   useEffect(() => {
-    p2pEngine.initConnection(handleIncomingMessage, handlePeerStatus);
+    p2pEngine.initConnection(handleIncomingMessage, handlePeerStatus, () => {
+      // Auto push all local products & orders upon new peer connection
+      syncAllDataNow();
+    });
     return () => {
       p2pEngine.close();
     };
-  }, [handleIncomingMessage, handlePeerStatus]);
+  }, [handleIncomingMessage, handlePeerStatus, syncAllDataNow]);
+
+  // Synchronize identity to P2P engine whenever settings are loaded or changed
+  useEffect(() => {
+    if (settings?.passphrase && settings?.id) {
+      p2pEngine.updateIdentity(
+        settings.passphrase,
+        settings.id,
+        settings.deviceName || 'Terminal Kasir'
+      );
+    }
+  }, [settings?.passphrase, settings?.id, settings?.deviceName]);
 
   // Actions
   const updateStoreName = (name: string) => {
@@ -155,8 +205,9 @@ export const useP2pSync = () => {
     const current = settings?.blacklistedDeviceIds || [];
     if (!current.includes(deviceId)) {
       const updated = [...current, deviceId];
-      // Also remove from whitelist if present
-      const updatedWhitelist = (settings?.whitelistedDeviceIds || []).filter((id) => id !== deviceId);
+      const updatedWhitelist = (settings?.whitelistedDeviceIds || []).filter(
+        (id) => id !== deviceId
+      );
       updateSettingsMutation.mutate({
         blacklistedDeviceIds: updated,
         whitelistedDeviceIds: updatedWhitelist,
@@ -175,8 +226,9 @@ export const useP2pSync = () => {
     const current = settings?.whitelistedDeviceIds || [];
     if (!current.includes(deviceId)) {
       const updated = [...current, deviceId];
-      // Also remove from blacklist if present
-      const updatedBlacklist = (settings?.blacklistedDeviceIds || []).filter((id) => id !== deviceId);
+      const updatedBlacklist = (settings?.blacklistedDeviceIds || []).filter(
+        (id) => id !== deviceId
+      );
       updateSettingsMutation.mutate({
         whitelistedDeviceIds: updated,
         blacklistedDeviceIds: updatedBlacklist,
@@ -196,37 +248,6 @@ export const useP2pSync = () => {
 
   const regeneratePassphrase = () => {
     updateSettingsMutation.mutate({ passphrase: generatePassphrase(12) });
-  };
-
-  const syncAllDataNow = async () => {
-    setIsSyncing(true);
-    try {
-      const products = await db.products.toArray();
-      const orders = await db.orders.toArray();
-      const deviceId = settings?.id || 'host-device';
-
-      for (const product of products) {
-        p2pEngine.broadcast({
-          action: 'UPSERT',
-          collection: 'products',
-          data: product,
-          updatedAt: product.updatedAt,
-          deviceId,
-        });
-      }
-
-      for (const order of orders) {
-        p2pEngine.broadcast({
-          action: 'UPSERT',
-          collection: 'orders',
-          data: order,
-          updatedAt: order.updatedAt,
-          deviceId,
-        });
-      }
-    } finally {
-      setTimeout(() => setIsSyncing(false), 1000);
-    }
   };
 
   const exportBackup = async () => {
