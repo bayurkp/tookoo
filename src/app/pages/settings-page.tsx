@@ -19,6 +19,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
 import { sounds } from '@/utils/audio';
@@ -136,27 +141,29 @@ export const SettingsPage: React.FC = () => {
               onSubmit={handleSaveProfile}
               className="space-y-4"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FieldGroup className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Store Name */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                <Field>
+                  <FieldLabel htmlFor="store-name">
                     {t('settings.profile.storeName', 'Nama Toko')} *
-                  </label>
+                  </FieldLabel>
                   <Input
+                    id="store-name"
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     placeholder="Contoh: Toko Kopi Senja"
                     disabled={isSettingsLoading}
                     required
                   />
-                </div>
+                </Field>
 
                 {/* Default Cashier */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                <Field>
+                  <FieldLabel htmlFor="default-cashier">
                     {t('settings.profile.defaultCashier', 'Nama Kasir Bawaan')}
-                  </label>
+                  </FieldLabel>
                   <Input
+                    id="default-cashier"
                     value={defaultCashier}
                     onChange={(e) => setDefaultCashier(e.target.value)}
                     placeholder={t(
@@ -165,14 +172,15 @@ export const SettingsPage: React.FC = () => {
                     )}
                     disabled={isSettingsLoading}
                   />
-                </div>
+                </Field>
 
                 {/* Store Address */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                <Field>
+                  <FieldLabel htmlFor="store-address">
                     {t('settings.profile.storeAddress', 'Alamat / Lokasi Toko')}
-                  </label>
+                  </FieldLabel>
                   <Input
+                    id="store-address"
                     value={storeAddress}
                     onChange={(e) => setStoreAddress(e.target.value)}
                     placeholder={t(
@@ -181,14 +189,15 @@ export const SettingsPage: React.FC = () => {
                     )}
                     disabled={isSettingsLoading}
                   />
-                </div>
+                </Field>
 
                 {/* Receipt Footer Message */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                <Field>
+                  <FieldLabel htmlFor="receipt-footer">
                     {t('settings.profile.receiptFooter', 'Pesan Kaki Struk')}
-                  </label>
+                  </FieldLabel>
                   <Input
+                    id="receipt-footer"
                     value={receiptFooter}
                     onChange={(e) => setReceiptFooter(e.target.value)}
                     placeholder={t(
@@ -197,8 +206,8 @@ export const SettingsPage: React.FC = () => {
                     )}
                     disabled={isSettingsLoading}
                   />
-                </div>
-              </div>
+                </Field>
+              </FieldGroup>
 
               <div className="flex justify-end pt-2">
                 <Button type="submit" disabled={isSettingsLoading} className="cursor-pointer">

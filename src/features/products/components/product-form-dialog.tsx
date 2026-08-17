@@ -11,6 +11,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from '@/components/ui/field';
 import { productFormSchema, type ProductFormInput } from '../types/product-form.types';
 import { useUpsertProduct } from '../hooks/use-products';
 import type { Product } from '@/types/product.types';
@@ -95,81 +101,61 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2">
-            <div className="space-y-1">
-              <label htmlFor="name" className="text-xs font-semibold text-foreground">
-                Nama Produk *
-              </label>
+          <FieldGroup className="gap-3 py-2">
+            <Field>
+              <FieldLabel htmlFor="name">Nama Produk *</FieldLabel>
               <Input
                 id="name"
                 placeholder="Contoh: Kopi Americano"
                 {...register('name')}
               />
-              {errors.name?.message && (
-                <p className="text-xs text-destructive">{errors.name.message}</p>
-              )}
-            </div>
+              <FieldError errors={[{ message: errors.name?.message }]} />
+            </Field>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label htmlFor="category" className="text-xs font-semibold text-foreground">
-                  Kategori *
-                </label>
+              <Field>
+                <FieldLabel htmlFor="category">Kategori *</FieldLabel>
                 <Input
                   id="category"
                   placeholder="Contoh: Minuman"
                   {...register('category')}
                 />
-                {errors.category?.message && (
-                  <p className="text-xs text-destructive">{errors.category.message}</p>
-                )}
-              </div>
+                <FieldError errors={[{ message: errors.category?.message }]} />
+              </Field>
 
-              <div className="space-y-1">
-                <label htmlFor="price" className="text-xs font-semibold text-foreground">
-                  Harga (Rp) *
-                </label>
+              <Field>
+                <FieldLabel htmlFor="price">Harga (Rp) *</FieldLabel>
                 <Input
                   id="price"
                   type="number"
                   placeholder="0"
                   {...register('price')}
                 />
-                {errors.price?.message && (
-                  <p className="text-xs text-destructive">{errors.price.message}</p>
-                )}
-              </div>
+                <FieldError errors={[{ message: errors.price?.message }]} />
+              </Field>
             </div>
 
-            <div className="space-y-1">
-              <label htmlFor="stock" className="text-xs font-semibold text-foreground">
-                Jumlah Stok *
-              </label>
+            <Field>
+              <FieldLabel htmlFor="stock">Jumlah Stok *</FieldLabel>
               <Input
                 id="stock"
                 type="number"
                 placeholder="0"
                 {...register('stock')}
               />
-              {errors.stock?.message && (
-                <p className="text-xs text-destructive">{errors.stock.message}</p>
-              )}
-            </div>
+              <FieldError errors={[{ message: errors.stock?.message }]} />
+            </Field>
 
-            <div className="space-y-1">
-              <label htmlFor="imageUrl" className="text-xs font-semibold text-foreground">
-                URL Foto Produk (Opsional)
-              </label>
+            <Field>
+              <FieldLabel htmlFor="imageUrl">URL Foto Produk (Opsional)</FieldLabel>
               <Input
                 id="imageUrl"
                 placeholder="https://images.unsplash.com/..."
                 {...register('imageUrl')}
               />
-              {errors.imageUrl?.message && (
-                <p className="text-xs text-destructive">{errors.imageUrl.message}</p>
-              )}
-            </div>
-          </div>
+              <FieldError errors={[{ message: errors.imageUrl?.message }]} />
+            </Field>
+          </FieldGroup>
 
           <DialogFooter>
             <Button
