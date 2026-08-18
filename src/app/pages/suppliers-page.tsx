@@ -5,10 +5,13 @@ import { SupplierFormDialog } from '@/features/suppliers/components/supplier-for
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { PageHeader } from '@/components/page-header';
+import { useTranslation } from 'react-i18next';
 import type { Supplier } from '@/types/supplier.types';
 import { Building2, Plus, Search, Phone, Package, FileCheck } from 'lucide-react';
 
 export const SuppliersPage: React.FC = () => {
+  const { t } = useTranslation();
   const { data: suppliers = [], isLoading } = useSuppliers();
   const deleteMutation = useDeleteSupplier();
 
@@ -47,26 +50,21 @@ export const SuppliersPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 p-4 md:p-6 max-w-7xl mx-auto">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-primary" />
-            <h1 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
-              Pemasok & Vendor (Suppliers)
-            </h1>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Daftar vendor penyedia bahan baku dan kulakan stok toko.
-          </p>
-        </div>
-
-        <Button onClick={handleOpenAdd} className="gap-2 shrink-0 font-bold shadow-xs">
-          <Plus className="h-4 w-4" />
-          <span>Tambah Pemasok</span>
-        </Button>
-      </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={t('suppliers.title', 'Pemasok & Vendor')}
+        description={t(
+          'suppliers.subtitle',
+          'Daftar vendor penyedia bahan baku dan kulakan stok toko.'
+        )}
+        actions={
+          <Button onClick={handleOpenAdd} className="gap-2 shrink-0 font-bold shadow-xs">
+            <Plus className="h-4 w-4" />
+            <span>{t('suppliers.addSupplier', 'Tambah Pemasok')}</span>
+          </Button>
+        }
+      />
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">

@@ -19,12 +19,12 @@ import {
   Lock,
   Check,
   Database,
-  Sliders,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PinModal } from '@/components/pin-modal';
 import { DataManagementSection } from '@/features/settings/components/data-management-section';
@@ -115,25 +115,20 @@ export const SettingsPage: React.FC = () => {
   const currentLang = i18n.language?.startsWith('en') ? 'en' : 'id';
 
   return (
-    <div className="space-y-6 p-4 md:p-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <div className="flex items-center gap-2">
-          <Sliders className="h-6 w-6 text-primary" />
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
-            Pengaturan Sistem
-          </h1>
-        </div>
-        <p className="text-muted-foreground text-xs mt-0.5">
-          Kelola tema visual antarmuka, efek audio kasir, otorisasi PIN keamanan, dan cadangan data
-          aplikasi.
-        </p>
-      </div>
+      <PageHeader
+        title={t('settings.title', 'Pengaturan Sistem')}
+        description={t(
+          'settings.subtitle',
+          'Kelola tema visual antarmuka, efek audio kasir, otorisasi PIN keamanan, dan cadangan data aplikasi.'
+        )}
+      />
 
       {savedSuccess && (
         <div className="p-3 bg-primary/10 border border-primary/30 rounded-xl flex items-center gap-2 text-primary text-xs font-semibold animate-in fade-in-50">
           <CheckCircle2 className="h-4 w-4" />
-          <span>Pengaturan Berhasil Disimpan!</span>
+          <span>{t('settings.saved', 'Pengaturan Berhasil Disimpan!')}</span>
         </div>
       )}
 

@@ -18,10 +18,13 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
+import { useTranslation } from 'react-i18next';
 import { useDashboardStats } from '@/features/dashboard/hooks/use-dashboard-stats';
 import { formatCurrency } from '@/utils/format-currency';
 
 export const DashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { stats, isLoading } = useDashboardStats();
 
@@ -34,33 +37,28 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold tracking-tight">Dashboard Toko</h2>
-            <Badge
-              variant="outline"
-              className="text-xs font-semibold px-2 py-0.5 bg-primary/5 text-primary border-primary/20"
-            >
-              Live Hari Ini
-            </Badge>
-          </div>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            {todayDateStr} • Ringkasan performa penjualan dan operasional tokomu.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+      {/* Page Header */}
+      <PageHeader
+        title={t('dashboard.title', 'Dashboard Toko')}
+        description={`${todayDateStr} • ${t('dashboard.subtitle', 'Ringkasan performa penjualan dan operasional tokomu.')}`}
+        badge={
+          <Badge
+            variant="outline"
+            className="text-xs font-semibold px-2 py-0.5 bg-primary/5 text-primary border-primary/20"
+          >
+            {t('dashboard.liveToday', 'Live Hari Ini')}
+          </Badge>
+        }
+        actions={
           <Button
             onClick={() => navigate('/')}
             className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
           >
             <ShoppingCart className="h-4 w-4" />
-            <span>Buka Kasir</span>
+            <span>{t('dashboard.openCashier', 'Buka Kasir')}</span>
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* 4 Main KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

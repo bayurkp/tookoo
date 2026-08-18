@@ -1,23 +1,21 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { PageHeader } from '@/components/page-header';
 import { DiscountManagerTab } from '@/features/products/components/discount-manager-tab';
-import { Tag } from 'lucide-react';
 
 export const DiscountsPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="space-y-5 p-4 md:p-6 max-w-7xl mx-auto">
-      {/* Top Header */}
-      <div>
-        <div className="flex items-center gap-2">
-          <Tag className="h-6 w-6 text-primary" />
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
-            Diskon & Voucher Promosi
-          </h1>
-        </div>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Atur kode voucher promo, diskon otomatis pesanan, dan potongan harga bertingkat untuk
-          kasir.
-        </p>
-      </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={t('discounts.title', 'Diskon & Promosi')}
+        description={t(
+          'discounts.subtitle',
+          'Atur kode voucher promo, diskon otomatis pesanan, dan potongan harga bertingkat untuk kasir.'
+        )}
+      />
 
       {/* Main Discount Content */}
       <DiscountManagerTab />

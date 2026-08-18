@@ -3,6 +3,7 @@ import { Store, CheckCircle2, Sparkles, Smartphone, Save } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/page-header';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import {
   Select,
@@ -59,29 +60,24 @@ export const StoreProfilePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
-            <span>{t('settings.storeProfile.title', 'Profil Toko')}</span>
-          </h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            {t(
-              'settings.storeProfile.desc',
-              'Informasi toko yang akan tercetak pada struk belanja pelanggan.'
-            )}
-          </p>
-        </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsSetupWizardOpen(true)}
-          className="gap-2 text-xs font-semibold shrink-0"
-        >
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span>{t('onboarding.setupGuide', 'Buka Panduan Setup Awal')}</span>
-        </Button>
-      </div>
+      <PageHeader
+        title={t('settings.storeProfile.title', 'Profil Toko')}
+        description={t(
+          'settings.storeProfile.desc',
+          'Informasi toko yang akan tercetak pada struk belanja pelanggan.'
+        )}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsSetupWizardOpen(true)}
+            className="gap-2 text-xs font-semibold shrink-0"
+          >
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span>{t('onboarding.setupGuide', 'Buka Panduan Setup Awal')}</span>
+          </Button>
+        }
+      />
 
       {savedSuccess && (
         <div className="p-3.5 bg-primary/10 border border-primary/30 rounded-xl flex items-center gap-2 text-primary text-xs font-semibold animate-in fade-in-50">

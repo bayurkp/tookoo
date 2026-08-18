@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   DropdownMenu,
@@ -331,30 +332,28 @@ export const ProductsPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            {t('products.title', 'Katalog Produk & Stok')}
-          </h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            {isSimple
-              ? t('products.simpleSubtitle', 'Kelola daftar barang dan harga jualan kasir tokomu.')
-              : t(
-                  'products.subtitle',
-                  'Kelola daftar barang, varian rasa/ukuran, kategori, dan modifier tokomu.'
-                )}
-          </p>
-        </div>
-        <Button
-          onClick={() => handleOpenCreate()}
-          className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{t('products.addProduct', 'Tambah Produk')}</span>
-        </Button>
-      </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={t('products.title', 'Katalog Produk & Stok')}
+        description={
+          isSimple
+            ? t('products.simpleSubtitle', 'Kelola daftar barang dan harga jualan kasir tokomu.')
+            : t(
+                'products.subtitle',
+                'Kelola daftar barang, varian rasa/ukuran, kategori, dan modifier tokomu.'
+              )
+        }
+        actions={
+          <Button
+            onClick={() => handleOpenCreate()}
+            className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{t('products.addProduct', 'Tambah Produk')}</span>
+          </Button>
+        }
+      />
 
       {/* Main Content: Mode Sederhana vs Mode Lanjutan */}
       {isSimple ? (

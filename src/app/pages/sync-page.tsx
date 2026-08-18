@@ -9,6 +9,7 @@ import { ConnectedPeersCard } from '@/features/sync/components/connected-peers-c
 import { TerminalSecurityCard } from '@/features/sync/components/terminal-security-card';
 import { BackupExportCard } from '@/features/sync/components/backup-export-card';
 import { CloudBackupCard } from '@/features/sync/components/cloud-backup-card';
+import { PageHeader } from '@/components/page-header';
 import type { StorePairingPayload } from '@/types/sync.types';
 import type { UserRole } from '@/types/store.types';
 
@@ -73,19 +74,15 @@ export const SyncPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-12">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">
-          {t('sync.title', 'Sinkronisasi Perangkat')}
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          {t(
-            'sync.subtitle',
-            'Hubungkan beberapa HP dan mesin kasir untuk jualan bersama secara offline & real-time.'
-          )}
-        </p>
-      </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={t('sync.title', 'Sinkronisasi Perangkat')}
+        description={t(
+          'sync.subtitle',
+          'Hubungkan beberapa HP dan mesin kasir untuk jualan bersama secara offline & real-time.'
+        )}
+      />
 
       {/* 1. Store Identity & Current Passphrase / Current Store QR */}
       <StoreIdentityCard

@@ -15,6 +15,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/page-header';
+import { useTranslation } from 'react-i18next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Table,
@@ -31,6 +33,7 @@ import {
 import { formatCurrency } from '@/utils/format-currency';
 
 export const ReportsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'pnl';
   const [timeRange, setTimeRange] = useState<TimeRangeFilter>('THIS_MONTH');
@@ -85,40 +88,39 @@ export const ReportsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header & Time Range Filter */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Laporan & Analisis Finansial</h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            Evaluasi laba kotor, performa produk terlaris, rekap kas kasir, dan pembukuan toko.
-          </p>
-        </div>
-
-        {/* Time Range Filter Buttons */}
-        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/60">
-          {(
-            [
-              { id: 'TODAY', label: 'Hari Ini' },
-              { id: 'LAST_7_DAYS', label: '7 Hari' },
-              { id: 'THIS_MONTH', label: 'Bulan Ini' },
-              { id: 'ALL_TIME', label: 'Semua' },
-            ] as const
-          ).map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTimeRange(item.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                timeRange === item.id
-                  ? 'bg-background text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title={t('reports.title', 'Laporan & Analisis Finansial')}
+        description={t(
+          'reports.subtitle',
+          'Evaluasi laba kotor, performa produk terlaris, rekap kas kasir, dan pembukuan toko.'
+        )}
+        actions={
+          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/60">
+            {(
+              [
+                { id: 'TODAY', label: 'Hari Ini' },
+                { id: 'LAST_7_DAYS', label: '7 Hari' },
+                { id: 'THIS_MONTH', label: 'Bulan Ini' },
+                { id: 'ALL_TIME', label: 'Semua' },
+              ] as const
+            ).map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setTimeRange(item.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                  timeRange === item.id
+                    ? 'bg-background text-foreground shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        }
+      />
 
       {/* Main Tabs */}
       <Tabs

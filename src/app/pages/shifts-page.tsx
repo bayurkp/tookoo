@@ -3,6 +3,7 @@ import { Clock, Plus, ArrowUpRight, ArrowDownLeft, Printer, CheckCircle2 } from 
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { db } from '@/lib/db';
@@ -45,30 +46,25 @@ export const ShiftsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
-            <span>{t('shifts.title', 'Shift & Uang Kas')}</span>
-          </h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            {t(
-              'shifts.subtitle',
-              'Pencatatan kas modal awal, serah terima shift staf, dan rekonsiliasi uang fisik laci kasir.'
-            )}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
-            <Printer className="h-4 w-4" />
-            <span>{t('shifts.printXReport', 'Cetak Laporan X')}</span>
-          </Button>
-          <Button size="sm" className="gap-2 text-xs font-semibold">
-            <Plus className="h-4 w-4" />
-            <span>{t('shifts.closeShift', 'Tutup Shift Kasir')}</span>
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={t('shifts.title', 'Shift & Uang Kas')}
+        description={t(
+          'shifts.subtitle',
+          'Pencatatan kas modal awal, serah terima shift staf, dan rekonsiliasi uang fisik laci kasir.'
+        )}
+        actions={
+          <>
+            <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
+              <Printer className="h-4 w-4" />
+              <span>{t('shifts.printXReport', 'Cetak Laporan X')}</span>
+            </Button>
+            <Button size="sm" className="gap-2 text-xs font-semibold">
+              <Plus className="h-4 w-4" />
+              <span>{t('shifts.closeShift', 'Tutup Shift Kasir')}</span>
+            </Button>
+          </>
+        }
+      />
 
       {/* Active Shift Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

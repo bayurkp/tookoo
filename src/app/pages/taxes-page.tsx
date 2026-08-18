@@ -1,19 +1,21 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { PageHeader } from '@/components/page-header';
 import { TaxManagerTab } from '@/features/products/components/tax-manager-tab';
 
 export const TaxesPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
-          <span>Pajak & Biaya Layanan</span>
-        </h2>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Atur tarif Pajak Restoran (PB1), PPN, Service Charge, dan biaya bungkus (Takeaway Fee)
-          yang otomatis dihitung kasir.
-        </p>
-      </div>
+      <PageHeader
+        title={t('taxes.title', 'Pajak & Biaya Layanan')}
+        description={t(
+          'taxes.subtitle',
+          'Atur tarif Pajak Restoran (PB1), PPN, Service Charge, dan biaya bungkus (Takeaway Fee) yang otomatis dihitung kasir.'
+        )}
+      />
 
       {/* Tax Manager Tab Content */}
       <TaxManagerTab />

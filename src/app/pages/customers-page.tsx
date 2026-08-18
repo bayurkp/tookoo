@@ -6,11 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/page-header';
+import { useTranslation } from 'react-i18next';
 import type { Customer, CustomerTier } from '@/types/customer.types';
 import { formatCurrency } from '@/utils/format-currency';
 import { Users, Plus, Search, Award, ShoppingBag, UserCheck, Percent } from 'lucide-react';
 
 export const CustomersPage: React.FC = () => {
+  const { t } = useTranslation();
   const { data: customers = [], isLoading } = useCustomers();
   const deleteMutation = useDeleteCustomer();
 
@@ -56,26 +59,21 @@ export const CustomersPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 p-4 md:p-6 max-w-7xl mx-auto">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Users className="h-6 w-6 text-primary" />
-            <h1 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
-              Pelanggan & Member
-            </h1>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Kelola database kontak pelanggan, member loyalitas, dan diskon otomatis kasir.
-          </p>
-        </div>
-
-        <Button onClick={handleOpenAdd} className="gap-2 shrink-0 font-bold shadow-xs">
-          <Plus className="h-4 w-4" />
-          <span>Tambah Pelanggan</span>
-        </Button>
-      </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={t('customers.title', 'Pelanggan & Member')}
+        description={t(
+          'customers.subtitle',
+          'Kelola database kontak pelanggan, member loyalitas, dan diskon otomatis kasir.'
+        )}
+        actions={
+          <Button onClick={handleOpenAdd} className="gap-2 shrink-0 font-bold shadow-xs">
+            <Plus className="h-4 w-4" />
+            <span>{t('customers.addCustomer', 'Tambah Pelanggan')}</span>
+          </Button>
+        }
+      />
 
       {/* Summary KPI Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

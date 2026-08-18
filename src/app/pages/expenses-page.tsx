@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { PageHeader } from '@/components/page-header';
+import { useTranslation } from 'react-i18next';
 import {
   Select,
   SelectTrigger,
@@ -44,6 +46,7 @@ import {
 } from '@/types/expense.types';
 
 export const ExpensesPage: React.FC = () => {
+  const { t } = useTranslation();
   const { data: expenses = [], isLoading } = useExpenses();
   const upsertMutation = useUpsertExpense();
   const deleteMutation = useDeleteExpense();
@@ -155,37 +158,37 @@ export const ExpensesPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Pengeluaran & Pembelian</h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            Kelola pos biaya operasional harian, kulakan stok barang, dan pantau arus kas laba toko.
-          </p>
-        </div>
+      <PageHeader
+        title={t('expenses.title', 'Pengeluaran & Pembelian')}
+        description={t(
+          'expenses.subtitle',
+          'Kelola pos biaya operasional harian, kulakan stok barang, dan pantau arus kas laba toko.'
+        )}
+        actions={
+          <>
+            <Button
+              onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
+              variant="outline"
+              size="sm"
+              className="gap-1.5 font-bold cursor-pointer text-xs"
+            >
+              <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
+              <span>{t('expenses.purchaseStock', '+ Beli Stok / Kulakan')}</span>
+            </Button>
 
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <Button
-            onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
-            variant="outline"
-            size="sm"
-            className="gap-1.5 font-bold cursor-pointer text-xs"
-          >
-            <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
-            <span>+ Beli Stok / Kulakan</span>
-          </Button>
-
-          <Button
-            onClick={() => handleOpenCreateExpense('EXPENSE')}
-            size="sm"
-            className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Catat Pengeluaran</span>
-          </Button>
-        </div>
-      </div>
+            <Button
+              onClick={() => handleOpenCreateExpense('EXPENSE')}
+              size="sm"
+              className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>{t('expenses.recordExpense', 'Catat Pengeluaran')}</span>
+            </Button>
+          </>
+        }
+      />
 
       {/* Cash Flow Summary Cards */}
       <CashFlowSummaryCard

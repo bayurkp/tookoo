@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { DailySummaryCard } from '@/features/orders/components/daily-summary-card';
 import { OrderReceiptDialog } from '@/features/orders/components/order-receipt-dialog';
 import { PinModal } from '@/components/pin-modal';
+import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -70,18 +71,14 @@ export const OrdersPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">
-          {t('orders.title', 'Riwayat Transaksi')}
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          {t(
-            'orders.subtitle',
-            'Laporan penjualan harian, riwayat pembayaran, dan cetak ulang struk.'
-          )}
-        </p>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title={t('orders.title', 'Riwayat Transaksi')}
+        description={t(
+          'orders.subtitle',
+          'Laporan penjualan harian, riwayat pembayaran, dan cetak ulang struk.'
+        )}
+      />
 
       {/* Daily Summary Cards with RBAC Check */}
       {canViewRevenue ? (

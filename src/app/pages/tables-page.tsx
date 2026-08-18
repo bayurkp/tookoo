@@ -14,6 +14,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { PageHeader } from '@/components/page-header';
+import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -39,6 +41,7 @@ import { sounds } from '@/utils/audio';
 import { DEFAULT_STORE_ZONES, type StoreTable } from '@/types/table.types';
 
 export const TablesPage: React.FC = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data: tables } = useTables();
   const upsertMutation = useUpsertTable();
@@ -269,57 +272,56 @@ export const TablesPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Denah & Tata Letak Meja</h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            Atur tata letak meja visual dengan canvas bebas gerak (pan & zoom) untuk kenyamanan
-            kasir.
-          </p>
-        </div>
+      <PageHeader
+        title={t('tables.title', 'Denah & Tata Letak Meja')}
+        description={t(
+          'tables.subtitle',
+          'Atur tata letak meja visual dengan canvas bebas gerak (pan & zoom) untuk kenyamanan kasir.'
+        )}
+        actions={
+          <>
+            {hasUnsavedLayout && (
+              <Button
+                onClick={handleSaveAllLayouts}
+                size="sm"
+                disabled={bulkUpsertMutation.isPending}
+                className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs animate-pulse bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <Save className="h-3.5 w-3.5" />
+                <span>{t('tables.saveLayout', 'Simpan Posisi Canvas')}</span>
+              </Button>
+            )}
 
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {hasUnsavedLayout && (
+            {feedbackMessage && (
+              <div className="flex items-center gap-1.5 text-xs text-primary font-bold px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20 animate-fade-in">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>{feedbackMessage}</span>
+              </div>
+            )}
+
             <Button
-              onClick={handleSaveAllLayouts}
+              onClick={() => setIsBulkDialogOpen(true)}
+              variant="outline"
               size="sm"
-              disabled={bulkUpsertMutation.isPending}
-              className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs animate-pulse bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="gap-1.5 font-bold cursor-pointer text-xs"
             >
-              <Save className="h-3.5 w-3.5" />
-              <span>Simpan Posisi Canvas</span>
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <span>{t('tables.bulkCreate', '+ Buat Meja Berurutan')}</span>
             </Button>
-          )}
 
-          {feedbackMessage && (
-            <div className="flex items-center gap-1.5 text-xs text-primary font-bold px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20 animate-fade-in">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span>{feedbackMessage}</span>
-            </div>
-          )}
-
-          <Button
-            onClick={() => setIsBulkDialogOpen(true)}
-            variant="outline"
-            size="sm"
-            className="gap-1.5 font-bold cursor-pointer text-xs"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span>+ Buat Meja Berurutan</span>
-          </Button>
-
-          <Button
-            onClick={handleOpenCreate}
-            size="sm"
-            className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Tambah Meja</span>
-          </Button>
-        </div>
-      </div>
+            <Button
+              onClick={handleOpenCreate}
+              size="sm"
+              className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>{t('tables.addTable', 'Tambah Meja')}</span>
+            </Button>
+          </>
+        }
+      />
 
       {/* Metric Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

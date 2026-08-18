@@ -12,6 +12,8 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table';
+import { useTranslation } from 'react-i18next';
+import { PageHeader } from '@/components/page-header';
 import { useStockAdjustments } from '@/features/inventory/hooks/use-stock-adjustments';
 import { StockAdjustmentDialog } from '@/features/inventory/components/stock-adjustment-dialog';
 import type { StockAdjustmentReason } from '@/types/stock-adjustment.types';
@@ -29,6 +31,7 @@ const REASON_LABELS: Record<
 };
 
 export const StockAdjustmentPage: React.FC = () => {
+  const { t } = useTranslation();
   const { data: adjustments = [], isLoading } = useStockAdjustments();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,22 +72,23 @@ export const StockAdjustmentPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Stok Adjustment (Penyesuaian Stok)</h2>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            Catat barang masuk (kulakan), barang rusak, kadaluarsa, dan koreksi hitung fisik toko.
-          </p>
-        </div>
-        <Button
-          onClick={() => setIsDialogOpen(true)}
-          className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Buat Penyesuaian Stok</span>
-        </Button>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title={t('inventory.title', 'Stok Adjustment (Penyesuaian Stok)')}
+        description={t(
+          'inventory.subtitle',
+          'Catat barang masuk (kulakan), barang rusak, kadaluarsa, dan koreksi hitung fisik toko.'
+        )}
+        actions={
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{t('inventory.createAdjustment', 'Buat Penyesuaian Stok')}</span>
+          </Button>
+        }
+      />
 
       {/* Metric Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
