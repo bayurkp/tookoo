@@ -14,6 +14,7 @@ import { HeaderStatusBadge } from '@/components/header-status-badge';
 import { AppModeSwitcher } from '@/components/app-mode-switcher';
 import { AppSidebar } from '@/components/app-sidebar';
 import { useAppMode } from '@/hooks/use-app-mode';
+import { useOnlineStatus } from '@/hooks/use-online-status';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -28,6 +29,7 @@ import {
 export const MainLayout: React.FC = () => {
   const { t } = useTranslation();
   const { isAdvanced } = useAppMode();
+  const isOnline = useOnlineStatus();
   const location = useLocation();
 
   // Dynamic breadcrumb resolution based on 4-Domain Framework
@@ -123,7 +125,7 @@ export const MainLayout: React.FC = () => {
             <div className="flex items-center gap-2">
               {/* Global App Mode Switcher (Simple vs Pro) */}
               <AppModeSwitcher variant="header" />
-              <HeaderStatusBadge isOnline={navigator.onLine} peerCount={0} />
+              <HeaderStatusBadge isOnline={isOnline} peerCount={0} />
             </div>
           </header>
 
