@@ -1,10 +1,28 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Trash2, Plus, Minus, Tag, Percent, BookmarkPlus } from 'lucide-react';
+import {
+  ShoppingCart,
+  Trash2,
+  Plus,
+  Minus,
+  Tag,
+  Percent,
+  BookmarkPlus,
+  User,
+  Users,
+  X,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -19,6 +37,7 @@ import {
 import { HoldOrderDialog } from './hold-order-dialog';
 import { useCartStore } from '../stores/cart-store';
 import { useMasterDiscounts } from '@/features/products/hooks/use-master-data';
+import { useCustomers } from '@/features/customers/hooks/use-customers';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
@@ -26,6 +45,8 @@ import { useAppMode } from '@/hooks/use-app-mode';
 import { getCurrencyConfig } from '@/utils/currency-config';
 import { formatCurrency } from '@/utils/format-currency';
 import type { MasterDiscount } from '@/types/master-data.types';
+import type { Customer } from '@/types/customer.types';
+import { CUSTOMER_TIER_META } from '@/types/customer.types';
 
 interface CartPanelProps {
   onProceedToPayment: () => void;
@@ -51,7 +72,9 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   const getItemCount = useCartStore((state) => state.getItemCount);
 
   const { data: masterDiscounts = [] } = useMasterDiscounts();
+  const { data: customers = [] } = useCustomers();
 
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [discountValue, setDiscountValue] = useState('');
   const [discountType, setDiscountType] = useState<'PERCENTAGE' | 'FIXED'>('PERCENTAGE');
@@ -257,7 +280,105 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
       </CardContent>
 
       {/* Cart Summary & Checkout Actions */}
-      <CardFooter className="p-4 border-t flex flex-col gap-3 bg-muted/20">
+      <CardFooter className="p-4 border-t flex flex-col gap-2.5 bg-muted/20">
+        {/* Customer / Member Selector */}
+        {items.length > 0 && (
+          <div className="w-full">
+            {selectedCustomer ? (
+              <div className="flex items-center justify-between p-2 rounded-lg bg-primary/10 border border-primary/20 text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-[10px] shrink-0">
+                    <User className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-foreground truncate leading-tight">
+                      {selectedCustomer.name}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <Badge
+                        variant={
+                          CUSTOMER_TIER_META[selectedCustomer.tier]?.badgeVariant || 'default'
+                        }
+                        className="text-[9px] px-1 py-0 h-3.5"
+                      >
+                        {CUSTOMER_TIER_META[selectedCustomer.tier]?.label || 'Member'}
+                      </Badge>
+                      <span className="text-[10px] text-muted-foreground">
+                        {selectedCustomer.points || 0} Pts
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0">
+                  {Boolean(
+                    selectedCustomer.discountPercentage &&
+                    selectedCustomer.discountPercentage > 0 &&
+                    !discount
+                  ) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setDiscount({
+                          name: `Diskon Member ${selectedCustomer.name}`,
+                          type: 'PERCENTAGE',
+                          value: selectedCustomer.discountPercentage || 0,
+                        })
+                      }
+                      className="h-6 px-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border-emerald-500/40"
+                    >
+                      <Percent className="h-2.5 w-2.5 mr-0.5" />
+                      Diskon {selectedCustomer.discountPercentage}%
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedCustomer(null)}
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ) : customers.length > 0 ? (
+              <Select
+                value=""
+                onValueChange={(val) => {
+                  const cust = customers.find((c) => c.id === val);
+                  if (cust) {
+                    setSelectedCustomer(cust);
+                    if (cust.discountPercentage && cust.discountPercentage > 0 && !discount) {
+                      setDiscount({
+                        name: `Diskon Member ${cust.name}`,
+                        type: 'PERCENTAGE',
+                        value: cust.discountPercentage,
+                      });
+                    }
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full h-7 text-xs border-dashed text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <Users className="h-3 w-3" />
+                    <span>Pilih Pelanggan / Member ({customers.length})</span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {customers.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name} ({c.phone}) - {CUSTOMER_TIER_META[c.tier]?.label || 'Member'}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            ) : null}
+          </div>
+        )}
+
         {/* Discount Section */}
         {items.length > 0 && (
           <div className="w-full space-y-2">
