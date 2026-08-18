@@ -23,6 +23,7 @@ import {
   Check,
   Database,
   Sparkles,
+  Receipt,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,7 @@ import {
 import { PinModal } from '@/components/pin-modal';
 import { ReceiptSettingsSection } from '@/features/settings/components/receipt-settings-section';
 import { DataManagementSection } from '@/features/settings/components/data-management-section';
+import { TaxManagerTab } from '@/features/products/components/tax-manager-tab';
 import { WelcomeOnboardingDialog } from '@/features/onboarding/components/welcome-onboarding-dialog';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
@@ -59,8 +61,8 @@ export const SettingsPage: React.FC = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab =
-    (searchParams.get('tab') as 'general' | 'receipt' | 'appearance' | 'security' | 'data') ||
-    'general';
+    (searchParams.get('tab') as
+      'general' | 'taxes' | 'receipt' | 'appearance' | 'security' | 'data') || 'general';
   const setActiveTab = (tab: string) => setSearchParams({ tab });
 
   // Form local state
@@ -218,6 +220,10 @@ export const SettingsPage: React.FC = () => {
             <TabsTrigger value="general" className="gap-2 text-xs font-bold px-3.5 py-1.5">
               <Store className="h-3.5 w-3.5" />
               <span>Profil & Sistem</span>
+            </TabsTrigger>
+            <TabsTrigger value="taxes" className="gap-2 text-xs font-bold px-3.5 py-1.5">
+              <Receipt className="h-3.5 w-3.5" />
+              <span>Pajak & Biaya Layanan</span>
             </TabsTrigger>
             <TabsTrigger value="receipt" className="gap-2 text-xs font-bold px-3.5 py-1.5">
               <Printer className="h-3.5 w-3.5" />
@@ -506,6 +512,11 @@ export const SettingsPage: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* TAB: PAJAK & BIAYA LAYANAN TOKO */}
+        <TabsContent value="taxes" className="space-y-6 m-0">
+          <TaxManagerTab />
         </TabsContent>
 
         {/* TAB 2: FORMAT NOTA & STRUK KASIR (DEDICATED SECTION) */}
@@ -947,10 +958,7 @@ export const SettingsPage: React.FC = () => {
       />
 
       {/* Re-run Onboarding Setup Wizard */}
-      <WelcomeOnboardingDialog
-        forceOpen={isSetupWizardOpen}
-        onOpenChange={setIsSetupWizardOpen}
-      />
+      <WelcomeOnboardingDialog forceOpen={isSetupWizardOpen} onOpenChange={setIsSetupWizardOpen} />
     </div>
   );
 };
