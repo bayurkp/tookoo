@@ -1,8 +1,13 @@
-export type ProductType = 'FNB' | 'RETAIL' | 'SERVICE';
+export interface ProductVariantDimension {
+  id: string; // UUID v4
+  name: string; // e.g. "Ukuran", "Warna", "Bahan", "Suhu", "Level Gula"
+  options: string[]; // e.g. ["S", "M", "L"] or ["Hot", "Ice"]
+}
 
 export interface ProductVariantOption {
   id: string; // UUID v4
-  name: string; // e.g. "Ukuran Reguler", "Ukuran Large", "Warna Merah", "Size XL"
+  name: string; // e.g. "Ukuran Reguler", "Hitam / M / Katun"
+  dimensionValues?: Record<string, string>; // e.g. { "Ukuran": "M", "Warna": "Hitam" }
   sku?: string;
   barcode?: string;
   price: number; // Base price for this variant
@@ -42,6 +47,7 @@ export interface Product {
   description?: string;
   imageUrl?: string;
   isActive?: boolean; // Active status toggle (default true)
+  variantDimensions?: ProductVariantDimension[]; // Up to 3 variant dimensions (e.g. Ukuran, Warna, Bahan)
   variants?: ProductVariantOption[];
   modifierGroups?: ProductModifierGroup[];
   createdAt: number; // Timestamp ms

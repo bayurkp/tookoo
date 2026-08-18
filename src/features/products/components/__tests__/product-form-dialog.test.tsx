@@ -19,12 +19,13 @@ describe('ProductFormDialog', () => {
     await db.products.clear();
   });
 
-  it('renders create mode with empty form', () => {
+  it('renders create mode with Simple Mode by default', () => {
     render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
       wrapper: createWrapper(),
     });
 
     expect(screen.getByText(/Tambah Produk Baru/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Mode Sederhana/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('');
   });
 
@@ -33,6 +34,7 @@ describe('ProductFormDialog', () => {
       id: 'prod-1',
       name: 'Cappuccino Hot',
       category: 'Kopi',
+      unit: 'cup',
       price: 20000,
       stock: 15,
       createdAt: Date.now(),
@@ -44,17 +46,17 @@ describe('ProductFormDialog', () => {
       wrapper: createWrapper(),
     });
 
-    expect(screen.getByText(/Edit.*Produk/i)).toBeInTheDocument();
+    expect(screen.getByText(/Edit Data Produk/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Nama Produk/i)).toHaveValue('Cappuccino Hot');
     expect(screen.getByLabelText(/^kategori produk/i)).toHaveValue('Kopi');
   });
 
-  it('validates required fields on empty submit', async () => {
+  it('validates required fields on empty submit in Simple Mode', async () => {
     render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
       wrapper: createWrapper(),
     });
 
-    const submitBtn = screen.getByRole('button', { name: /Tambah Produk/i });
+    const submitBtn = screen.getByRole('button', { name: /Simpan Produk/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
@@ -63,17 +65,49 @@ describe('ProductFormDialog', () => {
     });
   });
 
-  it('renders Unit of Measure field and quick unit presets', () => {
+  it('switches between Simple Mode and Advance Mode seamlessly', () => {
     render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
       wrapper: createWrapper(),
     });
 
-    const unitInput = screen.getByLabelText(/Satuan Unit Produk/i);
-    expect(unitInput).toHaveValue('pcs');
+    const modeToggleBtn = screen.getByRole('button', { name: /Mode Sederhana/i });
+    fireEvent.click(modeToggleBtn);
 
-    const cupBtn = screen.getByRole('button', { name: 'cup' });
-    fireEvent.click(cupBtn);
+    // Should now show Advance Mode tabs
+    expect(screen.getByRole('tab', { name: /Varian/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Modifier/i })).toBeInTheDocument();
 
-    expect(unitInput).toHaveValue('cup');
+    // Toggle back to Simple Mode
+    const advanceBtn = screen.getByRole('button', { name: /Mode Lengkap/i });
+    fireEvent.click(advanceBtn);
+
+    expect(screen.queryByRole('tab', { name: /Varian/i })).not.toBeInTheDocument();
+  });
+
+  it('allows defining multi-level dimensions in Advance Mode and generates variant matrix', async () => {
+    render(<ProductFormDialog open={true} onOpenChange={() => {}} productToEdit={null} />, {
+      wrapper: createWrapper(),
+    });
+
+    // 1. Switch to Advance Mode
+    const modeToggleBtn = screen.getByRole('button', { name: /Mode Sederhana/i });
+    fireEvent.click(modeToggleBtn);
+
+    // 2. Switch to Variants tab
+    const variantsTab = screen.getByRole('tab', { name: /Varian/i });
+    fireEvent.keyDown(variantsTab, { key: 'Enter' });
+
+    // 3. Add dimension level 1
+    const addDimBtn = await screen.findByRole('button', { name: /Tambah Tingkat Dimensi/i });
+    fireEvent.click(addDimBtn);
+
+    expect(screen.getByDisplayValue('Ukuran')).toBeInTheDocument();
+
+    // Add option to Dimension 1
+    const optionInput = screen.getByPlaceholderText(/\+ Ketik opsi lalu Tekan Enter/i);
+    fireEvent.change(optionInput, { target: { value: 'S' } });
+    fireEvent.keyDown(optionInput, { key: 'Enter', code: 'Enter' });
+
+    expect(screen.getByText('S')).toBeInTheDocument();
   });
 });

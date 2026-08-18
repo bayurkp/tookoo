@@ -1,8 +1,15 @@
 import { z } from 'zod';
 
+export const variantDimensionSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, 'Nama atribut dimensi wajib diisi'),
+  options: z.array(z.string()).default([]),
+});
+
 export const variantOptionSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Nama varian wajib diisi'),
+  dimensionValues: z.record(z.string(), z.string()).optional(),
   sku: z.string().optional(),
   barcode: z.string().optional(),
   price: z.coerce.number().min(0, 'Harga jual varian tidak boleh negatif'),
@@ -40,6 +47,7 @@ export const productFormSchema = z.object({
   description: z.string().optional(),
   imageUrl: z.string().url('URL foto tidak valid').optional().or(z.literal('')),
   isActive: z.boolean().default(true),
+  variantDimensions: z.array(variantDimensionSchema).optional(),
   variants: z.array(variantOptionSchema).optional(),
   modifierGroups: z.array(modifierGroupSchema).optional(),
 });

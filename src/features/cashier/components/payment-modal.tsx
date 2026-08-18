@@ -156,8 +156,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[425px] h-[85vh] max-h-[600px] min-h-[480px] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="p-4 px-6 border-b shrink-0 bg-card">
           <DialogTitle>{t('cashier.payment.title', 'Pembayaran')}</DialogTitle>
           <DialogDescription>
             {t(
@@ -167,142 +167,144 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Total Highlight */}
-        <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-muted-foreground font-medium">
-              {t('cashier.payment.totalBill', 'Total Tagihan')}
-            </p>
-            <p className="text-2xl font-black text-primary tracking-tight">
-              {formatCurrency(total, settings?.currency)}
-            </p>
+        <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
+          {/* Total Highlight */}
+          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground font-medium">
+                {t('cashier.payment.totalBill', 'Total Tagihan')}
+              </p>
+              <p className="text-2xl font-black text-primary tracking-tight">
+                {formatCurrency(total, settings?.currency)}
+              </p>
+            </div>
+            <Badge variant="outline" className="bg-background text-xs">
+              {t('cashier.payment.itemTypes', { count: itemCount })}
+            </Badge>
           </div>
-          <Badge variant="outline" className="bg-background text-xs">
-            {t('cashier.payment.itemTypes', { count: itemCount })}
-          </Badge>
+
+          {/* Payment Methods Tabs */}
+          <Tabs
+            value={paymentMethod}
+            onValueChange={(val) => {
+              setPaymentMethod(val as PaymentMethod);
+              setErrorMessage(null);
+            }}
+          >
+            <TabsList className="grid grid-cols-3 w-full">
+              <TabsTrigger value="CASH" className="gap-1.5">
+                <Banknote className="h-4 w-4" />
+                <span>{t('cashier.payment.cash', 'Tunai')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="QRIS" className="gap-1.5">
+                <QrCode className="h-4 w-4" />
+                <span>{t('cashier.payment.qris', 'QRIS')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="TRANSFER" className="gap-1.5">
+                <Building className="h-4 w-4" />
+                <span>{t('cashier.payment.transfer', 'Transfer')}</span>
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Cash Tab Content */}
+            <TabsContent value="CASH" className="space-y-3 pt-2">
+              <Field data-invalid={Boolean(errorMessage || (cashTendered > 0 && cashTendered < total))}>
+                <FieldLabel htmlFor="cashTendered">
+                  {t('cashier.payment.amountReceivedLabel', 'Uang Diterima *')}
+                </FieldLabel>
+                <CurrencyInput
+                  id="cashTendered"
+                  value={cashTendered}
+                  currencyCode={settings?.currency}
+                  onValueChange={(val) => {
+                    setCashTendered(val);
+                    setErrorMessage(null);
+                  }}
+                  className="text-lg font-bold"
+                  placeholder="0"
+                />
+              </Field>
+
+              {/* Quick Cash Buttons */}
+              <div className="flex flex-wrap gap-1.5">
+                {quickCashOptions.map((opt) => (
+                  <Button
+                    key={opt.label}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCashTendered(opt.value)}
+                    className="text-xs h-7 px-2"
+                  >
+                    {opt.label === 'Uang Pas'
+                      ? t('cashier.payment.exactAmount', 'Uang Pas')
+                      : opt.label}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Change Due Box */}
+              <div className="p-3 rounded-lg bg-muted/50 border flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t('cashier.payment.changeDueLabel', 'Uang Kembalian:')}
+                </span>
+                <span
+                  className={`text-lg font-bold ${
+                    isCashInsufficient ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'
+                  }`}
+                >
+                  {isCashInsufficient
+                    ? t('cashier.payment.insufficientCash', 'Uang Kurang')
+                    : formatCurrency(changeDue, settings?.currency)}
+                </span>
+              </div>
+            </TabsContent>
+
+            {/* QRIS Tab Content */}
+            <TabsContent value="QRIS" className="pt-2">
+              <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
+                <QrCode className="h-12 w-12 text-primary" />
+                <p className="font-semibold text-sm">
+                  {t('cashier.payment.qrisTitle', 'Scan QRIS Dinamis Toko')}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t('cashier.payment.qrisDesc', {
+                    amount: formatCurrency(total, settings?.currency),
+                    defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total, settings?.currency)}.`,
+                  })}
+                </p>
+                <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1 mt-2 font-medium">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>{t('cashier.payment.ready', 'Siap Transaksi')}</span>
+                </Badge>
+              </div>
+            </TabsContent>
+
+            {/* Transfer Tab Content */}
+            <TabsContent value="TRANSFER" className="pt-2">
+              <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
+                <Building className="h-12 w-12 text-primary" />
+                <p className="font-semibold text-sm">
+                  {t('cashier.payment.transferTitle', 'Transfer Bank Manual')}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t('cashier.payment.transferDesc', {
+                    amount: formatCurrency(total, settings?.currency),
+                    defaultValue: `Verifikasi mutasi rekening masuk sebesar ${formatCurrency(total, settings?.currency)} sebelum menyelesaikan transaksi.`,
+                  })}
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {errorMessage && (
+            <p className="text-xs text-destructive bg-destructive/10 p-2 rounded-md font-medium">
+              {errorMessage}
+            </p>
+          )}
         </div>
 
-        {/* Payment Methods Tabs */}
-        <Tabs
-          value={paymentMethod}
-          onValueChange={(val) => {
-            setPaymentMethod(val as PaymentMethod);
-            setErrorMessage(null);
-          }}
-        >
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="CASH" className="gap-1.5">
-              <Banknote className="h-4 w-4" />
-              <span>{t('cashier.payment.cash', 'Tunai')}</span>
-            </TabsTrigger>
-            <TabsTrigger value="QRIS" className="gap-1.5">
-              <QrCode className="h-4 w-4" />
-              <span>{t('cashier.payment.qris', 'QRIS')}</span>
-            </TabsTrigger>
-            <TabsTrigger value="TRANSFER" className="gap-1.5">
-              <Building className="h-4 w-4" />
-              <span>{t('cashier.payment.transfer', 'Transfer')}</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Cash Tab Content */}
-          <TabsContent value="CASH" className="space-y-3 pt-2">
-            <Field data-invalid={Boolean(errorMessage || (cashTendered > 0 && cashTendered < total))}>
-              <FieldLabel htmlFor="cashTendered">
-                {t('cashier.payment.amountReceivedLabel', 'Uang Diterima *')}
-              </FieldLabel>
-              <CurrencyInput
-                id="cashTendered"
-                value={cashTendered}
-                currencyCode={settings?.currency}
-                onValueChange={(val) => {
-                  setCashTendered(val);
-                  setErrorMessage(null);
-                }}
-                className="text-lg font-bold"
-                placeholder="0"
-              />
-            </Field>
-
-            {/* Quick Cash Buttons */}
-            <div className="flex flex-wrap gap-1.5">
-              {quickCashOptions.map((opt) => (
-                <Button
-                  key={opt.label}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCashTendered(opt.value)}
-                  className="text-xs h-7 px-2"
-                >
-                  {opt.label === 'Uang Pas'
-                    ? t('cashier.payment.exactAmount', 'Uang Pas')
-                    : opt.label}
-                </Button>
-              ))}
-            </div>
-
-            {/* Change Due Box */}
-            <div className="p-3 rounded-lg bg-muted/50 border flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground">
-                {t('cashier.payment.changeDueLabel', 'Uang Kembalian:')}
-              </span>
-              <span
-                className={`text-lg font-bold ${
-                  isCashInsufficient ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'
-                }`}
-              >
-                {isCashInsufficient
-                  ? t('cashier.payment.insufficientCash', 'Uang Kurang')
-                  : formatCurrency(changeDue, settings?.currency)}
-              </span>
-            </div>
-          </TabsContent>
-
-          {/* QRIS Tab Content */}
-          <TabsContent value="QRIS" className="pt-2">
-            <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
-              <QrCode className="h-12 w-12 text-primary" />
-              <p className="font-semibold text-sm">
-                {t('cashier.payment.qrisTitle', 'Scan QRIS Dinamis Toko')}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {t('cashier.payment.qrisDesc', {
-                  amount: formatCurrency(total, settings?.currency),
-                  defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total, settings?.currency)}.`,
-                })}
-              </p>
-              <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1 mt-2 font-medium">
-                <CheckCircle2 className="h-3 w-3" />
-                <span>{t('cashier.payment.ready', 'Siap Transaksi')}</span>
-              </Badge>
-            </div>
-          </TabsContent>
-
-          {/* Transfer Tab Content */}
-          <TabsContent value="TRANSFER" className="pt-2">
-            <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
-              <Building className="h-12 w-12 text-primary" />
-              <p className="font-semibold text-sm">
-                {t('cashier.payment.transferTitle', 'Transfer Bank Manual')}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {t('cashier.payment.transferDesc', {
-                  amount: formatCurrency(total, settings?.currency),
-                  defaultValue: `Verifikasi mutasi rekening masuk sebesar ${formatCurrency(total, settings?.currency)} sebelum menyelesaikan transaksi.`,
-                })}
-              </p>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {errorMessage && (
-          <p className="text-xs text-destructive bg-destructive/10 p-2 rounded-md font-medium">
-            {errorMessage}
-          </p>
-        )}
-
-        <DialogFooter>
+        <DialogFooter className="p-4 px-6 border-t shrink-0 bg-muted/20">
           <Button
             type="button"
             variant="outline"

@@ -148,7 +148,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden h-[85vh] max-h-[640px] min-h-[460px] flex flex-col">
         {/* Header with Product Preview */}
         <DialogHeader className="p-4 pb-3 border-b bg-muted/20 shrink-0">
           <div className="flex items-start gap-3">
