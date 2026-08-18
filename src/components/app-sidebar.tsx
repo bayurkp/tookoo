@@ -75,7 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Simple Mode Navigation Data
   const simpleNavItems: NavMainItem[] = [
     {
-      title: 'Kasir (POS)',
+      title: 'Kasir',
       url: '/',
       icon: ShoppingCart,
     },
@@ -119,7 +119,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: ShoppingCart,
       isActive: isSalesActive,
       items: [
-        { title: 'Kasir (POS)', url: '/' },
+        { title: 'Kasir', url: '/' },
         { title: 'Riwayat Transaksi', url: '/orders' },
         { title: 'Shift & Uang Kas', url: '/shifts', badge: 'Segera' },
       ],

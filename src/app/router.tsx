@@ -1,7 +1,29 @@
 import React, { lazy, Suspense } from 'react';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useRouteError } from 'react-router-dom';
 import { MainLayout } from '@/components/main-layout';
 import ErrorFallback from '@/components/error-fallback';
+
+// Root error boundary extracting real router error details
+const RootErrorBoundary: React.FC = () => {
+  const routeError = useRouteError();
+  const error =
+    routeError instanceof Error
+      ? routeError
+      : new Error(
+          typeof routeError === 'string'
+            ? routeError
+            : 'Terjadi kendala saat memuat halaman aplikasi.'
+        );
+
+  return (
+    <ErrorFallback
+      error={error}
+      resetErrorBoundary={() => {
+        window.location.href = '/';
+      }}
+    />
+  );
+};
 
 // Route-level code splitting using React.lazy (AGENTS.md Section 18 & 24)
 const DashboardPage = lazy(() => import('@/app/pages/dashboard-page'));
@@ -41,14 +63,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
-    errorElement: (
-      <ErrorFallback
-        error={new Error('Halaman tidak ditemukan atau terjadi kesalahan routing.')}
-        resetErrorBoundary={() => {
-          window.location.href = '/';
-        }}
-      />
-    ),
+    errorElement: <RootErrorBoundary />,
     children: [
       {
         index: true,

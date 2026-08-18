@@ -34,7 +34,7 @@ export const MainLayout: React.FC = () => {
   const getBreadcrumb = () => {
     const path = location.pathname;
     if (path === '/') {
-      return { group: 'Penjualan', title: 'Kasir (POS)' };
+      return { group: 'Penjualan', title: 'Kasir' };
     }
     if (path.startsWith('/orders')) {
       return { group: 'Penjualan', title: 'Riwayat Transaksi' };
