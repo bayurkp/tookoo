@@ -28,9 +28,9 @@ const customerFormSchema = z.object({
   name: z.string().min(1, 'Nama pelanggan wajib diisi'),
   phone: z.string().min(6, 'Nomor telepon/WhatsApp minimal 6 digit'),
   email: z.string().email('Format email tidak valid').optional().or(z.literal('')),
-  tier: z.enum(['REGULAR', 'VIP', 'MEMBER_DISCOUNT']).default('REGULAR'),
-  discountPercentage: z.coerce.number().min(0).max(100).default(0),
-  points: z.coerce.number().int().min(0).default(0),
+  tier: z.enum(['REGULAR', 'VIP', 'MEMBER_DISCOUNT']),
+  discountPercentage: z.number().min(0).max(100),
+  points: z.number().int().min(0),
   address: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -207,7 +207,7 @@ export const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
                 min={0}
                 max={100}
                 placeholder="misal: 10"
-                {...register('discountPercentage')}
+                {...register('discountPercentage', { valueAsNumber: true })}
               />
             </div>
           </div>
@@ -218,7 +218,12 @@ export const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
               <Award className="h-3.5 w-3.5 text-amber-500" />
               <span>Poin Loyalitas Belanja</span>
             </Label>
-            <Input type="number" min={0} placeholder="0" {...register('points')} />
+            <Input
+              type="number"
+              min={0}
+              placeholder="0"
+              {...register('points', { valueAsNumber: true })}
+            />
           </div>
 
           {/* Alamat & Catatan */}
