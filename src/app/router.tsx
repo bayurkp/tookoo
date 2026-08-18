@@ -25,7 +25,7 @@ const RootErrorBoundary: React.FC = () => {
   );
 };
 
-// Route-level code splitting using React.lazy (AGENTS.md Section 18 & 24)
+// Lazy loaded route pages
 const DashboardPage = lazy(() => import('@/app/pages/dashboard-page'));
 const CashierPage = lazy(() => import('@/app/pages/cashier-page'));
 const ProductsPage = lazy(() => import('@/app/pages/products-page'));

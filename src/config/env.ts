@@ -1,7 +1,3 @@
-/**
- * Global application environment configuration constants
- * Configured per AGENTS.md Part 1 (Section 3).
- */
 export const ENV = {
   APP_NAME: 'Tookoo POS',
   APP_VERSION: '1.1.0',
