@@ -86,6 +86,10 @@ export const router = createBrowserRouter([
         element: withSuspense(ExpensesPage),
       },
       {
+        path: 'purchases',
+        element: <Navigate to="/expenses?type=PURCHASE_STOCK" replace />,
+      },
+      {
         path: 'inventory/adjustments',
         element: withSuspense(StockAdjustmentPage),
       },

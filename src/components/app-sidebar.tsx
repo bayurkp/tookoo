@@ -471,7 +471,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     isActive={location.pathname === '/expenses' && currentType !== 'PURCHASE_STOCK'}
                     tooltip={t('nav.items.expenses', 'Pengeluaran Kas (Expenses)')}
                   >
-                    <NavLink to="/expenses">
+                    <NavLink to="/expenses?type=EXPENSE">
                       <Wallet />
                       <span>{t('nav.items.expenses', 'Pengeluaran Kas (Expenses)')}</span>
                     </NavLink>
@@ -481,7 +481,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
-                    isActive={location.pathname === '/expenses' && currentType === 'PURCHASE_STOCK'}
+                    isActive={
+                      location.pathname === '/purchases' ||
+                      (location.pathname === '/expenses' && currentType === 'PURCHASE_STOCK')
+                    }
                     tooltip={t('nav.items.purchaseStock', 'Pembelian Stok (PO)')}
                   >
                     <NavLink to="/expenses?type=PURCHASE_STOCK">

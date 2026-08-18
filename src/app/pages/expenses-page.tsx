@@ -1,10 +1,22 @@
-import React, { useState, useMemo } from 'react';
-import { Plus, ShoppingBag, Receipt, Search, FileImage, Sparkles } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import {
+  Plus,
+  ShoppingBag,
+  Receipt,
+  Search,
+  FileImage,
+  Sparkles,
+  Wallet,
+  TrendingUp,
+  Scale,
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
+import { StatCard } from '@/components/stat-card';
 import { useTranslation } from 'react-i18next';
 import {
   Select,
@@ -47,6 +59,9 @@ import {
 
 export const ExpensesPage: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const typeParam = searchParams.get('type') as ExpenseType | null;
+
   const { data: expenses = [], isLoading } = useExpenses();
   const upsertMutation = useUpsertExpense();
   const deleteMutation = useDeleteExpense();
@@ -62,13 +77,24 @@ export const ExpensesPage: React.FC = () => {
 
   // Filter States
   const [datePreset, setDatePreset] = useState<'ALL' | 'TODAY' | 'WEEK' | 'MONTH'>('MONTH');
-  const [selectedType, setSelectedType] = useState<string>('ALL');
+  const [selectedType, setSelectedType] = useState<string>(typeParam || 'ALL');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Sync selectedType with URL typeParam
+  useEffect(() => {
+    if (typeParam) {
+      setSelectedType(typeParam);
+    } else {
+      setSelectedType('ALL');
+    }
+  }, [typeParam]);
+
   // Dialog States
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formInitialType, setFormInitialType] = useState<ExpenseType>('EXPENSE');
+  const [formInitialType, setFormInitialType] = useState<ExpenseType>(
+    typeParam === 'PURCHASE_STOCK' ? 'PURCHASE_STOCK' : 'EXPENSE'
+  );
   const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -157,122 +183,263 @@ export const ExpensesPage: React.FC = () => {
     }
   };
 
+  // Determine Page Title, Subtitle, and Actions based on Active Mode
+  const isPurchasesMode = typeParam === 'PURCHASE_STOCK';
+  const isExpensesMode = typeParam === 'EXPENSE';
+
+  const pageTitle = isPurchasesMode
+    ? t('purchases.title', 'Pembelian Stok (PO)')
+    : isExpensesMode
+      ? t('expenses.title', 'Pengeluaran Kas Operasional')
+      : t('expenses.allTitle', 'Pengeluaran Kas & Pembelian');
+
+  const pageDescription = isPurchasesMode
+    ? t(
+        'purchases.subtitle',
+        'Catat nota belanja kulakan barang, penerimaan inventaris dari pemasok, dan penambahan stok otomatis.'
+      )
+    : isExpensesMode
+      ? t(
+          'expenses.subtitle',
+          'Catat pos biaya operasional toko harian seperti gaji karyawan, listrik, air, sewa tempat, dan utilitas.'
+        )
+      : t(
+          'expenses.allSubtitle',
+          'Kelola pos biaya operasional harian, kulakan stok barang, dan pantau arus kas laba toko.'
+        );
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
-        title={t('expenses.title', 'Pengeluaran & Pembelian')}
-        description={t(
-          'expenses.subtitle',
-          'Kelola pos biaya operasional harian, kulakan stok barang, dan pantau arus kas laba toko.'
-        )}
+        title={pageTitle}
+        description={pageDescription}
         actions={
-          <>
+          isPurchasesMode ? (
             <Button
               onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
-              variant="outline"
               size="sm"
-              className="gap-1.5 font-bold cursor-pointer text-xs"
+              className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
             >
-              <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
-              <span>{t('expenses.purchaseStock', '+ Beli Stok / Kulakan')}</span>
+              <Plus className="h-3.5 w-3.5" />
+              <span>{t('purchases.create', 'Tambah Pembelian Stok')}</span>
             </Button>
-
+          ) : isExpensesMode ? (
             <Button
               onClick={() => handleOpenCreateExpense('EXPENSE')}
               size="sm"
               className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>{t('expenses.recordExpense', 'Catat Pengeluaran')}</span>
+              <span>{t('expenses.create', 'Catat Pengeluaran Kas')}</span>
             </Button>
-          </>
+          ) : (
+            <>
+              <Button
+                onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
+                variant="outline"
+                size="sm"
+                className="gap-1.5 font-bold cursor-pointer text-xs"
+              >
+                <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
+                <span>{t('expenses.purchaseStock', '+ Beli Stok')}</span>
+              </Button>
+
+              <Button
+                onClick={() => handleOpenCreateExpense('EXPENSE')}
+                size="sm"
+                className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>{t('expenses.recordExpense', 'Catat Pengeluaran')}</span>
+              </Button>
+            </>
+          )
         }
       />
 
-      {/* Cash Flow Summary Cards */}
-      <CashFlowSummaryCard
-        totalRevenue={totalRevenue}
-        totalExpenses={totalExpenses}
-        totalPurchases={totalPurchases}
-        expenseCount={filteredExpenses.length}
-      />
+      {/* Cash Flow Summary Cards / Mode-Specific Stat Cards */}
+      {isPurchasesMode ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Pembelian Stok"
+            value={formatCurrency(totalPurchases)}
+            icon={ShoppingBag}
+            variant="info"
+            subtitle="Total belanja persediaan barang"
+          />
+          <StatCard
+            title="Transaksi Kulakan"
+            value={`${filteredExpenses.length} faktur`}
+            icon={Receipt}
+            variant="default"
+            subtitle="Nota pembelian tercatat"
+          />
+          <StatCard
+            title="Rata-rata Kulakan"
+            value={formatCurrency(
+              filteredExpenses.length > 0 ? totalPurchases / filteredExpenses.length : 0
+            )}
+            icon={TrendingUp}
+            variant="primary"
+            subtitle="Nilai rata-rata per transaksi kulakan"
+          />
+          <StatCard
+            title="Arus Kas Bersih (Laba)"
+            value={`${totalRevenue - totalExpenses - totalPurchases >= 0 ? '+' : ''}${formatCurrency(totalRevenue - totalExpenses - totalPurchases)}`}
+            icon={Scale}
+            variant={totalRevenue - totalExpenses - totalPurchases >= 0 ? 'success' : 'danger'}
+            subtitle="Omzet dikurangi semua pengeluaran"
+          />
+        </div>
+      ) : isExpensesMode ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Biaya Operasional"
+            value={formatCurrency(totalExpenses)}
+            icon={Wallet}
+            variant="danger"
+            subtitle="Biaya harian & utilitas toko"
+          />
+          <StatCard
+            title="Transaksi Biaya"
+            value={`${filteredExpenses.length} catatan`}
+            icon={Receipt}
+            variant="default"
+            subtitle="Total pos pengeluaran tercatat"
+          />
+          <StatCard
+            title="Rata-rata Biaya"
+            value={formatCurrency(
+              filteredExpenses.length > 0 ? totalExpenses / filteredExpenses.length : 0
+            )}
+            icon={TrendingUp}
+            variant="warning"
+            subtitle="Rata-rata per transaksi biaya"
+          />
+          <StatCard
+            title="Arus Kas Bersih (Laba)"
+            value={`${totalRevenue - totalExpenses - totalPurchases >= 0 ? '+' : ''}${formatCurrency(totalRevenue - totalExpenses - totalPurchases)}`}
+            icon={Scale}
+            variant={totalRevenue - totalExpenses - totalPurchases >= 0 ? 'success' : 'danger'}
+            subtitle="Omzet dikurangi semua pengeluaran"
+          />
+        </div>
+      ) : (
+        <CashFlowSummaryCard
+          totalRevenue={totalRevenue}
+          totalExpenses={totalExpenses}
+          totalPurchases={totalPurchases}
+          expenseCount={filteredExpenses.length}
+        />
+      )}
 
-      {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-3 bg-card rounded-xl border text-xs">
-        {/* Date Presets */}
-        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full scrollbar-none">
-          {(
-            [
-              { id: 'TODAY', label: 'Hari Ini' },
-              { id: 'WEEK', label: '7 Hari Terakhir' },
-              { id: 'MONTH', label: 'Bulan Ini' },
-              { id: 'ALL', label: 'Semua Waktu' },
-            ] as const
-          ).map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => setDatePreset(preset.id)}
-              className={`px-2.5 py-1.5 rounded-lg font-bold transition-colors cursor-pointer shrink-0 text-xs ${
-                datePreset === preset.id
-                  ? 'bg-primary text-primary-foreground shadow-xs'
-                  : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {preset.label}
-            </button>
-          ))}
+      {/* Mode Switcher Tabs & Filter Bar */}
+      <div className="space-y-3">
+        {/* Navigation Mode Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 scrollbar-none">
+          <button
+            type="button"
+            onClick={() => setSearchParams({ type: 'EXPENSE' })}
+            className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer shrink-0 text-xs flex items-center gap-1.5 ${
+              isExpensesMode
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Wallet className="h-3.5 w-3.5" />
+            <span>Pengeluaran Kas</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSearchParams({ type: 'PURCHASE_STOCK' })}
+            className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer shrink-0 text-xs flex items-center gap-1.5 ${
+              isPurchasesMode
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+            <span>Pembelian Stok (PO)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSearchParams({})}
+            className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer shrink-0 text-xs flex items-center gap-1.5 ${
+              !isPurchasesMode && !isExpensesMode
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Receipt className="h-3.5 w-3.5" />
+            <span>Semua Arus Kas Keluar</span>
+          </button>
         </div>
 
-        {/* Filters & Search */}
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          {/* Type Filter */}
-          <Select value={selectedType} onValueChange={(val) => setSelectedType(val)}>
-            <SelectTrigger className="h-8 text-xs w-36 bg-background">
-              <SelectValue placeholder="Tipe" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="ALL">Semua Tipe</SelectItem>
-                <SelectItem value="EXPENSE">Biaya Operasional</SelectItem>
-                <SelectItem value="PURCHASE_STOCK">Kulakan Stok</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        {/* Filter Bar */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-3 bg-card rounded-xl border text-xs">
+          {/* Date Presets */}
+          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full scrollbar-none">
+            {(
+              [
+                { id: 'TODAY', label: 'Hari Ini' },
+                { id: 'WEEK', label: '7 Hari Terakhir' },
+                { id: 'MONTH', label: 'Bulan Ini' },
+                { id: 'ALL', label: 'Semua Waktu' },
+              ] as const
+            ).map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => setDatePreset(preset.id)}
+                className={`px-2.5 py-1.5 rounded-lg font-bold transition-colors cursor-pointer shrink-0 text-xs ${
+                  datePreset === preset.id
+                    ? 'bg-primary text-primary-foreground shadow-xs'
+                    : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
 
-          {/* Category Filter */}
-          <Select value={selectedCategory} onValueChange={(val) => setSelectedCategory(val)}>
-            <SelectTrigger className="h-8 text-xs w-40 bg-background">
-              <SelectValue placeholder="Kategori" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="ALL">Semua Kategori</SelectItem>
-                {(Object.keys(EXPENSE_CATEGORY_META) as ExpenseCategory[]).map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    <span className="flex items-center gap-1.5">
-                      <ExpenseCategoryIcon
-                        category={cat}
-                        className="h-3.5 w-3.5 text-primary shrink-0"
-                      />
-                      <span>{EXPENSE_CATEGORY_META[cat].label}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          {/* Filters & Search */}
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            {/* Category Filter */}
+            <Select value={selectedCategory} onValueChange={(val) => setSelectedCategory(val)}>
+              <SelectTrigger className="h-8 text-xs w-40 bg-background">
+                <SelectValue placeholder="Kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="ALL">Semua Kategori</SelectItem>
+                  {(Object.keys(EXPENSE_CATEGORY_META) as ExpenseCategory[]).map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      <span className="flex items-center gap-1.5">
+                        <ExpenseCategoryIcon
+                          category={cat}
+                          className="h-3.5 w-3.5 text-primary shrink-0"
+                        />
+                        <span>{EXPENSE_CATEGORY_META[cat].label}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-          {/* Search Box */}
-          <div className="relative flex-1 md:w-48">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input
-              placeholder="Cari biaya / supplier..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-8 text-xs bg-background"
-            />
+            {/* Search Box */}
+            <div className="relative flex-1 md:w-48">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Cari biaya / supplier..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-8 text-xs bg-background"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -283,7 +450,11 @@ export const ExpensesPage: React.FC = () => {
         <div className="lg:col-span-2 space-y-2.5">
           <div className="flex items-center justify-between px-1">
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Daftar Transaksi ({filteredExpenses.length})
+              {isPurchasesMode
+                ? `Faktur Pembelian Stok (${filteredExpenses.length})`
+                : isExpensesMode
+                  ? `Daftar Biaya Operasional (${filteredExpenses.length})`
+                  : `Daftar Transaksi (${filteredExpenses.length})`}
             </p>
             <span className="text-xs font-mono font-bold text-foreground">
               Total: -{formatCurrency(totalExpenses + totalPurchases)}
@@ -291,28 +462,43 @@ export const ExpensesPage: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <div className="p-8 text-center text-xs text-muted-foreground">
-              Memuat data pengeluaran...
-            </div>
+            <div className="p-8 text-center text-xs text-muted-foreground">Memuat data...</div>
           ) : filteredExpenses.length === 0 ? (
             <Card className="border border-dashed p-8 rounded-2xl text-center space-y-3 bg-card/60">
               <div className="h-12 w-12 rounded-2xl bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto">
-                <Receipt className="h-6 w-6" />
+                {isPurchasesMode ? (
+                  <ShoppingBag className="h-6 w-6" />
+                ) : (
+                  <Wallet className="h-6 w-6" />
+                )}
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
-                <p className="text-sm font-bold text-foreground">Belum ada catatan pengeluaran</p>
+                <p className="text-sm font-bold text-foreground">
+                  {isPurchasesMode
+                    ? 'Belum ada catatan pembelian stok'
+                    : isExpensesMode
+                      ? 'Belum ada catatan pengeluaran kas'
+                      : 'Belum ada catatan transaksi'}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Catat biaya belanja bahan baku, operasional listrik, gaji, atau sewa toko Anda
-                  untuk mengetahui profit bersih harian.
+                  {isPurchasesMode
+                    ? 'Catat nota belanja kulakan barang atau penerimaan inventaris dari supplier untuk menambah stok toko.'
+                    : isExpensesMode
+                      ? 'Catat biaya belanja utilitas listrik, air, sewa tempat, atau gaji karyawan tokomu.'
+                      : 'Catat biaya operasional harian atau kulakan persediaan barang tokomu.'}
                 </p>
               </div>
               <Button
-                onClick={() => handleOpenCreateExpense('EXPENSE')}
+                onClick={() =>
+                  handleOpenCreateExpense(isPurchasesMode ? 'PURCHASE_STOCK' : 'EXPENSE')
+                }
                 size="sm"
                 className="gap-1.5 font-bold cursor-pointer text-xs"
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Catat Pengeluaran Pertama</span>
+                <span>
+                  {isPurchasesMode ? 'Tambah Pembelian Stok Pertama' : 'Catat Pengeluaran Pertama'}
+                </span>
               </Button>
             </Card>
           ) : (
