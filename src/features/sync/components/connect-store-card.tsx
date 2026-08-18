@@ -20,11 +20,7 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const words = passphraseInput
-    .trim()
-    .toLowerCase()
-    .split(/\s+/)
-    .filter(Boolean);
+  const words = passphraseInput.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const wordCount = words.length;
   const isComplete = wordCount === 12;
 
@@ -34,7 +30,9 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
 
     const cleanPassphrase = words.join(' ');
     if (!validatePassphrase(cleanPassphrase)) {
-      setErrorMsg('12 kata kunci tidak valid. Pastikan semua kata diketik dengan benar dan dipisahkan spasi.');
+      setErrorMsg(
+        '12 kata kunci tidak valid. Pastikan semua kata diketik dengan benar dan dipisahkan spasi.'
+      );
       return;
     }
 
@@ -95,9 +93,7 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
               </label>
               <span
                 className={`text-[11px] font-mono font-medium ${
-                  isComplete
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : 'text-muted-foreground'
+                  isComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'
                 }`}
               >
                 {wordCount} / 12 kata

@@ -59,7 +59,10 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
                 {t('sync.peers.title', 'Perangkat Kasir Terhubung')}
               </CardTitle>
               <CardDescription className="text-xs">
-                {t('sync.peers.desc', 'Daftar terminal kasir yang sedang aktif tersambung di toko Anda.')}
+                {t(
+                  'sync.peers.desc',
+                  'Daftar terminal kasir yang sedang aktif tersambung di toko Anda.'
+                )}
               </CardDescription>
             </div>
           </div>
@@ -71,7 +74,9 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
               disabled={isSyncing}
               className="h-8 text-xs font-semibold gap-1.5 cursor-pointer shrink-0"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? 'animate-spin text-primary' : ''}`} />
+              <RefreshCw
+                className={`h-3.5 w-3.5 ${isSyncing ? 'animate-spin text-primary' : ''}`}
+              />
               <span>{isSyncing ? 'Menyinkronkan...' : 'Samakan Data Sekarang'}</span>
             </Button>
           )}
@@ -127,11 +132,10 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
             {peers.length === 0 ? (
               <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center flex flex-col items-center justify-center space-y-2">
                 <Wifi className="h-8 w-8 text-muted-foreground/40" />
-                <p className="text-xs font-medium text-foreground">
-                  Mode 1 Kasir (Mandiri)
-                </p>
+                <p className="text-xs font-medium text-foreground">Mode 1 Kasir (Mandiri)</p>
                 <p className="text-[11px] text-muted-foreground max-w-xs">
-                  Belum ada terminal kasir lain yang terhubung. Sambungkan HP atau tablet kasir lain dengan memindai kode QR atau memasukkan 12 kata kunci.
+                  Belum ada terminal kasir lain yang terhubung. Sambungkan HP atau tablet kasir lain
+                  dengan memindai kode QR atau memasukkan 12 kata kunci.
                 </p>
               </div>
             ) : (
@@ -154,9 +158,14 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <p className="font-semibold text-foreground truncate">{peer.deviceName}</p>
+                            <p className="font-semibold text-foreground truncate">
+                              {peer.deviceName}
+                            </p>
                             {isWhitelisted && (
-                              <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-600 bg-amber-500/10 shrink-0">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-600 bg-amber-500/10 shrink-0"
+                              >
                                 <Star className="h-2.5 w-2.5 mr-0.5 fill-amber-500" />
                                 Tepercaya
                               </Badge>
@@ -169,7 +178,10 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
                       </div>
 
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0">
+                        <Badge
+                          variant="outline"
+                          className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs py-0"
+                        >
                           Terhubung
                         </Badge>
 
@@ -245,7 +257,8 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
 
             {whitelistedDeviceIds.length === 0 ? (
               <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center text-xs text-muted-foreground">
-                Belum ada perangkat di daftar tepercaya. Klik tombol &ldquo;Tepercaya&rdquo; pada perangkat yang aktif untuk menambahkannya.
+                Belum ada perangkat di daftar tepercaya. Klik tombol &ldquo;Tepercaya&rdquo; pada
+                perangkat yang aktif untuk menambahkannya.
               </div>
             ) : (
               <div className="space-y-1.5">

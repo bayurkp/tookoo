@@ -58,7 +58,9 @@ describe('StoreIdentityCard', () => {
     fireEvent.click(regenBtn);
 
     expect(screen.getByText(/Ganti Kunci Keamanan Toko\?/i)).toBeInTheDocument();
-    expect(screen.getByText(/memutuskan sambungan seluruh perangkat kasir lain/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/memutuskan sambungan seluruh perangkat kasir lain/i)
+    ).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole('button', { name: /Ya, Ganti Kunci Baru/i });
     fireEvent.click(confirmBtn);

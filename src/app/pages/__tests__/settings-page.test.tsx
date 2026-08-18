@@ -1,6 +1,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 import { db } from '@/lib/db';
 import { SettingsPage } from '../settings-page';
@@ -10,7 +11,9 @@ const createWrapper = () => {
     defaultOptions: { queries: { retry: false } },
   });
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <MemoryRouter>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </MemoryRouter>
   );
 };
 
@@ -19,16 +22,23 @@ describe('SettingsPage', () => {
     await db.settings.clear();
   });
 
-  it('renders all separated settings sections correctly', async () => {
+  it('renders all settings tabs and switches between them', async () => {
     render(<SettingsPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText(/^Profil Toko$/i)).toBeInTheDocument();
-      expect(screen.getByText(/Profil Perangkat & Terminal/i)).toBeInTheDocument();
-      expect(screen.getByText(/Tema & Tampilan/i)).toBeInTheDocument();
-      expect(screen.getByText(/Bahasa Aplikasi/i)).toBeInTheDocument();
-      expect(screen.getByText(/Suara & Operasional Kasir/i)).toBeInTheDocument();
-      expect(screen.getByText(/Keamanan & Hak Akses/i)).toBeInTheDocument();
+      expect(screen.getByText('Profil & Sistem')).toBeInTheDocument();
+      expect(screen.getByText('Format Nota & Struk')).toBeInTheDocument();
+      expect(screen.getByText('Tampilan & Suara')).toBeInTheDocument();
+      expect(screen.getByText('Keamanan & PIN')).toBeInTheDocument();
+    });
+
+    // Switch to Format Nota tab
+    const receiptTab = screen.getByRole('tab', { name: /Format Nota & Struk/i });
+    fireEvent.click(receiptTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Ukuran Kertas & Tipografi/i)).toBeInTheDocument();
+      expect(screen.getByText(/Pratinjau Nota Langsung/i)).toBeInTheDocument();
     });
   });
 

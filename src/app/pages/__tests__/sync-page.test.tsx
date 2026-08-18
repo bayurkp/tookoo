@@ -43,8 +43,6 @@ describe('SyncPage', () => {
     });
     fireEvent.click(scanBtn);
 
-    expect(
-      screen.getByText(/Sambungkan Perangkat Kasir/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Sambungkan Perangkat Kasir/i)).toBeInTheDocument();
   });
 });

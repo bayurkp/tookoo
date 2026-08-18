@@ -19,10 +19,7 @@ interface SignalPayload {
 }
 
 const ICE_SERVERS: RTCConfiguration = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-  ],
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }],
 };
 
 export class P2PClient {
@@ -208,11 +205,7 @@ export class P2PClient {
 
         // Initiator logic: Higher deviceId starts WebRTC channel if not existing
         const existing = this.peerConnections.get(peerId);
-        if (
-          !existing &&
-          typeof RTCPeerConnection !== 'undefined' &&
-          this.deviceId > peerId
-        ) {
+        if (!existing && typeof RTCPeerConnection !== 'undefined' && this.deviceId > peerId) {
           await this.initiatePeerOffer(peerId, peerDeviceName);
         }
         break;
@@ -229,11 +222,7 @@ export class P2PClient {
         this.notifyPeerConnected(peerId, peerDeviceName);
 
         const existing = this.peerConnections.get(peerId);
-        if (
-          !existing &&
-          typeof RTCPeerConnection !== 'undefined' &&
-          this.deviceId > peerId
-        ) {
+        if (!existing && typeof RTCPeerConnection !== 'undefined' && this.deviceId > peerId) {
           await this.initiatePeerOffer(peerId, peerDeviceName);
         }
         break;

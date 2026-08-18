@@ -8,6 +8,7 @@ import { QrScannerModal } from '@/features/sync/components/qr-scanner-modal';
 import { ConnectedPeersCard } from '@/features/sync/components/connected-peers-card';
 import { TerminalSecurityCard } from '@/features/sync/components/terminal-security-card';
 import { BackupExportCard } from '@/features/sync/components/backup-export-card';
+import { CloudBackupCard } from '@/features/sync/components/cloud-backup-card';
 import type { StorePairingPayload } from '@/types/sync.types';
 import type { UserRole } from '@/types/store.types';
 
@@ -41,7 +42,9 @@ export const SyncPage: React.FC = () => {
     if (pairParam && pairParam.trim().split(/\s+/).length === 12) {
       updateSettings({
         passphrase: pairParam.trim(),
-        storeName: storeParam ? decodeURIComponent(storeParam) : settings?.storeName || 'Toko Cabang',
+        storeName: storeParam
+          ? decodeURIComponent(storeParam)
+          : settings?.storeName || 'Toko Cabang',
       });
       // Clear search params
       setSearchParams({}, { replace: true });
@@ -122,6 +125,9 @@ export const SyncPage: React.FC = () => {
 
       {/* 5. Offline Backup & Restore */}
       <BackupExportCard onExport={exportBackup} onImport={importBackup} />
+
+      {/* 6. Cloud Backup & Remote Recovery (Google Drive, Telegram, Discord, Auto Schedule) */}
+      <CloudBackupCard />
 
       {/* Scanner Modal for Camera */}
       <QrScannerModal

@@ -96,7 +96,10 @@ export const TerminalSecurityCard: React.FC<TerminalSecurityCardProps> = ({
                 {t('sync.security.title', 'Peran Terminal & Keamanan PIN')}
               </CardTitle>
               <CardDescription className="text-xs">
-                {t('sync.security.desc', 'Tentukan peran perangkat ini dan amankan menu sensitif dengan PIN Pemilik.')}
+                {t(
+                  'sync.security.desc',
+                  'Tentukan peran perangkat ini dan amankan menu sensitif dengan PIN Pemilik.'
+                )}
               </CardDescription>
             </div>
           </div>
@@ -193,7 +196,10 @@ export const TerminalSecurityCard: React.FC<TerminalSecurityCardProps> = ({
                   <KeyRound className="h-3.5 w-3.5 text-primary" />
                   <span className="text-xs font-bold text-foreground">PIN Pemilik</span>
                 </div>
-                <Badge variant={settings?.ownerPin ? 'outline' : 'secondary'} className="text-[11px] py-0">
+                <Badge
+                  variant={settings?.ownerPin ? 'outline' : 'secondary'}
+                  className="text-[11px] py-0"
+                >
                   {settings?.ownerPin ? 'PIN Aktif' : 'Belum Ada PIN'}
                 </Badge>
               </div>

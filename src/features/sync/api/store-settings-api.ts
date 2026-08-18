@@ -12,9 +12,11 @@ export const getOrCreateStoreSettings = async (): Promise<StoreSettings> => {
   const now = Date.now();
   const defaultSettings: StoreSettings = {
     id: generateUUID(),
-    storeName: 'Toko Saya',
+    storeName: 'Tookoo POS',
     passphrase: generatePassphrase(12),
     storeSecretKey: generateUUID(),
+    isSetupComplete: false,
+    activeRole: 'OWNER',
     createdAt: now,
     updatedAt: now,
     deletedAt: null,

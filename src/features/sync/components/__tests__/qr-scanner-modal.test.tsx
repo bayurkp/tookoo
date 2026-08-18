@@ -6,7 +6,9 @@ describe('QrScannerModal', () => {
   it('renders modal with camera and 12-words tabs', () => {
     render(<QrScannerModal open={true} onOpenChange={vi.fn()} onPairSuccess={vi.fn()} />);
 
-    expect(screen.getByText(/Sambungkan Perangkat Kasir|Pairing Terminal Kasir/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Sambungkan Perangkat Kasir|Pairing Terminal Kasir/i)
+    ).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Pindai Kamera/i })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /12 Kata Kunci/i })).toBeInTheDocument();
   });

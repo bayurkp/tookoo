@@ -23,9 +23,7 @@ describe('TerminalSecurityCard', () => {
 
   it('allows owner to switch to manager or cashier directly', () => {
     const handleUpdateRole = vi.fn();
-    render(
-      <TerminalSecurityCard settings={mockSettings} onUpdateRole={handleUpdateRole} />
-    );
+    render(<TerminalSecurityCard settings={mockSettings} onUpdateRole={handleUpdateRole} />);
 
     const managerBtn = screen.getByRole('button', { name: /manajer/i });
     fireEvent.click(managerBtn);
@@ -40,9 +38,7 @@ describe('TerminalSecurityCard', () => {
     useAuthStore.setState({ currentRole: 'CASHIER' });
     const handleUpdateRole = vi.fn();
 
-    render(
-      <TerminalSecurityCard settings={mockSettings} onUpdateRole={handleUpdateRole} />
-    );
+    render(<TerminalSecurityCard settings={mockSettings} onUpdateRole={handleUpdateRole} />);
 
     const ownerBtn = screen.getByTitle(/Perlu PIN Pemilik untuk beralih ke peran Pemilik/i);
     fireEvent.click(ownerBtn);
@@ -65,9 +61,7 @@ describe('TerminalSecurityCard', () => {
     useAuthStore.setState({ currentRole: 'MANAGER' });
     const handleUpdateRole = vi.fn();
 
-    render(
-      <TerminalSecurityCard settings={mockSettings} onUpdateRole={handleUpdateRole} />
-    );
+    render(<TerminalSecurityCard settings={mockSettings} onUpdateRole={handleUpdateRole} />);
 
     // Manager -> Cashier (demotion) -> No PIN
     const cashierBtn = screen.getByRole('button', { name: /kasir/i });

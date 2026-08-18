@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Html5Qrcode } from 'html5-qrcode';
-import { ScanLine, KeyRound, CheckCircle2, AlertCircle, Camera, RefreshCw, StopCircle } from 'lucide-react';
+import {
+  ScanLine,
+  KeyRound,
+  CheckCircle2,
+  AlertCircle,
+  Camera,
+  RefreshCw,
+  StopCircle,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,

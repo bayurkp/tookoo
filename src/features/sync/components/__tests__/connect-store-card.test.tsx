@@ -8,10 +8,7 @@ describe('ConnectStoreCard', () => {
     const handleOpenScanner = vi.fn();
 
     render(
-      <ConnectStoreCard
-        onPairSuccess={handlePairSuccess}
-        onOpenScanner={handleOpenScanner}
-      />
+      <ConnectStoreCard onPairSuccess={handlePairSuccess} onOpenScanner={handleOpenScanner} />
     );
 
     expect(screen.getByText(/Sambungkan ke Toko Lain/i)).toBeInTheDocument();
@@ -27,10 +24,7 @@ describe('ConnectStoreCard', () => {
     const handleOpenScanner = vi.fn();
 
     render(
-      <ConnectStoreCard
-        onPairSuccess={handlePairSuccess}
-        onOpenScanner={handleOpenScanner}
-      />
+      <ConnectStoreCard onPairSuccess={handlePairSuccess} onOpenScanner={handleOpenScanner} />
     );
 
     const textarea = screen.getByPlaceholderText(/apple banana cherry/i);
@@ -46,7 +40,8 @@ describe('ConnectStoreCard', () => {
     fireEvent.click(submitBtn);
     expect(handlePairSuccess).toHaveBeenCalledWith(
       expect.objectContaining({
-        passphrase: 'ocean forest monkey vintage crystal guitar silver river tiger winter cloud amber',
+        passphrase:
+          'ocean forest monkey vintage crystal guitar silver river tiger winter cloud amber',
       })
     );
   });

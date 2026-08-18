@@ -191,7 +191,8 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
                   <span>Kunci Keamanan Toko</span>
                 </label>
                 <p className="text-[11px] text-muted-foreground">
-                  Gunakan 12 kata kunci rahasia ini untuk menyambungkan perangkat kasir baru secara manual.
+                  Gunakan 12 kata kunci rahasia ini untuk menyambungkan perangkat kasir baru secara
+                  manual.
                 </p>
               </div>
               <div className="flex items-center gap-1 shrink-0 ml-2">
@@ -312,7 +313,8 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
                   <QRCodeSVG value={payloadString} size={160} level="M" includeMargin={false} />
                 </div>
                 <p className="text-[11px] text-muted-foreground text-center max-w-xs">
-                  Arahkan kamera HP kasir baru ke kode QR ini untuk menghubungkan perangkat ke toko ini secara instan.
+                  Arahkan kamera HP kasir baru ke kode QR ini untuk menghubungkan perangkat ke toko
+                  ini secara instan.
                 </p>
               </div>
             )}
@@ -332,7 +334,9 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
                 Ganti Kunci Keamanan Toko?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-xs text-muted-foreground mt-1">
-                Mengganti 12 kata kunci akan <strong>memutuskan sambungan seluruh perangkat kasir lain</strong> yang saat ini terhubung. Semua perangkat kasir harus dihubungkan ulang dengan kunci baru.
+                Mengganti 12 kata kunci akan{' '}
+                <strong>memutuskan sambungan seluruh perangkat kasir lain</strong> yang saat ini
+                terhubung. Semua perangkat kasir harus dihubungkan ulang dengan kunci baru.
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
