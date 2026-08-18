@@ -10,8 +10,6 @@ import {
   Store,
   Wallet,
   Users,
-  Laptop,
-  ShieldCheck,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { db } from '@/lib/db';
@@ -29,7 +27,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { NavMain, type NavMainItem } from '@/components/nav-main';
-import { AppModeSwitcher } from '@/components/app-mode-switcher';
+import { NavUser } from '@/components/nav-user';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
@@ -214,23 +212,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
 
-      {/* Sidebar Footer: App Mode Switcher & Device Details */}
+      {/* Sidebar Footer: NavUser Profile Dropdown */}
       <SidebarFooter className="p-2 border-t">
-        <AppModeSwitcher variant="sidebar" />
-
-        <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 text-xs">
-          <div className="flex items-center gap-2 min-w-0">
-            <Laptop className="size-3.5 text-muted-foreground shrink-0" />
-            <span className="text-[11px] font-medium text-foreground truncate" title={deviceName}>
-              {deviceName}
-            </span>
-          </div>
-          <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-        </div>
-
-        <p className="text-[10px] text-muted-foreground text-center">
-          Tookoo POS • 100% Offline P2P
-        </p>
+        <NavUser
+          user={{
+            name: storeName,
+            role: roleLabel,
+            deviceName: deviceName,
+          }}
+        />
       </SidebarFooter>
 
       <SidebarRail />
