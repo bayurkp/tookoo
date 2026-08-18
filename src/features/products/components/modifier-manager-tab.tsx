@@ -181,7 +181,7 @@ export const ModifierManagerTab: React.FC<ModifierManagerTabProps> = ({
             className="gap-1.5 font-bold cursor-pointer shrink-0"
           >
             <Plus className="h-4 w-4" />
-            <span>Tambah Master Modifier</span>
+            <span>Tambah Modifier</span>
           </Button>
         </div>
       </div>

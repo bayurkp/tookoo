@@ -123,7 +123,7 @@ export const UomManagerTab: React.FC<UomManagerTabProps> = ({ products }) => {
           className="gap-1.5 font-bold cursor-pointer shrink-0"
         >
           <Plus className="h-4 w-4" />
-          <span>Tambah Master Satuan</span>
+          <span>Tambah Satuan</span>
         </Button>
       </div>
 

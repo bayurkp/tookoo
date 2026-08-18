@@ -154,7 +154,7 @@ export const CategoryManagerTab: React.FC<CategoryManagerTabProps> = ({
           className="gap-1.5 font-bold cursor-pointer shrink-0"
         >
           <Plus className="h-4 w-4" />
-          <span>Tambah Master Kategori</span>
+          <span>Tambah Kategori</span>
         </Button>
       </div>
 

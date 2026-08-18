@@ -138,35 +138,26 @@ export const TaxManagerTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header & Actions */}
+      {/* Search & Actions Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h3 className="text-base font-bold text-foreground">Master Pajak & Biaya Layanan</h3>
-          <p className="text-muted-foreground text-xs">
-            Atur tarif PPN, Pajak Restoran (PB1), Biaya Layanan (*Service Charge*), dan biaya
-            pengemasan.
-          </p>
+        <div className="relative flex-1 w-full sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Cari nama pajak atau biaya layanan..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 bg-card"
+          />
         </div>
 
         <Button
           onClick={handleOpenCreate}
           size="sm"
-          className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
+          className="gap-1.5 font-bold cursor-pointer shrink-0"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-4 w-4" />
           <span>Tambah Pajak / Biaya</span>
         </Button>
-      </div>
-
-      {/* Search Bar */}
-      <div className="relative w-full sm:w-80">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-        <Input
-          placeholder="Cari nama pajak / biaya layanan..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-8 h-8 text-xs bg-card"
-        />
       </div>
 
       {/* Taxes List Cards */}
