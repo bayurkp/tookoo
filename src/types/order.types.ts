@@ -18,6 +18,8 @@ export interface Order {
   orderNumber: string; // e.g. "TK-20260817-001"
   status?: OrderStatus; // 'PAID' (default) or 'PENDING' (tunda bayar / open bills)
   customerName?: string; // e.g. "Meja 4 - Pak Budi", "Antrean #12"
+  customerId?: string; // UUID Customer if registered member
+  customerPhone?: string; // WhatsApp / Phone number
   tableNumber?: string; // e.g. "04"
   notes?: string;
   items: OrderItem[];

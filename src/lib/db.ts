@@ -13,6 +13,8 @@ import type {
 } from '@/types/master-data.types';
 import type { StoreTable } from '@/types/table.types';
 import type { Expense } from '@/types/expense.types';
+import type { Customer } from '@/types/customer.types';
+import type { Supplier } from '@/types/supplier.types';
 
 export class TookooDatabase extends Dexie {
   products!: Table<Product, string>;
@@ -26,6 +28,8 @@ export class TookooDatabase extends Dexie {
   masterDiscounts!: Table<MasterDiscount, string>;
   masterTaxes!: Table<MasterTax, string>;
   expenses!: Table<Expense, string>;
+  customers!: Table<Customer, string>;
+  suppliers!: Table<Supplier, string>;
 
   get restaurantTables(): Table<StoreTable, string> {
     return this.table<StoreTable, string>('tables');
@@ -87,6 +91,25 @@ export class TookooDatabase extends Dexie {
       masterDiscounts: 'id, name, code, scope, isActive, createdAt, updatedAt, deletedAt',
       masterTaxes: 'id, name, type, isActive, createdAt, updatedAt, deletedAt',
       expenses: 'id, category, type, date, paymentMethod, createdAt, updatedAt, deletedAt',
+    });
+
+    this.version(7).stores({
+      products: 'id, name, category, price, stock, createdAt, updatedAt, deletedAt',
+      orders:
+        'id, orderNumber, totalAmount, paymentMethod, cashierName, customerId, createdAt, updatedAt, deletedAt',
+      settings: 'id, storeName, passphrase, createdAt, updatedAt, deletedAt',
+      stockAdjustments: 'id, adjustmentNumber, adjustedBy, createdAt, updatedAt, deletedAt',
+      masterCategories: 'id, name, parentId, createdAt, updatedAt, deletedAt',
+      masterUoms: 'id, name, symbol, createdAt, updatedAt, deletedAt',
+      masterVariantAttributes: 'id, name, createdAt, updatedAt, deletedAt',
+      masterModifierGroups: 'id, name, createdAt, updatedAt, deletedAt',
+      tables: 'id, name, zone, status, createdAt, updatedAt, deletedAt',
+      masterDiscounts: 'id, name, code, scope, isActive, createdAt, updatedAt, deletedAt',
+      masterTaxes: 'id, name, type, isActive, createdAt, updatedAt, deletedAt',
+      expenses:
+        'id, category, type, date, paymentMethod, supplierId, createdAt, updatedAt, deletedAt',
+      customers: 'id, name, phone, email, tier, createdAt, updatedAt, deletedAt',
+      suppliers: 'id, name, phone, email, contactPerson, createdAt, updatedAt, deletedAt',
     });
   }
 }
