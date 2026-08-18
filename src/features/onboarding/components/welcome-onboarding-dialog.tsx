@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Store,
-  QrCode,
-  Sparkles,
-  ArrowRight,
-  ShieldCheck,
-  Zap,
-  WifiOff,
-} from 'lucide-react';
+import { Store, QrCode, Sparkles, ArrowRight, ShieldCheck, Zap, WifiOff } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -45,7 +37,10 @@ export const WelcomeOnboardingDialog: React.FC<WelcomeOnboardingDialogProps> = (
   });
 
   // Modal is open if forced or if settings.isSetupComplete is false
-  const isOpen = forceOpen !== undefined ? forceOpen : (!isLoading && settings !== null && settings.isSetupComplete === false);
+  const isOpen =
+    forceOpen !== undefined
+      ? forceOpen
+      : !isLoading && settings !== null && settings.isSetupComplete === false;
 
   const handleComplete = () => {
     queryClient.invalidateQueries({ queryKey: ['settings'] });

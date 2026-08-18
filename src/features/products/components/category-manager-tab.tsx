@@ -1,14 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Folder,
-  Plus,
-  Search,
-  Tag,
-  ArrowRight,
-  Pencil,
-  Trash2,
-  Loader2,
-} from 'lucide-react';
+import { Folder, Plus, Search, Tag, ArrowRight, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

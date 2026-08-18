@@ -60,8 +60,12 @@ export const CreateStoreWizard: React.FC<CreateStoreWizardProps> = ({
 }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [storeName, setStoreName] = useState(initialSettings?.storeName || 'Tookoo Store');
-  const [deviceName, setDeviceName] = useState(initialSettings?.deviceName || 'Kasir Utama (Tablet)');
-  const [defaultCashier, setDefaultCashier] = useState(initialSettings?.defaultCashier || 'Kasir 1');
+  const [deviceName, setDeviceName] = useState(
+    initialSettings?.deviceName || 'Kasir Utama (Tablet)'
+  );
+  const [defaultCashier, setDefaultCashier] = useState(
+    initialSettings?.defaultCashier || 'Kasir 1'
+  );
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('CAFE');
   const [appMode, setAppMode] = useState<AppMode>('ADVANCED');
   const [ownerPin, setOwnerPin] = useState(initialSettings?.ownerPin || '');
@@ -293,9 +297,7 @@ export const CreateStoreWizard: React.FC<CreateStoreWizardProps> = ({
                 <Zap className="h-4 w-4 text-emerald-500 shrink-0" />
                 <div>
                   <p className="text-xs font-bold text-foreground">Mode Sederhana</p>
-                  <p className="text-[10px] text-muted-foreground">
-                    1-Tap bayar, cepat & ringkas
-                  </p>
+                  <p className="text-[10px] text-muted-foreground">1-Tap bayar, cepat & ringkas</p>
                 </div>
               </button>
 
@@ -311,9 +313,7 @@ export const CreateStoreWizard: React.FC<CreateStoreWizardProps> = ({
                 <Layers className="h-4 w-4 text-primary shrink-0" />
                 <div>
                   <p className="text-xs font-bold text-foreground">Mode Lanjutan (Pro)</p>
-                  <p className="text-[10px] text-muted-foreground">
-                    Denah meja, varian & analitik
-                  </p>
+                  <p className="text-[10px] text-muted-foreground">Denah meja, varian & analitik</p>
                 </div>
               </button>
             </div>
@@ -336,7 +336,9 @@ export const CreateStoreWizard: React.FC<CreateStoreWizardProps> = ({
           </div>
 
           <Field>
-            <FieldLabel className="text-xs font-bold">PIN Keamanan (4–6 Angka) - Opsional</FieldLabel>
+            <FieldLabel className="text-xs font-bold">
+              PIN Keamanan (4–6 Angka) - Opsional
+            </FieldLabel>
             <Input
               type="password"
               maxLength={6}

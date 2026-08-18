@@ -19,11 +19,7 @@ import {
   SelectGroup,
   SelectItem,
 } from '@/components/ui/select';
-import {
-  type StoreTable,
-  type TableStatus,
-  type TableShape,
-} from '@/types/table.types';
+import { type StoreTable, type TableStatus, type TableShape } from '@/types/table.types';
 
 interface TableEditDialogProps {
   open: boolean;

@@ -4,9 +4,7 @@ import type { Expense } from '@/types/expense.types';
 
 export async function getExpenses(): Promise<Expense[]> {
   const all = await db.expenses.toArray();
-  return all
-    .filter((e) => e.deletedAt === null)
-    .sort((a, b) => b.date - a.date);
+  return all.filter((e) => e.deletedAt === null).sort((a, b) => b.date - a.date);
 }
 
 export async function upsertExpense(

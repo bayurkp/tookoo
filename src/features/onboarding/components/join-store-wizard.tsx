@@ -68,9 +68,9 @@ export const JoinStoreWizard: React.FC<JoinStoreWizardProps> = ({
       const now = Date.now();
       const currentSettings = (await db.settings.toCollection().first()) || initialSettings;
 
-      const finalStoreName =
-        scannedPayload?.storeName || storeNameInput.trim() || 'Toko Terhubung';
-      const finalSecretKey = scannedPayload?.storeSecretKey || currentSettings?.storeSecretKey || '';
+      const finalStoreName = scannedPayload?.storeName || storeNameInput.trim() || 'Toko Terhubung';
+      const finalSecretKey =
+        scannedPayload?.storeSecretKey || currentSettings?.storeSecretKey || '';
 
       const updatedSettings: StoreSettings = {
         id: currentSettings?.id || crypto.randomUUID(),

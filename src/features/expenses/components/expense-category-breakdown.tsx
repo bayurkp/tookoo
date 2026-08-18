@@ -2,19 +2,13 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/utils/format-currency';
 import { ExpenseCategoryIcon } from './expense-category-icon';
-import {
-  EXPENSE_CATEGORY_META,
-  type Expense,
-  type ExpenseCategory,
-} from '@/types/expense.types';
+import { EXPENSE_CATEGORY_META, type Expense, type ExpenseCategory } from '@/types/expense.types';
 
 interface ExpenseCategoryBreakdownProps {
   expenses: Expense[];
 }
 
-export const ExpenseCategoryBreakdown: React.FC<ExpenseCategoryBreakdownProps> = ({
-  expenses,
-}) => {
+export const ExpenseCategoryBreakdown: React.FC<ExpenseCategoryBreakdownProps> = ({ expenses }) => {
   const total = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
 
   // Group by category
@@ -61,7 +55,10 @@ export const ExpenseCategoryBreakdown: React.FC<ExpenseCategoryBreakdownProps> =
             <div key={category} className="space-y-1 text-xs">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <ExpenseCategoryIcon category={category} className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <ExpenseCategoryIcon
+                    category={category}
+                    className="h-3.5 w-3.5 text-primary shrink-0"
+                  />
                   <span className="font-semibold text-foreground truncate">{meta.label}</span>
                 </div>
                 <div className="flex items-center gap-2 font-mono shrink-0">

@@ -76,7 +76,8 @@ export const ZoneManagerDialog: React.FC<ZoneManagerDialogProps> = ({
 
     if (
       zones.some(
-        (z) => z.toLowerCase() === trimmed.toLowerCase() && z.toLowerCase() !== oldZone.toLowerCase()
+        (z) =>
+          z.toLowerCase() === trimmed.toLowerCase() && z.toLowerCase() !== oldZone.toLowerCase()
       )
     ) {
       setErrorMessage(`Nama area "${trimmed}" sudah digunakan.`);

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  TrendingUp,
-  TrendingDown,
-  Wallet,
-  ArrowUpRight,
-  Scale,
-} from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, Scale } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/utils/format-currency';
@@ -57,9 +51,7 @@ export const CashFlowSummaryCard: React.FC<CashFlowSummaryCardProps> = ({
           <p className="text-xl font-extrabold text-rose-600 dark:text-rose-400 font-mono">
             {formatCurrency(totalExpenses)}
           </p>
-          <p className="text-[10px] text-muted-foreground">
-            {expenseCount} transaksi pengeluaran
-          </p>
+          <p className="text-[10px] text-muted-foreground">{expenseCount} transaksi pengeluaran</p>
         </div>
         <div className="h-9 w-9 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
           <TrendingDown className="h-5 w-5" />
@@ -108,9 +100,7 @@ export const CashFlowSummaryCard: React.FC<CashFlowSummaryCardProps> = ({
           </div>
           <p
             className={`text-xl font-black font-mono ${
-              isSurplus
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-destructive'
+              isSurplus ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'
             }`}
           >
             {isSurplus ? '+' : ''}

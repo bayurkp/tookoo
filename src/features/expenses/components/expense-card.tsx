@@ -1,21 +1,10 @@
 import React from 'react';
-import {
-  Pencil,
-  Trash2,
-  Calendar,
-  CreditCard,
-  User,
-  ShoppingBag,
-  FileImage,
-} from 'lucide-react';
+import { Pencil, Trash2, Calendar, CreditCard, User, ShoppingBag, FileImage } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/format-currency';
 import { ExpenseCategoryIcon } from './expense-category-icon';
-import {
-  EXPENSE_CATEGORY_META,
-  type Expense,
-} from '@/types/expense.types';
+import { EXPENSE_CATEGORY_META, type Expense } from '@/types/expense.types';
 
 interface ExpenseCardProps {
   expense: Expense;
@@ -82,9 +71,7 @@ export const ExpenseCard: React.FC<ExpenseCardProps> = ({
             </span>
           </div>
 
-          <p className="font-bold text-foreground text-xs leading-snug">
-            {expense.description}
-          </p>
+          <p className="font-bold text-foreground text-xs leading-snug">{expense.description}</p>
 
           <div className="flex flex-wrap items-center gap-3 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1">

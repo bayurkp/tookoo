@@ -8,11 +8,7 @@ interface CompassRoseProps {
   className?: string;
 }
 
-export const CompassRose: React.FC<CompassRoseProps> = ({
-  rotation,
-  onRotate,
-  className = '',
-}) => {
+export const CompassRose: React.FC<CompassRoseProps> = ({ rotation, onRotate, className = '' }) => {
   const getDirectionName = (deg: number) => {
     const normalized = ((deg % 360) + 360) % 360;
     if (normalized === 0) return 'Utara (U)';
@@ -52,7 +48,9 @@ export const CompassRose: React.FC<CompassRoseProps> = ({
           {/* South Pointer (Gray) */}
           <div className="absolute -bottom-0.5 flex flex-col items-center">
             <div className="w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-t-[9px] border-t-muted-foreground/60" />
-            <span className="text-[8px] font-bold text-muted-foreground leading-none mt-0.5">S</span>
+            <span className="text-[8px] font-bold text-muted-foreground leading-none mt-0.5">
+              S
+            </span>
           </div>
 
           {/* East Pointer (T) */}

@@ -174,7 +174,8 @@ export const TablesPage: React.FC = () => {
 
   // Statistics
   const stats = useMemo(() => {
-    const targetTables = selectedZone === 'ALL' ? localTables : localTables.filter((t) => t.zone === selectedZone);
+    const targetTables =
+      selectedZone === 'ALL' ? localTables : localTables.filter((t) => t.zone === selectedZone);
     const total = targetTables.length;
     const available = targetTables.filter((t) => t.status === 'AVAILABLE').length;
     const occupied = targetTables.filter((t) => t.status === 'OCCUPIED').length;
@@ -186,10 +187,7 @@ export const TablesPage: React.FC = () => {
 
   // Handle Drag & Resize on Canvas
   const handleUpdateTableLayout = useCallback(
-    (
-      tableId: string,
-      updates: { x: number; y: number; width: number; height: number }
-    ) => {
+    (tableId: string, updates: { x: number; y: number; width: number; height: number }) => {
       setLocalTables((prev) => prev.map((t) => (t.id === tableId ? { ...t, ...updates } : t)));
       setHasUnsavedLayout(true);
     },
@@ -214,7 +212,10 @@ export const TablesPage: React.FC = () => {
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveTable = async (tableData: Partial<StoreTable> & { name: string }, targetZone: string) => {
+  const handleSaveTable = async (
+    tableData: Partial<StoreTable> & { name: string },
+    targetZone: string
+  ) => {
     const saved = await upsertMutation.mutateAsync(tableData);
     setLocalTables((prev) => {
       const idx = prev.findIndex((t) => t.id === saved.id);
@@ -274,7 +275,8 @@ export const TablesPage: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Denah & Tata Letak Meja</h2>
           <p className="text-muted-foreground text-xs mt-0.5">
-            Atur tata letak meja visual dengan canvas bebas gerak (pan & zoom) untuk kenyamanan kasir.
+            Atur tata letak meja visual dengan canvas bebas gerak (pan & zoom) untuk kenyamanan
+            kasir.
           </p>
         </div>
 

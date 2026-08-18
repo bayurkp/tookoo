@@ -2,11 +2,7 @@ import type { Product } from '@/types/product.types';
 import { generateUUID } from '@/utils/uuid';
 
 export type TemplateIconName =
-  | 'Coffee'
-  | 'UtensilsCrossed'
-  | 'ShoppingBag'
-  | 'Scissors'
-  | 'FileText';
+  'Coffee' | 'UtensilsCrossed' | 'ShoppingBag' | 'Scissors' | 'FileText';
 
 export interface BusinessTemplate {
   id: string;
@@ -279,7 +275,8 @@ export const BUSINESS_TEMPLATES: BusinessTemplate[] = [
     name: 'Jasa & Layanan UMKM',
     category: 'Jasa / Servis',
     iconName: 'Scissors',
-    description: 'Cocok untuk laundry kiloan, barbershop, salon, bengkel, atau jasa cuci kendaraan.',
+    description:
+      'Cocok untuk laundry kiloan, barbershop, salon, bengkel, atau jasa cuci kendaraan.',
     recommendedMode: 'SIMPLE',
     sampleProducts: (now: number): Product[] => [
       {

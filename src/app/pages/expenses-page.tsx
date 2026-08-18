@@ -1,12 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Plus,
-  ShoppingBag,
-  Receipt,
-  Search,
-  FileImage,
-  Sparkles,
-} from 'lucide-react';
+import { Plus, ShoppingBag, Receipt, Search, FileImage, Sparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,12 +12,7 @@ import {
   SelectGroup,
   SelectItem,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -110,7 +98,8 @@ export const ExpensesPage: React.FC = () => {
         !searchQuery.trim() ||
         e.description.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
         (e.paidTo && e.paidTo.toLowerCase().includes(searchQuery.toLowerCase().trim())) ||
-        (e.customCategory && e.customCategory.toLowerCase().includes(searchQuery.toLowerCase().trim()));
+        (e.customCategory &&
+          e.customCategory.toLowerCase().includes(searchQuery.toLowerCase().trim()));
 
       return matchDate && matchType && matchCategory && matchSearch;
     });
@@ -150,7 +139,9 @@ export const ExpensesPage: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  const handleSaveExpense = async (expenseData: Parameters<typeof upsertMutation.mutateAsync>[0]) => {
+  const handleSaveExpense = async (
+    expenseData: Parameters<typeof upsertMutation.mutateAsync>[0]
+  ) => {
     await upsertMutation.mutateAsync(expenseData);
     sounds.playSuccess();
   };
@@ -258,7 +249,10 @@ export const ExpensesPage: React.FC = () => {
                 {(Object.keys(EXPENSE_CATEGORY_META) as ExpenseCategory[]).map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     <span className="flex items-center gap-1.5">
-                      <ExpenseCategoryIcon category={cat} className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <ExpenseCategoryIcon
+                        category={cat}
+                        className="h-3.5 w-3.5 text-primary shrink-0"
+                      />
                       <span>{EXPENSE_CATEGORY_META[cat].label}</span>
                     </span>
                   </SelectItem>

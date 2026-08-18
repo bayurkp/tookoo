@@ -1,11 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { db } from '@/lib/db';
-import {
-  getTables,
-  upsertTable,
-  updateTableStatus,
-  deleteTable,
-} from '../tables-api';
+import { getTables, upsertTable, updateTableStatus, deleteTable } from '../tables-api';
 
 describe('Tables API', () => {
   beforeEach(async () => {

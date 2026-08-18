@@ -55,7 +55,12 @@ export const TableCanvas: React.FC<TableCanvasProps> = ({
   // Interaction States
   const [isPanning, setIsPanning] = useState<boolean>(false);
   const [isSpacePressed, setIsSpacePressed] = useState<boolean>(false);
-  const panStartRef = useRef<{ startX: number; startY: number; startPanX: number; startPanY: number }>({
+  const panStartRef = useRef<{
+    startX: number;
+    startY: number;
+    startPanX: number;
+    startPanY: number;
+  }>({
     startX: 0,
     startY: 0,
     startPanX: 60,
@@ -87,7 +92,10 @@ export const TableCanvas: React.FC<TableCanvasProps> = ({
   // Keyboard Spacebar listener for temporary pan mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+      if (
+        e.code === 'Space' &&
+        !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)
+      ) {
         setIsSpacePressed(true);
       }
     };
@@ -319,16 +327,7 @@ export const TableCanvas: React.FC<TableCanvasProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [
-    isPanning,
-    draggingTableId,
-    resizingTableId,
-    dragOffset,
-    resizeStart,
-    zoom,
-    pan,
-    snap,
-  ]);
+  }, [isPanning, draggingTableId, resizingTableId, dragOffset, resizeStart, zoom, pan, snap]);
 
   const getStatusBadge = (table: StoreTable) => {
     if (table.status === 'OCCUPIED') {

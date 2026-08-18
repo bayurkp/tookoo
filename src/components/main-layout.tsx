@@ -1,6 +1,14 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { ShoppingCart, Package, Receipt, RefreshCw, Settings, LayoutGrid, Wallet } from 'lucide-react';
+import {
+  ShoppingCart,
+  Package,
+  Receipt,
+  RefreshCw,
+  Settings,
+  LayoutGrid,
+  Wallet,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
 import { AppModeSwitcher } from '@/components/app-mode-switcher';
