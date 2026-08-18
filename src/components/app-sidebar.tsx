@@ -6,7 +6,6 @@ import {
   Receipt,
   Package,
   SlidersHorizontal,
-  TrendingUp,
   RefreshCw,
   Settings,
   ChevronRight,
@@ -43,6 +42,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -78,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const roleLabel =
     currentRole === 'OWNER' ? 'Pemilik Toko' : currentRole === 'MANAGER' ? 'Manajer Toko' : 'Kasir';
 
-  // Active state checkers
+  // Active domain state checkers
   const isSalesActive =
     location.pathname === '/' ||
     location.pathname.startsWith('/orders') ||
@@ -138,584 +138,587 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {isSimple ? (
           <SidebarGroup>
             <SidebarGroupLabel>Menu Kasir</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname === '/'}
-                  tooltip="Kasir (POS)"
-                >
-                  <NavLink to="/">
-                    <ShoppingCart />
-                    <span>Kasir (POS)</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname.startsWith('/orders')}
-                  tooltip="Riwayat Transaksi"
-                >
-                  <NavLink to="/orders">
-                    <Receipt />
-                    <span>Riwayat Transaksi</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname.startsWith('/products')}
-                  tooltip="Produk & Menu"
-                >
-                  <NavLink to="/products">
-                    <Package />
-                    <span>Produk & Menu</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname.startsWith('/customers')}
-                  tooltip="Pelanggan & Member"
-                >
-                  <NavLink to="/customers">
-                    <Users />
-                    <span>Pelanggan & Member</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname.startsWith('/expenses')}
-                  tooltip="Biaya Operasional"
-                >
-                  <NavLink to="/expenses">
-                    <Wallet />
-                    <span>Biaya Operasional</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname.startsWith('/settings')}
-                  tooltip="Pengaturan Toko"
-                >
-                  <NavLink to="/settings">
-                    <Settings />
-                    <span>Pengaturan Toko</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        ) : (
-          /* ========================================================================= */
-          /* 2. ADVANCED / PRO MODE: 100% COLLAPSIBLE ENTERPRISE DOMAIN HIERARCHY */
-          /* ========================================================================= */
-          <>
-            {/* 1. DASBOR (SATU ITEM MANDIRI DI ATAS) */}
-            <SidebarGroup className="py-1">
+            <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
-                    isActive={location.pathname === '/dashboard'}
-                    tooltip="Dasbor Toko"
+                    isActive={location.pathname === '/'}
+                    tooltip="Kasir (POS)"
                   >
-                    <NavLink to="/dashboard">
-                      <LayoutDashboard />
-                      <span className="font-bold">Dasbor</span>
+                    <NavLink to="/">
+                      <ShoppingCart />
+                      <span>Kasir (POS)</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith('/orders')}
+                    tooltip="Riwayat Transaksi"
+                  >
+                    <NavLink to="/orders">
+                      <Receipt />
+                      <span>Riwayat Transaksi</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith('/products')}
+                    tooltip="Produk & Menu"
+                  >
+                    <NavLink to="/products">
+                      <Package />
+                      <span>Produk & Menu</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith('/customers')}
+                    tooltip="Pelanggan & Member"
+                  >
+                    <NavLink to="/customers">
+                      <Users />
+                      <span>Pelanggan & Member</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith('/expenses')}
+                    tooltip="Biaya Operasional"
+                  >
+                    <NavLink to="/expenses">
+                      <Wallet />
+                      <span>Biaya Operasional</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname.startsWith('/settings')}
+                    tooltip="Pengaturan Toko"
+                  >
+                    <NavLink to="/settings">
+                      <Settings />
+                      <span>Pengaturan Toko</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
-            </SidebarGroup>
-
-            {/* 2. PENJUALAN (COLLAPSIBLE) */}
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : (
+          /* ========================================================================= */
+          /* 2. ADVANCED / PRO MODE: COLLAPSIBLE GROUP LABELS WITH INDIVIDUAL BUTTONS */
+          /* ========================================================================= */
+          <>
+            {/* 1. DASBOR (SATU ITEM MANDIRI PALING ATAS) */}
             <SidebarGroup className="py-1">
-              <SidebarGroupLabel>Penjualan</SidebarGroupLabel>
-              <SidebarMenu>
-                <Collapsible defaultOpen={isSalesActive} className="group/collapsible">
+              <SidebarGroupContent>
+                <SidebarMenu>
                   <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton isActive={isSalesActive} tooltip="Penjualan">
-                        <ShoppingCart />
-                        <span>Penjualan</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild isActive={location.pathname === '/'}>
-                            <NavLink to="/">
-                              <ShoppingCart className="size-3.5" />
-                              <span>Kasir (POS)</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/orders')}
-                          >
-                            <NavLink to="/orders">
-                              <Receipt className="size-3.5" />
-                              <span>Riwayat Transaksi</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/shifts')}
-                          >
-                            <NavLink
-                              to="/shifts"
-                              className="flex items-center justify-between w-full"
-                            >
-                              <div className="flex items-center gap-2">
-                                <Clock className="size-3.5" />
-                                <span>Shift & Uang Kas</span>
-                              </div>
-                              <Badge
-                                variant="outline"
-                                className="text-[8px] px-1 py-0 h-3.5 text-muted-foreground border-muted-foreground/30 font-medium"
-                              >
-                                Segera
-                              </Badge>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === '/dashboard'}
+                      tooltip="Dasbor Toko"
+                    >
+                      <NavLink to="/dashboard">
+                        <LayoutDashboard />
+                        <span className="font-bold">Dasbor</span>
+                      </NavLink>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
-                </Collapsible>
-              </SidebarMenu>
+                </SidebarMenu>
+              </SidebarGroupContent>
             </SidebarGroup>
 
-            {/* 3. DATA TOKO (COLLAPSIBLE DENGAN FLOW BISNIS & NESTED PRODUK) */}
+            {/* 2. PENJUALAN (COLLAPSIBLE GROUP TITLE) */}
             <SidebarGroup className="py-1">
-              <SidebarGroupLabel>Data Toko</SidebarGroupLabel>
-              <SidebarMenu>
-                <Collapsible defaultOpen={isStoreDataActive} className="group/collapsible">
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton isActive={isStoreDataActive} tooltip="Data Toko">
-                        <Store />
-                        <span>Data Toko</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {/* 1. Profil Toko */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/store-profile')}
-                          >
-                            <NavLink to="/store-profile">
-                              <Store className="size-3.5" />
-                              <span>Profil Toko</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+              <Collapsible defaultOpen={isSalesActive} className="group/collapsible">
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer select-none">
+                    <span>Penjualan</span>
+                    <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="mt-1">
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === '/'}
+                          tooltip="Kasir (POS)"
+                        >
+                          <NavLink to="/">
+                            <ShoppingCart />
+                            <span>Kasir (POS)</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        {/* 2. Produk & Menu (Nested Collapsible) */}
-                        <SidebarMenuSubItem>
-                          <Collapsible defaultOpen={isProductsActive} className="group/nested">
-                            <CollapsibleTrigger asChild>
-                              <SidebarMenuSubButton
-                                isActive={isProductsActive}
-                                className="flex items-center justify-between cursor-pointer"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Package className="size-3.5" />
-                                  <span>Produk & Menu</span>
-                                </div>
-                                <ChevronRight className="size-3 transition-transform duration-200 group-data-[state=open]/nested:rotate-90" />
-                              </SidebarMenuSubButton>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="ml-3 pl-2 border-l border-border/60 my-0.5 space-y-0.5">
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/orders')}
+                          tooltip="Riwayat Transaksi"
+                        >
+                          <NavLink to="/orders">
+                            <Receipt />
+                            <span>Riwayat Transaksi</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/shifts')}
+                          tooltip="Shift & Uang Kas"
+                        >
+                          <NavLink
+                            to="/shifts"
+                            className="flex items-center justify-between w-full"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Clock />
+                              <span>Shift & Uang Kas</span>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className="text-[8px] px-1 py-0 h-3.5 text-muted-foreground border-muted-foreground/30 font-medium"
+                            >
+                              Segera
+                            </Badge>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarGroup>
+
+            {/* 3. DATA TOKO (COLLAPSIBLE GROUP TITLE DENGAN FLOW BISNIS LENGKAP) */}
+            <SidebarGroup className="py-1">
+              <Collapsible defaultOpen={isStoreDataActive} className="group/collapsible">
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer select-none">
+                    <span>Data Toko</span>
+                    <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="mt-1">
+                      {/* 1. Profil Toko */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/store-profile')}
+                          tooltip="Profil Toko"
+                        >
+                          <NavLink to="/store-profile">
+                            <Store />
+                            <span>Profil Toko</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+
+                      {/* 2. Produk & Menu (Collapsible Nested MenuItem) */}
+                      <Collapsible defaultOpen={isProductsActive} className="group/nested">
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton isActive={isProductsActive} tooltip="Produk & Menu">
+                              <Package />
+                              <span>Produk & Menu</span>
+                              <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/nested:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
                                   asChild
-                                  size="sm"
                                   isActive={
                                     location.pathname === '/products' &&
                                     (!currentTab || currentTab === 'products')
                                   }
                                 >
                                   <NavLink to="/products?tab=products">
-                                    <Package className="size-3" />
+                                    <Package className="size-3.5" />
                                     <span>Daftar Produk</span>
                                   </NavLink>
                                 </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
 
+                              <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
                                   asChild
-                                  size="sm"
                                   isActive={
                                     location.pathname === '/products' && currentTab === 'categories'
                                   }
                                 >
                                   <NavLink to="/products?tab=categories">
-                                    <Folder className="size-3" />
+                                    <Folder className="size-3.5" />
                                     <span>Kategori</span>
                                   </NavLink>
                                 </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
 
+                              <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
                                   asChild
-                                  size="sm"
                                   isActive={
                                     location.pathname === '/products' && currentTab === 'uom'
                                   }
                                 >
                                   <NavLink to="/products?tab=uom">
-                                    <Scale className="size-3" />
+                                    <Scale className="size-3.5" />
                                     <span>Satuan (UOM)</span>
                                   </NavLink>
                                 </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
 
+                              <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
                                   asChild
-                                  size="sm"
                                   isActive={
                                     location.pathname === '/products' && currentTab === 'variants'
                                   }
                                 >
                                   <NavLink to="/products?tab=variants">
-                                    <Sparkles className="size-3" />
+                                    <Sparkles className="size-3.5" />
                                     <span>Varian Produk</span>
                                   </NavLink>
                                 </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
 
+                              <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
                                   asChild
-                                  size="sm"
                                   isActive={
                                     location.pathname === '/products' && currentTab === 'modifiers'
                                   }
                                 >
                                   <NavLink to="/products?tab=modifiers">
-                                    <Layers className="size-3" />
+                                    <Layers className="size-3.5" />
                                     <span>Opsi Tambahan (Modifier)</span>
                                   </NavLink>
                                 </SidebarMenuSubButton>
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        </SidebarMenuSubItem>
+                              </SidebarMenuSubItem>
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
 
-                        {/* 3. Diskon & Promosi */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/discounts')}
-                          >
-                            <NavLink to="/discounts">
-                              <Tag className="size-3.5" />
-                              <span>Diskon & Promosi</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      {/* 3. Diskon & Promosi */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/discounts')}
+                          tooltip="Diskon & Promosi"
+                        >
+                          <NavLink to="/discounts">
+                            <Tag />
+                            <span>Diskon & Promosi</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        {/* 4. Pajak & Biaya Layanan */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/taxes')}
-                          >
-                            <NavLink to="/taxes">
-                              <Receipt className="size-3.5" />
-                              <span>Pajak & Biaya Layanan</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      {/* 4. Pajak & Biaya Layanan */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/taxes')}
+                          tooltip="Pajak & Biaya Layanan"
+                        >
+                          <NavLink to="/taxes">
+                            <Receipt />
+                            <span>Pajak & Biaya Layanan</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        {/* 5. Pelanggan & Member */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/customers')}
-                          >
-                            <NavLink to="/customers">
-                              <Users className="size-3.5" />
-                              <span>Pelanggan & Member</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      {/* 5. Pelanggan & Member */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/customers')}
+                          tooltip="Pelanggan & Member"
+                        >
+                          <NavLink to="/customers">
+                            <Users />
+                            <span>Pelanggan & Member</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        {/* 6. Pemasok & Vendor */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/suppliers')}
-                          >
-                            <NavLink to="/suppliers">
-                              <Building2 className="size-3.5" />
-                              <span>Pemasok & Vendor</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      {/* 6. Pemasok & Vendor */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/suppliers')}
+                          tooltip="Pemasok & Vendor"
+                        >
+                          <NavLink to="/suppliers">
+                            <Building2 />
+                            <span>Pemasok & Vendor</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        {/* 7. Denah Meja */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              location.pathname.startsWith('/tables') ||
-                              location.pathname.startsWith('/layout')
-                            }
-                          >
-                            <NavLink to="/tables">
-                              <LayoutGrid className="size-3.5" />
-                              <span>Denah Meja</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      {/* 7. Denah Meja */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={
+                            location.pathname.startsWith('/tables') ||
+                            location.pathname.startsWith('/layout')
+                          }
+                          tooltip="Denah Meja"
+                        >
+                          <NavLink to="/tables">
+                            <LayoutGrid />
+                            <span>Denah Meja</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        {/* 8. Desain Nota & Struk */}
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/receipt-settings')}
-                          >
-                            <NavLink to="/receipt-settings">
-                              <Printer className="size-3.5" />
-                              <span>Desain Nota & Struk</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              </SidebarMenu>
+                      {/* 8. Desain Nota & Struk */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/receipt-settings')}
+                          tooltip="Desain Nota & Struk"
+                        >
+                          <NavLink to="/receipt-settings">
+                            <Printer />
+                            <span>Desain Nota & Struk</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarGroup>
 
-            {/* 4. AKUNTANSI & INVENTARIS (COLLAPSIBLE) */}
+            {/* 4. AKUNTANSI & INVENTARIS (COLLAPSIBLE GROUP TITLE) */}
             <SidebarGroup className="py-1">
-              <SidebarGroupLabel>Akuntansi & Inventaris</SidebarGroupLabel>
-              <SidebarMenu>
-                <Collapsible defaultOpen={isInventoryActive} className="group/collapsible">
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        isActive={isInventoryActive}
-                        tooltip="Akuntansi & Inventaris"
-                      >
-                        <Wallet />
-                        <span>Akuntansi & Inventaris</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              location.pathname === '/expenses' && currentType !== 'PURCHASE_STOCK'
-                            }
-                          >
-                            <NavLink to="/expenses">
-                              <Wallet className="size-3.5" />
-                              <span>Pengeluaran Kas (Expenses)</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+              <Collapsible defaultOpen={isInventoryActive} className="group/collapsible">
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer select-none">
+                    <span>Akuntansi & Inventaris</span>
+                    <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="mt-1">
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={
+                            location.pathname === '/expenses' && currentType !== 'PURCHASE_STOCK'
+                          }
+                          tooltip="Pengeluaran Kas (Expenses)"
+                        >
+                          <NavLink to="/expenses">
+                            <Wallet />
+                            <span>Pengeluaran Kas (Expenses)</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              location.pathname === '/expenses' && currentType === 'PURCHASE_STOCK'
-                            }
-                          >
-                            <NavLink to="/expenses?type=PURCHASE_STOCK">
-                              <ShoppingBag className="size-3.5" />
-                              <span>Pembelian Stok (PO)</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={
+                            location.pathname === '/expenses' && currentType === 'PURCHASE_STOCK'
+                          }
+                          tooltip="Pembelian Stok (PO)"
+                        >
+                          <NavLink to="/expenses?type=PURCHASE_STOCK">
+                            <ShoppingBag />
+                            <span>Pembelian Stok (PO)</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/inventory/adjustments')}
-                          >
-                            <NavLink to="/inventory/adjustments">
-                              <SlidersHorizontal className="size-3.5" />
-                              <span>Penyesuaian Stok (Opname)</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              </SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/inventory/adjustments')}
+                          tooltip="Penyesuaian Stok (Opname)"
+                        >
+                          <NavLink to="/inventory/adjustments">
+                            <SlidersHorizontal />
+                            <span>Penyesuaian Stok (Opname)</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarGroup>
 
-            {/* 5. LAPORAN & ANALITIK (COLLAPSIBLE) */}
+            {/* 5. LAPORAN & ANALITIK (COLLAPSIBLE GROUP TITLE) */}
             <SidebarGroup className="py-1">
-              <SidebarGroupLabel>Laporan & Analitik</SidebarGroupLabel>
-              <SidebarMenu>
-                <Collapsible defaultOpen={isReportsActive} className="group/collapsible">
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton isActive={isReportsActive} tooltip="Laporan & Analitik">
-                        <TrendingUp />
-                        <span>Laporan & Analitik</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              location.pathname === '/reports' &&
-                              (!currentTab || currentTab === 'pnl')
-                            }
-                          >
-                            <NavLink to="/reports?tab=pnl">
-                              <DollarSign className="size-3.5" />
-                              <span>Laba & Rugi (P&L)</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+              <Collapsible defaultOpen={isReportsActive} className="group/collapsible">
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer select-none">
+                    <span>Laporan & Analitik</span>
+                    <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="mt-1">
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={
+                            location.pathname === '/reports' &&
+                            (!currentTab || currentTab === 'pnl')
+                          }
+                          tooltip="Laba & Rugi (P&L)"
+                        >
+                          <NavLink to="/reports?tab=pnl">
+                            <DollarSign />
+                            <span>Laba & Rugi (P&L)</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname === '/reports' && currentTab === 'products'}
-                          >
-                            <NavLink to="/reports?tab=products">
-                              <Package className="size-3.5" />
-                              <span>Penjualan Produk</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === '/reports' && currentTab === 'products'}
+                          tooltip="Penjualan Produk"
+                        >
+                          <NavLink to="/reports?tab=products">
+                            <Package />
+                            <span>Penjualan Produk</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname === '/reports' && currentTab === 'payments'}
-                          >
-                            <NavLink to="/reports?tab=payments">
-                              <CreditCard className="size-3.5" />
-                              <span>Metode Pembayaran</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === '/reports' && currentTab === 'payments'}
+                          tooltip="Metode Pembayaran"
+                        >
+                          <NavLink to="/reports?tab=payments">
+                            <CreditCard />
+                            <span>Metode Pembayaran</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname === '/reports' && currentTab === 'export'}
-                          >
-                            <NavLink to="/reports?tab=export">
-                              <Download className="size-3.5" />
-                              <span>Ekspor & Tutup Buku</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              </SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === '/reports' && currentTab === 'export'}
+                          tooltip="Ekspor & Tutup Buku"
+                        >
+                          <NavLink to="/reports?tab=export">
+                            <Download />
+                            <span>Ekspor & Tutup Buku</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarGroup>
 
-            {/* 6. SISTEM & PENGATURAN (COLLAPSIBLE) */}
+            {/* 6. SISTEM & PENGATURAN (COLLAPSIBLE GROUP TITLE) */}
             <SidebarGroup className="py-1">
-              <SidebarGroupLabel>Sistem</SidebarGroupLabel>
-              <SidebarMenu>
-                <Collapsible defaultOpen={isSystemActive} className="group/collapsible">
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton isActive={isSystemActive} tooltip="Sistem & Pengaturan">
-                        <Settings />
-                        <span>Sistem</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname.startsWith('/sync')}
-                          >
-                            <NavLink to="/sync">
-                              <RefreshCw className="size-3.5" />
-                              <span>Sinkronisasi Perangkat (P2P)</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+              <Collapsible defaultOpen={isSystemActive} className="group/collapsible">
+                <SidebarGroupLabel asChild>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between cursor-pointer select-none">
+                    <span>Sistem</span>
+                    <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu className="mt-1">
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname.startsWith('/sync')}
+                          tooltip="Sinkronisasi Perangkat (P2P)"
+                        >
+                          <NavLink to="/sync">
+                            <RefreshCw />
+                            <span>Sinkronisasi Perangkat (P2P)</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              location.pathname === '/settings' &&
-                              (!currentTab || currentTab === 'appearance')
-                            }
-                          >
-                            <NavLink to="/settings?tab=appearance">
-                              <Palette className="size-3.5" />
-                              <span>Tampilan & Suara</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={
+                            location.pathname === '/settings' &&
+                            (!currentTab || currentTab === 'appearance')
+                          }
+                          tooltip="Tampilan & Suara"
+                        >
+                          <NavLink to="/settings?tab=appearance">
+                            <Palette />
+                            <span>Tampilan & Suara</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={
-                              location.pathname === '/settings' && currentTab === 'security'
-                            }
-                          >
-                            <NavLink to="/settings?tab=security">
-                              <Shield className="size-3.5" />
-                              <span>Keamanan & Hak Akses</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === '/settings' && currentTab === 'security'}
+                          tooltip="Keamanan & Hak Akses"
+                        >
+                          <NavLink to="/settings?tab=security">
+                            <Shield />
+                            <span>Keamanan & Hak Akses</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={location.pathname === '/settings' && currentTab === 'data'}
-                          >
-                            <NavLink to="/settings?tab=data">
-                              <Database className="size-3.5" />
-                              <span>Cadangkan & Reset Data</span>
-                            </NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              </SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={location.pathname === '/settings' && currentTab === 'data'}
+                          tooltip="Cadangkan & Reset Data"
+                        >
+                          <NavLink to="/settings?tab=data">
+                            <Database />
+                            <span>Cadangkan & Reset Data</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarGroup>
           </>
         )}
