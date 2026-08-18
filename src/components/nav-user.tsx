@@ -19,10 +19,11 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useAuthStore } from '@/stores/auth-store';
-import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { db } from '@/lib/db';
 import { useAppMode } from '@/hooks/use-app-mode';
 import { PinModal } from '@/components/pin-modal';
-import type { UserRole } from '@/types/store.types';
+import type { UserRole, StoreSettings } from '@/types/store.types';
 
 export function NavUser({
   user,
@@ -35,9 +36,26 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { currentRole, setRole } = useAuthStore();
-  const { settings, updateSettings } = useP2pSync();
   const { mode, setMode } = useAppMode();
+
+  const { data: settings } = useQuery<StoreSettings | null>({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      return (await db.settings.toCollection().first()) || null;
+    },
+  });
+
+  const updateSettingsRole = async (newRole: UserRole) => {
+    if (settings?.id) {
+      await db.settings.update(settings.id, {
+        activeRole: newRole,
+        updatedAt: Date.now(),
+      });
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+    }
+  };
 
   const [pinModalOpen, setPinModalOpen] = React.useState(false);
   const [pendingRole, setPendingRole] = React.useState<UserRole | null>(null);
@@ -59,14 +77,14 @@ export function NavUser({
       setPinModalOpen(true);
     } else {
       setRole(newRole);
-      updateSettings({ activeRole: newRole });
+      updateSettingsRole(newRole);
     }
   };
 
   const handlePinSuccess = () => {
     if (pendingRole) {
       setRole(pendingRole);
-      updateSettings({ activeRole: pendingRole });
+      updateSettingsRole(pendingRole);
       setPendingRole(null);
     }
   };
