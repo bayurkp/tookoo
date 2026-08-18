@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -38,7 +37,6 @@ import { AppModeSwitcher } from '@/components/app-mode-switcher';
 import { cn } from '@/lib/cn';
 
 export const AppSidebar: React.FC = () => {
-  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const currentRole = useAuthStore((state) => state.currentRole);
@@ -132,17 +130,17 @@ export const AppSidebar: React.FC = () => {
               <nav className="space-y-0.5">
                 <NavLink to="/" className={({ isActive }) => navItemClass(isActive)}>
                   <ShoppingCart className="h-4 w-4 shrink-0" />
-                  <span>{t('nav.cashier', 'Kasir Jualan')}</span>
+                  <span>Kasir (POS)</span>
                 </NavLink>
 
                 <NavLink to="/orders" className={({ isActive }) => navItemClass(isActive)}>
                   <Receipt className="h-4 w-4 shrink-0" />
-                  <span>{t('nav.orders', 'Riwayat Pesanan')}</span>
+                  <span>Riwayat Transaksi</span>
                 </NavLink>
 
                 <NavLink to="/products" className={({ isActive }) => navItemClass(isActive)}>
                   <Package className="h-4 w-4 shrink-0" />
-                  <span>{t('nav.products', 'Katalog Produk')}</span>
+                  <span>Produk & Menu</span>
                 </NavLink>
 
                 <NavLink to="/customers" className={({ isActive }) => navItemClass(isActive)}>
@@ -152,39 +150,39 @@ export const AppSidebar: React.FC = () => {
 
                 <NavLink to="/expenses" className={({ isActive }) => navItemClass(isActive)}>
                   <Wallet className="h-4 w-4 shrink-0" />
-                  <span>Pengeluaran Kas</span>
+                  <span>Biaya Operasional</span>
                 </NavLink>
 
                 <NavLink to="/settings" className={({ isActive }) => navItemClass(isActive)}>
                   <Settings className="h-4 w-4 shrink-0" />
-                  <span>{t('nav.settings', 'Pengaturan Toko')}</span>
+                  <span>Pengaturan Toko</span>
                 </NavLink>
               </nav>
             </div>
           ) : (
             /* ========================================================================= */
-            /* 2. ADVANCED / PRO MODE: EXACT 4 BUSINESS DOMAINS ARCHITECTURE */
+            /* 2. ADVANCED / PRO MODE: PROFESSIONAL ENTERPRISE RETAIL DOMAINS */
             /* ========================================================================= */
             <>
-              {/* DOMAIN 1: PENJUALAN (FRONT-END KASIR) */}
+              {/* DOMAIN 1: PENJUALAN */}
               <div className="space-y-0.5">
                 <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  1. Penjualan (Kasir)
+                  Penjualan
                 </p>
                 <nav className="space-y-0.5">
                   <NavLink to="/" className={({ isActive }) => navItemClass(isActive)}>
                     <ShoppingCart className="h-4 w-4 shrink-0" />
-                    <span>{t('nav.cashier', 'Terminal Kasir')}</span>
+                    <span>Kasir (POS)</span>
                   </NavLink>
 
                   <NavLink to="/orders" className={({ isActive }) => navItemClass(isActive)}>
                     <Receipt className="h-4 w-4 shrink-0" />
-                    <span>Manajemen Pesanan</span>
+                    <span>Riwayat Transaksi</span>
                   </NavLink>
 
                   <NavLink to="/shifts" className={({ isActive }) => navItemClass(isActive)}>
                     <Clock className="h-4 w-4 shrink-0" />
-                    <span className="flex-1">Shift & Uang Laci</span>
+                    <span className="flex-1">Shift & Uang Kas</span>
                     <Badge
                       variant="outline"
                       className="text-[9px] px-1 py-0 h-4 text-muted-foreground border-muted-foreground/30 font-medium"
@@ -200,43 +198,43 @@ export const AppSidebar: React.FC = () => {
                     }
                   >
                     <LayoutGrid className="h-4 w-4 shrink-0" />
-                    <span>Denah & Meja</span>
+                    <span>Denah Meja</span>
                   </NavLink>
                 </nav>
               </div>
 
-              {/* DOMAIN 2: MASTER DATA (DATA INDUK) */}
+              {/* DOMAIN 2: MASTER DATA */}
               <div className="space-y-0.5">
                 <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  2. Master Data (Induk)
+                  Master Data
                 </p>
                 <nav className="space-y-0.5">
                   <NavLink to="/products" className={({ isActive }) => navItemClass(isActive)}>
                     <Package className="h-4 w-4 shrink-0" />
-                    <span>Katalog Produk</span>
+                    <span>Produk & Menu</span>
                   </NavLink>
 
                   <NavLink to="/discounts" className={({ isActive }) => navItemClass(isActive)}>
                     <Tag className="h-4 w-4 shrink-0" />
-                    <span>Aturan Harga & Promo</span>
+                    <span>Diskon & Promosi</span>
                   </NavLink>
 
                   <NavLink to="/customers" className={({ isActive }) => navItemClass(isActive)}>
                     <Users className="h-4 w-4 shrink-0" />
-                    <span>Database Pelanggan</span>
+                    <span>Pelanggan & Member</span>
                   </NavLink>
 
                   <NavLink to="/suppliers" className={({ isActive }) => navItemClass(isActive)}>
                     <Building2 className="h-4 w-4 shrink-0" />
-                    <span>Kontak Pemasok</span>
+                    <span>Pemasok (Supplier)</span>
                   </NavLink>
                 </nav>
               </div>
 
-              {/* DOMAIN 3: INVENTARIS & AKUNTANSI (BACK-OFFICE) */}
+              {/* DOMAIN 3: INVENTARIS & BIAYA */}
               <div className="space-y-0.5">
                 <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  3. Inventaris & Akuntansi
+                  Inventaris & Biaya
                 </p>
                 <nav className="space-y-0.5">
                   <NavLink
@@ -244,25 +242,25 @@ export const AppSidebar: React.FC = () => {
                     className={({ isActive }) => navItemClass(isActive)}
                   >
                     <SlidersHorizontal className="h-4 w-4 shrink-0" />
-                    <span>Manajemen Stok (Opname)</span>
+                    <span>Penyesuaian Stok</span>
                   </NavLink>
 
                   <NavLink to="/expenses" className={({ isActive }) => navItemClass(isActive)}>
                     <Wallet className="h-4 w-4 shrink-0" />
-                    <span>Pengeluaran & Biaya</span>
+                    <span>Biaya Operasional</span>
                   </NavLink>
                 </nav>
               </div>
 
-              {/* DOMAIN 4: LAPORAN & ANALITIK (INTELLIGENCE) */}
+              {/* DOMAIN 4: LAPORAN & ANALITIK */}
               <div className="space-y-0.5">
                 <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  4. Laporan & Analitik
+                  Laporan & Analitik
                 </p>
                 <nav className="space-y-0.5">
                   <NavLink to="/dashboard" className={({ isActive }) => navItemClass(isActive)}>
                     <LayoutDashboard className="h-4 w-4 shrink-0" />
-                    <span>Dashboard Real-Time</span>
+                    <span>Ringkasan Bisnis</span>
                   </NavLink>
 
                   {/* Collapsible Laporan */}
@@ -283,7 +281,7 @@ export const AppSidebar: React.FC = () => {
                     >
                       <div className="flex items-center gap-2.5">
                         <TrendingUp className="h-4 w-4 shrink-0 text-foreground/80" />
-                        <span>Laporan Keuangan</span>
+                        <span>Laporan Bisnis</span>
                       </div>
                       <button
                         type="button"
@@ -313,7 +311,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <DollarSign className="h-3 w-3 shrink-0" />
-                          <span>Laba Rugi Bersih (Net)</span>
+                          <span>Laba & Rugi (P&L)</span>
                         </NavLink>
 
                         <NavLink
@@ -323,7 +321,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Package className="h-3 w-3 shrink-0" />
-                          <span>Performa Produk Terlaris</span>
+                          <span>Penjualan Produk</span>
                         </NavLink>
 
                         <NavLink
@@ -333,7 +331,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <CreditCard className="h-3 w-3 shrink-0" />
-                          <span>Kas & Metode Bayar</span>
+                          <span>Metode Pembayaran</span>
                         </NavLink>
 
                         <NavLink
@@ -351,7 +349,7 @@ export const AppSidebar: React.FC = () => {
                 </nav>
               </div>
 
-              {/* SISTEM & PENGATURAN TOKO */}
+              {/* SISTEM & PENGATURAN */}
               <div className="space-y-0.5">
                 <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
                   Sistem & Pengaturan
@@ -359,7 +357,7 @@ export const AppSidebar: React.FC = () => {
                 <nav className="space-y-0.5">
                   <NavLink to="/sync" className={({ isActive }) => navItemClass(isActive)}>
                     <RefreshCw className="h-4 w-4 shrink-0" />
-                    <span>{t('nav.sync', 'Sinkronisasi P2P')}</span>
+                    <span>Sinkronisasi Perangkat</span>
                   </NavLink>
 
                   {/* Collapsible Pengaturan */}
@@ -380,7 +378,7 @@ export const AppSidebar: React.FC = () => {
                     >
                       <div className="flex items-center gap-2.5">
                         <Settings className="h-4 w-4 shrink-0 text-foreground/80" />
-                        <span>{t('nav.settings', 'Pengaturan Toko')}</span>
+                        <span>Pengaturan Toko</span>
                       </div>
                       <button
                         type="button"
@@ -410,7 +408,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Store className="h-3 w-3 shrink-0" />
-                          <span>Profil & Terminal</span>
+                          <span>Profil Bisnis</span>
                         </NavLink>
 
                         <NavLink
@@ -420,7 +418,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Receipt className="h-3 w-3 shrink-0" />
-                          <span>Pajak & Biaya Layanan</span>
+                          <span>Pajak & Layanan</span>
                         </NavLink>
 
                         <NavLink
@@ -430,7 +428,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Printer className="h-3 w-3 shrink-0" />
-                          <span>Format Nota & Struk</span>
+                          <span>Desain Struk</span>
                         </NavLink>
 
                         <NavLink
@@ -450,7 +448,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Shield className="h-3 w-3 shrink-0" />
-                          <span>Keamanan & PIN</span>
+                          <span>Keamanan & Hak Akses</span>
                         </NavLink>
 
                         <NavLink
@@ -460,7 +458,7 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Database className="h-3 w-3 shrink-0" />
-                          <span>Manajemen Data</span>
+                          <span>Cadangkan & Reset</span>
                         </NavLink>
                       </div>
                     )}
