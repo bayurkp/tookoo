@@ -19,6 +19,7 @@ import {
 import { HoldOrderDialog } from './hold-order-dialog';
 import { useCartStore } from '../stores/cart-store';
 import { CurrencyInput } from '@/components/ui/currency-input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { getCurrencyConfig } from '@/utils/currency-config';
 import { formatCurrency } from '@/utils/format-currency';
@@ -126,86 +127,89 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
       </CardHeader>
 
       {/* Cart Items List */}
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
-        {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground space-y-2 py-10">
-            <div className="p-3 bg-muted rounded-full">
-              <ShoppingCart className="h-6 w-6" />
-            </div>
-            <p className="text-sm font-medium">{t('cashier.cart.empty', 'Keranjang masih kosong')}</p>
-            <p className="text-xs text-muted-foreground max-w-[200px]">
-              {t('cashier.cart.emptySubtitle', 'Pilih produk di sebelah kiri untuk menambahkan ke pesanan.')}
-            </p>
-          </div>
-        ) : (
-          items.map((item) => {
-            const maxStock = item.selectedVariant ? item.selectedVariant.stock : item.product.stock;
-            return (
-              <div
-                key={item.id}
-                className="flex items-start justify-between gap-2 p-2.5 rounded-lg border bg-card/60 text-xs"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground truncate">{item.product.name}</p>
-                  {item.selectedVariant && (
-                    <p className="text-[11px] text-primary font-medium truncate">
-                      {item.selectedVariant.name}
-                    </p>
-                  )}
-                  {item.selectedModifiers && item.selectedModifiers.length > 0 && (
-                    <p className="text-[10px] text-muted-foreground truncate">
-                      +{item.selectedModifiers.map((m) => m.name).join(', ')}
-                    </p>
-                  )}
-                  <p className="text-muted-foreground font-mono mt-0.5">
-                    {formatCurrency(item.unitPrice, settings?.currency)}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <div className="flex items-center border rounded-md bg-background">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Kurangi kuantitas"
-                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <span className="w-6 text-center font-bold">{item.quantity}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Tambah kuantitas"
-                      disabled={item.quantity >= maxStock}
-                      className="h-6 w-6 text-muted-foreground hover:text-foreground disabled:opacity-40"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-
-                  <span className="font-bold text-foreground w-16 text-right font-mono">
-                    {formatCurrency(item.unitPrice * item.quantity, settings?.currency)}
-                  </span>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-muted-foreground hover:text-destructive ml-1"
-                    onClick={() => removeItem(item.id)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
+      <CardContent className="flex-1 p-0 overflow-hidden">
+        <ScrollArea className="h-full w-full p-4">
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground space-y-2 py-10">
+              <div className="p-3 bg-muted rounded-full">
+                <ShoppingCart className="h-6 w-6" />
               </div>
-            );
-          })
-        )}
+              <p className="text-sm font-medium">{t('cashier.cart.empty', 'Keranjang masih kosong')}</p>
+              <p className="text-xs text-muted-foreground max-w-[200px]">
+                {t('cashier.cart.emptySubtitle', 'Pilih produk di sebelah kiri untuk menambahkan ke pesanan.')}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3 pr-2">
+              {items.map((item) => {
+                const maxStock = item.selectedVariant ? item.selectedVariant.stock : item.product.stock;
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-start justify-between gap-2 p-2.5 rounded-lg border bg-card/60 text-xs"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground truncate">{item.product.name}</p>
+                      {item.selectedVariant && (
+                        <p className="text-[11px] text-primary font-medium truncate">
+                          {item.selectedVariant.name}
+                        </p>
+                      )}
+                      {item.selectedModifiers && item.selectedModifiers.length > 0 && (
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          +{item.selectedModifiers.map((m) => m.name).join(', ')}
+                        </p>
+                      )}
+                      <p className="text-muted-foreground font-mono mt-0.5">
+                        {item.quantity} {item.selectedVariant ? 'unit' : (item.product.unit || 'pcs')} @ {formatCurrency(item.unitPrice, settings?.currency)}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <p className="font-bold text-foreground font-mono mr-1">
+                        {formatCurrency(item.totalPrice, settings?.currency)}
+                      </p>
+
+                      <div className="flex items-center border rounded-md bg-background">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Kurangi kuantitas"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-5 text-center font-bold text-xs">{item.quantity}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Tambah kuantitas"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          disabled={item.quantity >= maxStock}
+                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-transparent cursor-pointer"
+                        onClick={() => removeItem(item.id)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </ScrollArea>
       </CardContent>
 
       {/* Cart Summary & Checkout Actions */}

@@ -25,6 +25,7 @@ import { useQuery } from '@tanstack/react-query';
 import { db } from '@/lib/db';
 import { useAuthStore } from '@/stores/auth-store';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const AppSidebar: React.FC = () => {
   const { t } = useTranslation();
@@ -38,6 +39,9 @@ export const AppSidebar: React.FC = () => {
   // Accordion open states for sub-items
   const [isProductsOpen, setIsProductsOpen] = useState(true);
   const [isReportsOpen, setIsReportsOpen] = useState(true);
+
+  const isProductsActive = location.pathname.startsWith('/products');
+  const isReportsActive = location.pathname.startsWith('/reports');
 
   // Fetch current store settings for name & device
   const { data: settings } = useQuery({
@@ -58,9 +62,9 @@ export const AppSidebar: React.FC = () => {
       : 'Kasir';
 
   return (
-    <aside className="w-64 border-r bg-card/60 backdrop-blur-md p-4 flex flex-col justify-between hidden md:flex shrink-0 select-none overflow-y-auto">
+    <aside className="w-64 border-r bg-card/60 backdrop-blur-md p-4 flex flex-col justify-between hidden md:flex shrink-0 select-none overflow-hidden h-screen">
       {/* Sidebar Header: Store Identity */}
-      <div className="space-y-4">
+      <div className="space-y-4 shrink-0">
         <div className="flex items-center gap-3 p-2 rounded-xl bg-muted/40 border border-border/60">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-lg shrink-0 shadow-xs">
             {storeName.charAt(0).toUpperCase()}
@@ -76,9 +80,11 @@ export const AppSidebar: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Navigation Groupings */}
-        <div className="space-y-4">
+      {/* Navigation Groupings in ScrollArea */}
+      <ScrollArea className="flex-1 -mx-2 px-2 my-3">
+        <div className="space-y-4 pr-1">
           {/* Group 1: Operasional Kasir */}
           <div>
             <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
@@ -205,7 +211,7 @@ export const AppSidebar: React.FC = () => {
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                     >
-                      <Layers className="h-3 w-3 shrink-0" />
+                      <Sparkles className="h-3 w-3 shrink-0" />
                       <span>Daftar Varian</span>
                     </NavLink>
 
@@ -217,7 +223,7 @@ export const AppSidebar: React.FC = () => {
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                     >
-                      <Sparkles className="h-3 w-3 shrink-0" />
+                      <Layers className="h-3 w-3 shrink-0" />
                       <span>Modifier & Topping</span>
                     </NavLink>
                   </div>
@@ -226,7 +232,7 @@ export const AppSidebar: React.FC = () => {
 
               {/* Stok Adjustment */}
               <NavLink
-                to="/stock-adjustment"
+                to="/inventory/adjustments"
                 className={({ isActive }) =>
                   `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
                     isActive
@@ -304,7 +310,7 @@ export const AppSidebar: React.FC = () => {
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                     >
-                      <Layers className="h-3 w-3 shrink-0" />
+                      <Package className="h-3 w-3 shrink-0" />
                       <span>Performa Produk</span>
                     </NavLink>
 
@@ -373,10 +379,10 @@ export const AppSidebar: React.FC = () => {
             </nav>
           </div>
         </div>
-      </div>
+      </ScrollArea>
 
       {/* Sidebar Footer */}
-      <div className="pt-3 border-t border-border/80 space-y-2 mt-4">
+      <div className="pt-3 border-t border-border/80 space-y-2 shrink-0">
         <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 text-xs">
           <div className="flex items-center gap-2 min-w-0">
             <Laptop className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
