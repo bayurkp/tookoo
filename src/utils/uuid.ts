@@ -3,10 +3,7 @@
  */
 export const generateUUID = (): string => {
   // 1. Native crypto.randomUUID (available in Secure Contexts: HTTPS & localhost)
-  if (
-    typeof crypto !== 'undefined' &&
-    typeof crypto.randomUUID === 'function'
-  ) {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     try {
       return crypto.randomUUID();
     } catch {
@@ -15,10 +12,7 @@ export const generateUUID = (): string => {
   }
 
   // 2. crypto.getRandomValues (available in almost all modern mobile browsers)
-  if (
-    typeof crypto !== 'undefined' &&
-    typeof crypto.getRandomValues === 'function'
-  ) {
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
     try {
       const bytes = new Uint8Array(16);
       crypto.getRandomValues(bytes);
@@ -39,10 +33,10 @@ export const generateUUID = (): string => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     let r = Math.random() * 16;
     if (d > 0) {
-      r = (d + r) % 16 | 0;
+      r = ((d + r) % 16) | 0;
       d = Math.floor(d / 16);
     } else {
-      r = (d2 + r) % 16 | 0;
+      r = ((d2 + r) % 16) | 0;
       d2 = Math.floor(d2 / 16);
     }
     return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);

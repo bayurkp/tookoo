@@ -1,12 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldDescription,
-  FieldError,
-} from '../field';
+import { Field, FieldGroup, FieldLabel, FieldDescription, FieldError } from '../field';
 import { Input } from '../input';
 
 describe('Field Components', () => {

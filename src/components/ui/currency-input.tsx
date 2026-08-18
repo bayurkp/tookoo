@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback, forwardRef } from 'react';
 import { cn } from '@/lib/cn';
 import { getCurrencyConfig } from '@/utils/currency-config';
 
-export interface CurrencyInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+export interface CurrencyInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'onChange'
+> {
   value?: number;
   onValueChange?: (val: number) => void;
   currencyCode?: string;
@@ -12,15 +14,7 @@ export interface CurrencyInputProps
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
   (
-    {
-      value,
-      onValueChange,
-      currencyCode,
-      className,
-      placeholder = '0',
-      disabled,
-      ...props
-    },
+    { value, onValueChange, currencyCode, className, placeholder = '0', disabled, ...props },
     ref
   ) => {
     const config = getCurrencyConfig(currencyCode);

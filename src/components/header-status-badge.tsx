@@ -16,9 +16,14 @@ export const HeaderStatusBadge: React.FC<HeaderStatusBadgeProps> = ({
 
   if (peerCount > 0) {
     return (
-      <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1.5 py-1 px-3">
+      <Badge
+        variant="outline"
+        className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1.5 py-1 px-3"
+      >
         <Wifi className="h-3.5 w-3.5" />
-        <span className="text-xs font-semibold">{t('status.p2pConnected', { count: peerCount })}</span>
+        <span className="text-xs font-semibold">
+          {t('status.p2pConnected', { count: peerCount })}
+        </span>
       </Badge>
     );
   }

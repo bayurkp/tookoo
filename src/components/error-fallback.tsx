@@ -2,7 +2,14 @@ import React from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
 
 export const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
   const handleReload = () => {
@@ -14,7 +21,13 @@ export const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBounda
   };
 
   const errorMessage =
-    error instanceof Error ? error.message : typeof error === 'string' ? error : error ? JSON.stringify(error) : null;
+    error instanceof Error
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : error
+          ? JSON.stringify(error)
+          : null;
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-background text-foreground">
@@ -25,7 +38,8 @@ export const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBounda
           </div>
           <CardTitle className="text-lg font-bold">Terjadi Kendala Teknis</CardTitle>
           <CardDescription className="text-xs">
-            Aplikasi mengalami kendala saat memuat halaman kasir. Data toko Anda tetap aman tersimpan di perangkat.
+            Aplikasi mengalami kendala saat memuat halaman kasir. Data toko Anda tetap aman
+            tersimpan di perangkat.
           </CardDescription>
         </CardHeader>
 

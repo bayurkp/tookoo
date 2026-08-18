@@ -51,7 +51,11 @@ describe('imageCompressor', () => {
     vi.stubGlobal('Image', MockImage);
 
     const mockBlob = new Blob(['mock content'], { type: 'image/png' });
-    const result = await compressImageToWebP(mockBlob, { maxWidth: 400, maxHeight: 400, quality: 0.8 });
+    const result = await compressImageToWebP(mockBlob, {
+      maxWidth: 400,
+      maxHeight: 400,
+      quality: 0.8,
+    });
 
     expect(result).toBe('data:image/webp;base64,mockWebpData');
   });

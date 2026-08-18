@@ -8,7 +8,9 @@ import { App } from '@/app/app';
 if (
   typeof window !== 'undefined' &&
   'serviceWorker' in navigator &&
-  (window.isSecureContext || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  (window.isSecureContext ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1')
 ) {
   import('virtual:pwa-register')
     .then(({ registerSW }) => {

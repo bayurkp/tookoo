@@ -1,4 +1,5 @@
 import { getCurrencyConfig } from './currency-config';
+export { DEFAULT_CURRENCY } from './currency-config';
 
 /**
  * Formats a numeric value into localized Currency format
