@@ -14,6 +14,9 @@ const SyncPage = lazy(() => import('@/app/pages/sync-page'));
 const SettingsPage = lazy(() => import('@/app/pages/settings-page'));
 const TablesPage = lazy(() => import('@/app/pages/tables-page'));
 const ExpensesPage = lazy(() => import('@/app/pages/expenses-page'));
+const CustomersPage = lazy(() => import('@/app/pages/customers-page'));
+const SuppliersPage = lazy(() => import('@/app/pages/suppliers-page'));
+const DiscountsPage = lazy(() => import('@/app/pages/discounts-page'));
 
 const PageLoader: React.FC = () => (
   <div className="flex h-full min-h-[320px] w-full items-center justify-center">
@@ -66,6 +69,18 @@ export const router = createBrowserRouter([
       {
         path: 'stock-adjustment',
         element: withSuspense(StockAdjustmentPage),
+      },
+      {
+        path: 'customers',
+        element: withSuspense(CustomersPage),
+      },
+      {
+        path: 'suppliers',
+        element: withSuspense(SuppliersPage),
+      },
+      {
+        path: 'discounts',
+        element: withSuspense(DiscountsPage),
       },
       {
         path: 'orders',

@@ -13,10 +13,6 @@ import {
   ShieldCheck,
   Laptop,
   ChevronDown,
-  Folder,
-  Layers,
-  Sparkles,
-  Scale,
   DollarSign,
   CreditCard,
   Download,
@@ -28,6 +24,8 @@ import {
   Tag,
   Database,
   Wallet,
+  Users,
+  Building2,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { db } from '@/lib/db';
@@ -48,22 +46,17 @@ export const AppSidebar: React.FC = () => {
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab');
 
-  // Smart accordion states: expanded if on the matching path
-  const [isProductsOpen, setIsProductsOpen] = useState(
-    () => location.pathname.startsWith('/products')
+  // Smart collapsible states
+  const [isReportsOpen, setIsReportsOpen] = useState(() =>
+    location.pathname.startsWith('/reports')
   );
-  const [isReportsOpen, setIsReportsOpen] = useState(
-    () => location.pathname.startsWith('/reports')
-  );
-  const [isSettingsOpen, setIsSettingsOpen] = useState(
-    () => location.pathname.startsWith('/settings')
+  const [isSettingsOpen, setIsSettingsOpen] = useState(() =>
+    location.pathname.startsWith('/settings')
   );
 
-  // Auto-expand active route group when navigating
+  // Auto-expand active group
   useEffect(() => {
-    if (location.pathname.startsWith('/products')) {
-      setIsProductsOpen(true);
-    } else if (location.pathname.startsWith('/reports')) {
+    if (location.pathname.startsWith('/reports')) {
       setIsReportsOpen(true);
     } else if (location.pathname.startsWith('/settings')) {
       setIsSettingsOpen(true);
@@ -86,7 +79,7 @@ export const AppSidebar: React.FC = () => {
 
   const navItemClass = (isActive: boolean) =>
     cn(
-      'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-150 relative group',
+      'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-150 relative group select-none',
       isActive
         ? 'bg-primary text-primary-foreground font-bold shadow-xs'
         : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground'
@@ -94,16 +87,16 @@ export const AppSidebar: React.FC = () => {
 
   const subNavItemClass = (isActive: boolean) =>
     cn(
-      'flex items-center gap-2 rounded-md px-2 py-1.5 text-[11px] transition-all duration-150',
+      'flex items-center gap-2 rounded-md px-2 py-1 text-[11px] font-medium transition-all duration-150 select-none',
       isActive
         ? 'bg-primary/10 text-primary font-bold'
         : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
     );
 
   return (
-    <aside className="w-64 border-r bg-card/70 backdrop-blur-md p-3 flex flex-col justify-between hidden md:flex shrink-0 select-none overflow-hidden h-full z-10">
+    <aside className="w-64 border-r bg-card/80 backdrop-blur-md p-3 flex flex-col justify-between hidden md:flex shrink-0 select-none overflow-hidden h-full z-10">
       {/* Sidebar Header: Store Identity */}
-      <div className="space-y-2.5 shrink-0">
+      <div className="space-y-2 shrink-0">
         <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/40 border border-border/60">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-base shrink-0 shadow-xs">
             {storeName.charAt(0).toUpperCase()}
@@ -126,14 +119,14 @@ export const AppSidebar: React.FC = () => {
 
       {/* Navigation Groups inside ScrollArea */}
       <ScrollArea className="flex-1 min-h-0 -mx-1.5 px-1.5 my-2">
-        <div className="space-y-3.5 pr-1 py-1">
+        <div className="space-y-3 pr-1 py-1">
           {/* ========================================================================= */}
-          {/* 1. SIMPLE MODE NAVIGATION (Focused Core Business Menus) */}
+          {/* 1. SIMPLE MODE NAVIGATION (Fast, Focused Essential Menus) */}
           {/* ========================================================================= */}
           {isSimple ? (
             <div className="space-y-1">
-              <p className="px-2.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-                Menu Utama Toko
+              <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                Menu Kasir
               </p>
               <nav className="space-y-0.5">
                 <NavLink to="/" className={({ isActive }) => navItemClass(isActive)}>
@@ -144,6 +137,11 @@ export const AppSidebar: React.FC = () => {
                 <NavLink to="/products" className={({ isActive }) => navItemClass(isActive)}>
                   <Package className="h-4 w-4 shrink-0" />
                   <span>{t('nav.products', 'Katalog Produk')}</span>
+                </NavLink>
+
+                <NavLink to="/customers" className={({ isActive }) => navItemClass(isActive)}>
+                  <Users className="h-4 w-4 shrink-0" />
+                  <span>Pelanggan & Member</span>
                 </NavLink>
 
                 <NavLink to="/orders" className={({ isActive }) => navItemClass(isActive)}>
@@ -164,39 +162,28 @@ export const AppSidebar: React.FC = () => {
             </div>
           ) : (
             /* ========================================================================= */
-            /* 2. ADVANCED / PRO MODE: 6 DISCRETE BUSINESS MODULES */
+            /* 2. ADVANCED / PRO MODE: CLEAN, PROFESSIONAL 6 DOMAIN MODULES */
             /* ========================================================================= */
             <>
-              {/* MODUL 1: PENJUALAN & KASIR */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2.5">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Penjualan & Kasir
-                  </p>
-                </div>
+              {/* GROUP 1: PENJUALAN & KASIR */}
+              <div className="space-y-0.5">
+                <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                  Penjualan & Kasir
+                </p>
                 <nav className="space-y-0.5">
-                  <NavLink
-                    to="/dashboard"
-                    className={({ isActive }) => navItemClass(isActive)}
-                  >
+                  <NavLink to="/dashboard" className={({ isActive }) => navItemClass(isActive)}>
                     <LayoutDashboard className="h-4 w-4 shrink-0" />
                     <span>Dashboard Toko</span>
                   </NavLink>
 
-                  <NavLink
-                    to="/"
-                    className={({ isActive }) => navItemClass(isActive)}
-                  >
+                  <NavLink to="/" className={({ isActive }) => navItemClass(isActive)}>
                     <ShoppingCart className="h-4 w-4 shrink-0" />
                     <span>{t('nav.cashier', 'Terminal Kasir')}</span>
                   </NavLink>
 
-                  <NavLink
-                    to="/orders"
-                    className={({ isActive }) => navItemClass(isActive)}
-                  >
+                  <NavLink to="/orders" className={({ isActive }) => navItemClass(isActive)}>
                     <Receipt className="h-4 w-4 shrink-0" />
-                    <span>{t('nav.orders', 'Riwayat & Struk')}</span>
+                    <span>{t('nav.orders', 'Riwayat Pesanan')}</span>
                   </NavLink>
 
                   <NavLink
@@ -211,138 +198,17 @@ export const AppSidebar: React.FC = () => {
                 </nav>
               </div>
 
-              {/* MODUL 2: PRODUK & MENU (MASTER DATA) */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2.5">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Produk & Menu
-                  </p>
-                </div>
+              {/* GROUP 2: PRODUK & STOK */}
+              <div className="space-y-0.5">
+                <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                  Produk & Stok
+                </p>
                 <nav className="space-y-0.5">
-                  {/* Collapsible Katalog Produk */}
-                  <div>
-                    <div
-                      onClick={() => {
-                        if (location.pathname !== '/products') {
-                          navigate('/products');
-                        }
-                        setIsProductsOpen((prev) => !prev);
-                      }}
-                      className={cn(
-                        'flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold cursor-pointer transition-all duration-150',
-                        location.pathname === '/products'
-                          ? 'bg-muted/80 text-foreground font-bold'
-                          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
-                      )}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Package className="h-4 w-4 shrink-0 text-foreground/80" />
-                        <span>{t('nav.products', 'Katalog Produk')}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsProductsOpen((prev) => !prev);
-                        }}
-                        className="p-0.5 hover:bg-muted rounded text-muted-foreground"
-                      >
-                        <ChevronDown
-                          className={cn(
-                            'h-3.5 w-3.5 transition-transform duration-200',
-                            !isProductsOpen && '-rotate-90'
-                          )}
-                        />
-                      </button>
-                    </div>
+                  <NavLink to="/products" className={({ isActive }) => navItemClass(isActive)}>
+                    <Package className="h-4 w-4 shrink-0" />
+                    <span>{t('nav.products', 'Katalog Produk')}</span>
+                  </NavLink>
 
-                    {/* Sub-items for Products */}
-                    {isProductsOpen && (
-                      <div className="ml-3.5 pl-2.5 border-l border-border/60 mt-1 space-y-0.5 animate-in fade-in-50 duration-150">
-                        <NavLink
-                          to="/products?tab=products"
-                          className={subNavItemClass(
-                            location.pathname === '/products' &&
-                              (!currentTab || currentTab === 'products')
-                          )}
-                        >
-                          <Package className="h-3 w-3 shrink-0" />
-                          <span>Semua Produk</span>
-                        </NavLink>
-
-                        <NavLink
-                          to="/products?tab=categories"
-                          className={subNavItemClass(
-                            location.pathname === '/products' && currentTab === 'categories'
-                          )}
-                        >
-                          <Folder className="h-3 w-3 shrink-0" />
-                          <span>Kategori Produk</span>
-                        </NavLink>
-
-                        <NavLink
-                          to="/products?tab=uom"
-                          className={subNavItemClass(
-                            location.pathname === '/products' && currentTab === 'uom'
-                          )}
-                        >
-                          <Scale className="h-3 w-3 shrink-0" />
-                          <span>Satuan (UOM)</span>
-                        </NavLink>
-
-                        <NavLink
-                          to="/products?tab=variants"
-                          className={subNavItemClass(
-                            location.pathname === '/products' && currentTab === 'variants'
-                          )}
-                        >
-                          <Sparkles className="h-3 w-3 shrink-0" />
-                          <span>Master Varian</span>
-                        </NavLink>
-
-                        <NavLink
-                          to="/products?tab=modifiers"
-                          className={subNavItemClass(
-                            location.pathname === '/products' && currentTab === 'modifiers'
-                          )}
-                        >
-                          <Layers className="h-3 w-3 shrink-0" />
-                          <span>Master Modifier</span>
-                        </NavLink>
-
-                        <NavLink
-                          to="/products?tab=discounts"
-                          className={subNavItemClass(
-                            location.pathname === '/products' && currentTab === 'discounts'
-                          )}
-                        >
-                          <Tag className="h-3 w-3 shrink-0" />
-                          <span>Master Diskon</span>
-                        </NavLink>
-
-                        <NavLink
-                          to="/products?tab=taxes"
-                          className={subNavItemClass(
-                            location.pathname === '/products' && currentTab === 'taxes'
-                          )}
-                        >
-                          <Receipt className="h-3 w-3 shrink-0" />
-                          <span>Pajak & Biaya</span>
-                        </NavLink>
-                      </div>
-                    )}
-                  </div>
-                </nav>
-              </div>
-
-              {/* MODUL 3: INVENTORI & STOK */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2.5">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Inventori & Stok
-                  </p>
-                </div>
-                <nav className="space-y-0.5">
                   <NavLink
                     to="/inventory/adjustments"
                     className={({ isActive }) => navItemClass(isActive)}
@@ -353,32 +219,49 @@ export const AppSidebar: React.FC = () => {
                 </nav>
               </div>
 
-              {/* MODUL 4: KEUANGAN & BIAYA */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2.5">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Keuangan & Biaya
-                  </p>
-                </div>
+              {/* GROUP 3: PELANGGAN & PEMASOK (CRM & SUPPLIERS) */}
+              <div className="space-y-0.5">
+                <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                  Pelanggan & Pemasok
+                </p>
                 <nav className="space-y-0.5">
-                  <NavLink
-                    to="/expenses"
-                    className={({ isActive }) => navItemClass(isActive)}
-                  >
-                    <Wallet className="h-4 w-4 shrink-0" />
-                    <span>Pengeluaran & Kulakan</span>
+                  <NavLink to="/customers" className={({ isActive }) => navItemClass(isActive)}>
+                    <Users className="h-4 w-4 shrink-0" />
+                    <span>Pelanggan & Member</span>
+                  </NavLink>
+
+                  <NavLink to="/suppliers" className={({ isActive }) => navItemClass(isActive)}>
+                    <Building2 className="h-4 w-4 shrink-0" />
+                    <span>Pemasok / Supplier</span>
                   </NavLink>
                 </nav>
               </div>
 
-              {/* MODUL 5: LAPORAN & ANALITIK */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2.5">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Laporan & Analitik
-                  </p>
-                </div>
+              {/* GROUP 4: PROMOSI & LOYALITAS */}
+              <div className="space-y-0.5">
+                <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                  Promosi & Loyalitas
+                </p>
                 <nav className="space-y-0.5">
+                  <NavLink to="/discounts" className={({ isActive }) => navItemClass(isActive)}>
+                    <Tag className="h-4 w-4 shrink-0" />
+                    <span>Diskon & Voucher Promo</span>
+                  </NavLink>
+                </nav>
+              </div>
+
+              {/* GROUP 5: KEUANGAN & LAPORAN */}
+              <div className="space-y-0.5">
+                <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                  Keuangan & Laporan
+                </p>
+                <nav className="space-y-0.5">
+                  <NavLink to="/expenses" className={({ isActive }) => navItemClass(isActive)}>
+                    <Wallet className="h-4 w-4 shrink-0" />
+                    <span>Pengeluaran & Kulakan</span>
+                  </NavLink>
+
+                  {/* Collapsible Laporan */}
                   <div>
                     <div
                       onClick={() => {
@@ -396,7 +279,7 @@ export const AppSidebar: React.FC = () => {
                     >
                       <div className="flex items-center gap-2.5">
                         <TrendingUp className="h-4 w-4 shrink-0 text-foreground/80" />
-                        <span>Laporan Bisnis</span>
+                        <span>Laporan & Analitik</span>
                       </div>
                       <button
                         type="button"
@@ -464,18 +347,13 @@ export const AppSidebar: React.FC = () => {
                 </nav>
               </div>
 
-              {/* MODUL 6: SISTEM & PENGATURAN */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between px-2.5">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Sistem & Pengaturan
-                  </p>
-                </div>
+              {/* GROUP 6: SISTEM & PENGATURAN */}
+              <div className="space-y-0.5">
+                <p className="px-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                  Sistem & Pengaturan
+                </p>
                 <nav className="space-y-0.5">
-                  <NavLink
-                    to="/sync"
-                    className={({ isActive }) => navItemClass(isActive)}
-                  >
+                  <NavLink to="/sync" className={({ isActive }) => navItemClass(isActive)}>
                     <RefreshCw className="h-4 w-4 shrink-0" />
                     <span>{t('nav.sync', 'Sinkronisasi P2P')}</span>
                   </NavLink>
@@ -528,7 +406,17 @@ export const AppSidebar: React.FC = () => {
                           )}
                         >
                           <Store className="h-3 w-3 shrink-0" />
-                          <span>Profil & Terminal</span>
+                          <span>Profil & Sistem</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/settings?tab=taxes"
+                          className={subNavItemClass(
+                            location.pathname === '/settings' && currentTab === 'taxes'
+                          )}
+                        >
+                          <Receipt className="h-3 w-3 shrink-0" />
+                          <span>Pajak & Biaya Layanan</span>
                         </NavLink>
 
                         <NavLink
@@ -581,7 +469,7 @@ export const AppSidebar: React.FC = () => {
       </ScrollArea>
 
       {/* Sidebar Footer: Mode Switcher & Device Info */}
-      <div className="pt-2.5 border-t border-border/80 space-y-2 shrink-0">
+      <div className="pt-2 border-t border-border/80 space-y-1.5 shrink-0">
         <AppModeSwitcher variant="sidebar" />
 
         <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 text-xs">
