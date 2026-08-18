@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BadgeCheck, ChevronsUpDown, Shield, Sliders, Database, Store, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -34,6 +35,7 @@ export function NavUser({
     deviceName: string;
   };
 }) {
+  const { t } = useTranslation();
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -136,10 +138,10 @@ export function NavUser({
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
 
-              {/* Mode Switcher */}
+              {/* Display Mode Selection */}
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="text-[10px] text-muted-foreground uppercase tracking-wider px-2 py-1">
-                  Mode Tampilan
+                  {t('auth.viewMode', 'Mode Tampilan')}
                 </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => setMode('simple')}
@@ -147,7 +149,7 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Sliders className="size-3.5" />
-                    <span>Mode Sederhana (Lite)</span>
+                    <span>{t('auth.simpleMode', 'Mode Sederhana (Lite)')}</span>
                   </div>
                   {mode === 'simple' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
@@ -158,17 +160,17 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Sliders className="size-3.5" />
-                    <span>Mode Lengkap (Pro)</span>
+                    <span>{t('auth.advancedMode', 'Mode Lengkap (Pro)')}</span>
                   </div>
                   {mode === 'advanced' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
 
-              {/* Ganti Role Otorisasi */}
+              {/* Role Switcher */}
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="text-[10px] text-muted-foreground uppercase tracking-wider px-2 py-1">
-                  Ganti Hak Akses
+                  {t('auth.switchRole', 'Ganti Hak Akses')}
                 </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => handleSwitchRole('CASHIER')}
@@ -176,7 +178,7 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <BadgeCheck className="size-3.5" />
-                    <span>Kasir</span>
+                    <span>{t('auth.roles.cashier', 'Kasir')}</span>
                   </div>
                   {currentRole === 'CASHIER' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
@@ -187,7 +189,7 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Shield className="size-3.5" />
-                    <span>Manajer Toko</span>
+                    <span>{t('auth.roles.manager', 'Manajer Toko')}</span>
                   </div>
                   {currentRole === 'MANAGER' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
@@ -198,21 +200,21 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Shield className="size-3.5" />
-                    <span>Pemilik (Owner)</span>
+                    <span>{t('auth.roles.owner', 'Pemilik (Owner)')}</span>
                   </div>
                   {currentRole === 'OWNER' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
 
-              {/* Pintasan Pengaturan */}
+              {/* Navigation Shortcuts */}
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   onClick={() => navigate('/store-profile')}
                   className="text-xs gap-2 cursor-pointer"
                 >
                   <Store className="size-3.5" />
-                  <span>Profil Toko</span>
+                  <span>{t('nav.items.storeProfile', 'Profil Toko')}</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -220,7 +222,7 @@ export function NavUser({
                   className="text-xs gap-2 cursor-pointer"
                 >
                   <Shield className="size-3.5" />
-                  <span>Keamanan & PIN</span>
+                  <span>{t('nav.items.security', 'Keamanan & PIN')}</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -228,7 +230,7 @@ export function NavUser({
                   className="text-xs gap-2 cursor-pointer"
                 >
                   <Database className="size-3.5" />
-                  <span>Cadangkan Data</span>
+                  <span>{t('nav.items.dataBackup', 'Cadangkan Data')}</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
@@ -236,15 +238,18 @@ export function NavUser({
         </SidebarMenuItem>
       </SidebarMenu>
 
-      {/* Modal Otorisasi PIN jika ingin promosi ke Manajer / Owner */}
+      {/* Owner PIN Authorization Modal */}
       <PinModal
         open={pinModalOpen}
         onOpenChange={setPinModalOpen}
         correctPin={settings?.ownerPin}
-        title="Otorisasi PIN Pemilik"
-        description={`Masukkan PIN Pemilik untuk mengubah peran terminal menjadi ${
-          pendingRole === 'OWNER' ? 'Pemilik Toko' : 'Manajer Toko'
-        }.`}
+        title={t('auth.pinModalTitle', 'Otorisasi PIN Pemilik')}
+        description={t('auth.pinModalDesc', 'Masukkan PIN Pemilik untuk mengubah peran terminal.', {
+          role:
+            pendingRole === 'OWNER'
+              ? t('auth.roles.owner', 'Pemilik Toko')
+              : t('auth.roles.manager', 'Manajer Toko'),
+        })}
         onSuccess={handlePinSuccess}
       />
     </>

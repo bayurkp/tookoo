@@ -28,12 +28,50 @@
     }
   },
   "nav": {
+    "dashboard": "Dashboard",
     "cashier": "Cashier",
     "products": "Products",
     "stockAdjustment": "Stock Adjustment",
-    "orders": "History",
+    "orders": "Transaction History",
     "sync": "Synchronization",
-    "settings": "Settings"
+    "settings": "Settings",
+    "groups": {
+      "sales": "Sales",
+      "storeData": "Store Data",
+      "accounting": "Accounting & Inventory",
+      "reports": "Reports & Analytics",
+      "system": "System"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "cashier": "Cashier",
+      "orders": "Transaction History",
+      "shifts": "Shift & Cash Drawer",
+      "storeProfile": "Store Profile",
+      "productCatalog": "Product Catalog & Menu",
+      "productsList": "Products List",
+      "categories": "Categories",
+      "uom": "Units of Measure (UOM)",
+      "variants": "Product Variants",
+      "modifiers": "Modifiers & Add-ons",
+      "discounts": "Discounts & Promotions",
+      "taxes": "Taxes & Service Charge",
+      "customers": "Customers & Members",
+      "suppliers": "Suppliers & Vendors",
+      "tables": "Table Floor Plan",
+      "receiptSettings": "Receipt & Bill Design",
+      "expenses": "Operational Expenses",
+      "purchaseStock": "Purchase Orders (PO)",
+      "inventoryAdjustments": "Stock Opname & Adjustments",
+      "pnlReport": "Profit & Loss (P&L)",
+      "productsReport": "Product Sales",
+      "paymentsReport": "Payment Methods",
+      "exportReport": "Export & Book Closing",
+      "p2pSync": "Device Sync (P2P)",
+      "appearance": "Appearance & Audio",
+      "security": "Security & Access PIN",
+      "dataBackup": "Backup & Reset Data"
+    }
   },
   "status": {
     "p2pConnected": "Connected ({{count}} Devices)",
@@ -197,6 +235,29 @@
       "errorMsg": "Failed to read backup file. Invalid JSON format."
     }
   },
+  "shifts": {
+    "title": "Shift & Cash Drawer",
+    "subtitle": "Track cash drawer float, staff shift handovers, and physical cash reconciliations.",
+    "printXReport": "Print X Report",
+    "closeShift": "Close Cashier Shift",
+    "currentShift": "Current Shift",
+    "shiftActive": "Shift 1 (Active)",
+    "openedToday": "Opened today, 08:00",
+    "terminal": "Terminal",
+    "cashDrawer": "Physical Cash Balance (Drawer)",
+    "initialCash": "Starting Cash Float",
+    "cashSales": "Cash Sales",
+    "nonCashSales": "Non-Cash Transactions",
+    "shiftOrders": "Total Shift Orders",
+    "ordersCount": "{{count}} Orders",
+    "qrisAndTransfer": "QRIS & Transfer",
+    "paidIn": "Paid-In",
+    "paidInDesc": "Add change float or additional cash into the cash drawer.",
+    "paidInBtn": "Paid-In",
+    "paidOut": "Paid-Out",
+    "paidOutDesc": "Withdraw cash from drawer for urgent store operating expenses.",
+    "paidOutBtn": "Paid-Out"
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage store profile, device profile, visual theme, language, and security preferences.",
@@ -252,5 +313,18 @@
       "storageStatus": "Local Database Storage",
       "storageDesc": "100% data safely stored locally in browser (IndexedDB)."
     }
+  },
+  "auth": {
+    "roles": {
+      "owner": "Store Owner",
+      "manager": "Store Manager",
+      "cashier": "Cashier"
+    },
+    "viewMode": "Display Mode",
+    "simpleMode": "Simple Mode (Lite)",
+    "advancedMode": "Advanced Mode (Pro)",
+    "switchRole": "Switch Access Role",
+    "pinModalTitle": "Owner PIN Authorization",
+    "pinModalDesc": "Enter Owner PIN to elevate terminal role to {{role}}."
   }
 }

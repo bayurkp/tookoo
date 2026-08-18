@@ -12,12 +12,14 @@ import {
   SelectGroup,
   SelectItem,
 } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { WelcomeOnboardingDialog } from '@/features/onboarding/components/welcome-onboarding-dialog';
 import { SUPPORTED_CURRENCIES, DEFAULT_CURRENCY } from '@/utils/currency-config';
 import type { CurrencyCode } from '@/types/currency.types';
 
 export const StoreProfilePage: React.FC = () => {
+  const { t } = useTranslation();
   const { settings, isSettingsLoading, updateSettings } = useP2pSync();
 
   const [storeName, setStoreName] = useState('');
@@ -60,10 +62,13 @@ export const StoreProfilePage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
-            <span>Profil Toko</span>
+            <span>{t('settings.storeProfile.title', 'Profil Toko')}</span>
           </h2>
           <p className="text-muted-foreground text-xs mt-0.5">
-            Identitas resmi usaha, mata uang transaksi, alamat toko, dan profil terminal kasir ini.
+            {t(
+              'settings.storeProfile.desc',
+              'Informasi toko yang akan tercetak pada struk belanja pelanggan.'
+            )}
           </p>
         </div>
 
@@ -74,19 +79,19 @@ export const StoreProfilePage: React.FC = () => {
           className="gap-2 text-xs font-semibold shrink-0"
         >
           <Sparkles className="h-4 w-4 text-primary" />
-          <span>Buka Panduan Setup Awal</span>
+          <span>{t('onboarding.setupGuide', 'Buka Panduan Setup Awal')}</span>
         </Button>
       </div>
 
       {savedSuccess && (
         <div className="p-3.5 bg-primary/10 border border-primary/30 rounded-xl flex items-center gap-2 text-primary text-xs font-semibold animate-in fade-in-50">
           <CheckCircle2 className="h-4 w-4" />
-          <span>Profil Toko & Terminal Berhasil Disimpan!</span>
+          <span>{t('common.states.saved', 'Data Berhasil Disimpan')}</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Identitas Bisnis */}
+        {/* Business Identity */}
         <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">
@@ -94,9 +99,14 @@ export const StoreProfilePage: React.FC = () => {
                 <Store className="h-4 w-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-sm font-bold text-foreground">Identitas Usaha</CardTitle>
+                <CardTitle className="text-sm font-bold text-foreground">
+                  {t('settings.storeProfile.title', 'Identitas Usaha')}
+                </CardTitle>
                 <CardDescription className="text-xs">
-                  Nama usaha dan mata uang utama penjualan kasir.
+                  {t(
+                    'settings.storeProfile.desc',
+                    'Nama usaha dan mata uang utama penjualan kasir.'
+                  )}
                 </CardDescription>
               </div>
             </div>
@@ -106,7 +116,9 @@ export const StoreProfilePage: React.FC = () => {
             <form onSubmit={handleSaveStoreProfile} className="space-y-4">
               <FieldGroup className="space-y-3">
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Nama Toko / Usaha *</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">
+                    {t('settings.storeProfile.storeName', 'Nama Toko')} *
+                  </FieldLabel>
                   <Input
                     placeholder="misal: Tookoo Coffee & Eatery"
                     value={storeName}
@@ -118,7 +130,9 @@ export const StoreProfilePage: React.FC = () => {
                 </Field>
 
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Mata Uang Utama</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">
+                    {t('settings.currency.title', 'Mata Uang Utama')}
+                  </FieldLabel>
                   <Select
                     value={currency}
                     onValueChange={(val) => setCurrency(val as CurrencyCode)}
@@ -140,9 +154,14 @@ export const StoreProfilePage: React.FC = () => {
                 </Field>
 
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Alamat Toko (Header Struk)</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">
+                    {t('settings.storeProfile.storeAddress', 'Alamat Toko')}
+                  </FieldLabel>
                   <Input
-                    placeholder="misal: Jl. Boulevard Raya Blok A No. 12"
+                    placeholder={t(
+                      'settings.storeProfile.storeAddressPlaceholder',
+                      'Contoh: Jl. Sudirman No. 45, Jakarta'
+                    )}
                     value={storeAddress}
                     onChange={(e) => setStoreAddress(e.target.value)}
                     disabled={isSettingsLoading}
@@ -159,14 +178,14 @@ export const StoreProfilePage: React.FC = () => {
                   className="w-full font-bold text-xs gap-1.5"
                 >
                   <Save className="h-3.5 w-3.5" />
-                  <span>Simpan Identitas Usaha</span>
+                  <span>{t('settings.storeProfile.saveBtn', 'Simpan Profil Toko')}</span>
                 </Button>
               </div>
             </form>
           </CardContent>
         </Card>
 
-        {/* Profil Terminal Kasir */}
+        {/* Terminal & Device Profile */}
         <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between">
           <CardHeader className="p-5 pb-3 border-b">
             <div className="flex items-center gap-2.5">
@@ -175,10 +194,13 @@ export const StoreProfilePage: React.FC = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-sm font-bold text-foreground">
-                  Profil Terminal Perangkat
+                  {t('settings.deviceProfile.title', 'Profil Terminal')}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Pengenal perangkat kasir ini di jaringan lokal P2P.
+                  {t(
+                    'settings.deviceProfile.desc',
+                    'Identitas terminal kasir ini dalam jaringan lokal toko.'
+                  )}
                 </CardDescription>
               </div>
             </div>
@@ -188,7 +210,9 @@ export const StoreProfilePage: React.FC = () => {
             <form onSubmit={handleSaveStoreProfile} className="space-y-4">
               <FieldGroup className="space-y-3">
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Nama Terminal Ini</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">
+                    {t('settings.deviceProfile.deviceName', 'Nama Terminal Ini')}
+                  </FieldLabel>
                   <Input
                     placeholder="misal: Kasir Utama / Bar Depan"
                     value={deviceName}
@@ -199,9 +223,14 @@ export const StoreProfilePage: React.FC = () => {
                 </Field>
 
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Nama Kasir Bawaan</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">
+                    {t('settings.deviceProfile.defaultCashier', 'Nama Kasir Bawaan')}
+                  </FieldLabel>
                   <Input
-                    placeholder="misal: Hendra"
+                    placeholder={t(
+                      'settings.deviceProfile.defaultCashierPlaceholder',
+                      'Contoh: Kasir 1'
+                    )}
                     value={defaultCashier}
                     onChange={(e) => setDefaultCashier(e.target.value)}
                     disabled={isSettingsLoading}
@@ -219,7 +248,7 @@ export const StoreProfilePage: React.FC = () => {
                   className="w-full font-bold text-xs gap-1.5"
                 >
                   <Save className="h-3.5 w-3.5" />
-                  <span>Simpan Profil Terminal</span>
+                  <span>{t('settings.deviceProfile.saveBtn', 'Simpan Profil Perangkat')}</span>
                 </Button>
               </div>
             </form>
@@ -227,7 +256,7 @@ export const StoreProfilePage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Setup Wizard Dialog */}
+      {/* Onboarding Setup Wizard Dialog */}
       <WelcomeOnboardingDialog forceOpen={isSetupWizardOpen} onOpenChange={setIsSetupWizardOpen} />
     </div>
   );

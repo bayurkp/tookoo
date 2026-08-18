@@ -28,12 +28,50 @@
     }
   },
   "nav": {
+    "dashboard": "Dasbor",
     "cashier": "Kasir",
     "products": "Produk",
-    "stockAdjustment": "Stok Adjustment",
-    "orders": "Riwayat",
+    "stockAdjustment": "Penyesuaian Stok (Opname)",
+    "orders": "Riwayat Transaksi",
     "sync": "Sinkronisasi",
-    "settings": "Pengaturan"
+    "settings": "Pengaturan",
+    "groups": {
+      "sales": "Penjualan",
+      "storeData": "Data Toko",
+      "accounting": "Akuntansi & Inventaris",
+      "reports": "Laporan & Analitik",
+      "system": "Sistem"
+    },
+    "items": {
+      "dashboard": "Dasbor",
+      "cashier": "Kasir",
+      "orders": "Riwayat Transaksi",
+      "shifts": "Shift & Uang Kas",
+      "storeProfile": "Profil Toko",
+      "productCatalog": "Katalog Produk & Menu",
+      "productsList": "Daftar Produk",
+      "categories": "Kategori",
+      "uom": "Satuan (UOM)",
+      "variants": "Varian Produk",
+      "modifiers": "Opsi Tambahan (Modifier)",
+      "discounts": "Diskon & Promosi",
+      "taxes": "Pajak & Biaya Layanan",
+      "customers": "Pelanggan & Member",
+      "suppliers": "Pemasok & Vendor",
+      "tables": "Denah Meja",
+      "receiptSettings": "Desain Nota & Struk",
+      "expenses": "Pengeluaran Kas (Expenses)",
+      "purchaseStock": "Pembelian Stok (PO)",
+      "inventoryAdjustments": "Penyesuaian Stok (Opname)",
+      "pnlReport": "Laba & Rugi (P&L)",
+      "productsReport": "Penjualan Produk",
+      "paymentsReport": "Metode Pembayaran",
+      "exportReport": "Ekspor & Tutup Buku",
+      "p2pSync": "Sinkronisasi Perangkat (P2P)",
+      "appearance": "Tampilan & Suara",
+      "security": "Keamanan & Hak Akses",
+      "dataBackup": "Cadangkan & Reset Data"
+    }
   },
   "status": {
     "p2pConnected": "Tersambung ({{count}} Kasir)",
@@ -197,6 +235,29 @@
       "errorMsg": "Gagal membaca berkas cadangan. Format JSON tidak valid."
     }
   },
+  "shifts": {
+    "title": "Shift & Uang Kas",
+    "subtitle": "Pencatatan kas modal awal, serah terima shift staf, dan rekonsiliasi uang fisik laci kasir.",
+    "printXReport": "Cetak Laporan X",
+    "closeShift": "Tutup Shift Kasir",
+    "currentShift": "Shift Saat Ini",
+    "shiftActive": "Shift 1 (Aktif)",
+    "openedToday": "Dibuka hari ini, 08:00 WIB",
+    "terminal": "Terminal",
+    "cashDrawer": "Saldo Kas Fisik (Laci)",
+    "initialCash": "Modal Kas Awal",
+    "cashSales": "Penjualan Tunai",
+    "nonCashSales": "Transaksi Non-Tunai",
+    "shiftOrders": "Total Transaksi Shift",
+    "ordersCount": "{{count}} Pesanan",
+    "qrisAndTransfer": "QRIS & Transfer",
+    "paidIn": "Kas Masuk (Paid-In)",
+    "paidInDesc": "Tambah uang kembalian / modal tambahan ke laci kasir.",
+    "paidInBtn": "Kas Masuk",
+    "paidOut": "Kas Keluar (Paid-Out)",
+    "paidOutDesc": "Ambil uang dari laci untuk kebutuhan mendesak / operasional toko.",
+    "paidOutBtn": "Kas Keluar"
+  },
   "settings": {
     "title": "Pengaturan",
     "subtitle": "Kelola profil toko, profil perangkat, tema visual, bahasa, dan keamanan kasir.",
@@ -252,5 +313,18 @@
       "storageStatus": "Penyimpanan Database Lokal",
       "storageDesc": "100% data tersimpan aman secara lokal di peramban (IndexedDB)."
     }
+  },
+  "auth": {
+    "roles": {
+      "owner": "Pemilik Toko",
+      "manager": "Manajer Toko",
+      "cashier": "Kasir"
+    },
+    "viewMode": "Mode Tampilan",
+    "simpleMode": "Mode Sederhana (Lite)",
+    "advancedMode": "Mode Lengkap (Pro)",
+    "switchRole": "Ganti Hak Akses",
+    "pinModalTitle": "Otorisasi PIN Pemilik",
+    "pinModalDesc": "Masukkan PIN Pemilik untuk mengubah peran terminal menjadi {{role}}."
   }
 }

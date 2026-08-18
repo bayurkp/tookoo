@@ -4,10 +4,13 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { db } from '@/lib/db';
 import { formatCurrency } from '@/utils/format-currency';
 
 export const ShiftsPage: React.FC = () => {
+  const { t } = useTranslation();
+
   const { data: settings } = useQuery({
     queryKey: ['settings'],
     queryFn: async () => {
@@ -33,10 +36,11 @@ export const ShiftsPage: React.FC = () => {
     .filter((o) => o.paymentMethod !== 'CASH')
     .reduce((sum, o) => sum + (o.total || 0), 0);
 
-  const [initialCash] = useState(200000); // Default cash drawer float
+  const [initialCash] = useState(200000);
 
-  const cashierName = settings?.defaultCashier || 'Kasir 1';
-  const terminalName = settings?.deviceName || 'Terminal Utama';
+  const cashierName = settings?.defaultCashier || t('auth.roles.cashier', 'Kasir 1');
+  const terminalName =
+    settings?.deviceName || t('settings.deviceProfile.deviceName', 'Terminal Utama');
 
   return (
     <div className="space-y-6">
@@ -44,39 +48,43 @@ export const ShiftsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
-            <span>Shift & Uang Kas</span>
+            <span>{t('shifts.title', 'Shift & Uang Kas')}</span>
           </h2>
           <p className="text-muted-foreground text-xs mt-0.5">
-            Pencatatan kas modal awal, serah terima shift staf, dan rekonsiliasi uang fisik laci
-            kasir.
+            {t(
+              'shifts.subtitle',
+              'Pencatatan kas modal awal, serah terima shift staf, dan rekonsiliasi uang fisik laci kasir.'
+            )}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
             <Printer className="h-4 w-4" />
-            <span>Cetak Laporan X</span>
+            <span>{t('shifts.printXReport', 'Cetak Laporan X')}</span>
           </Button>
           <Button size="sm" className="gap-2 text-xs font-semibold">
             <Plus className="h-4 w-4" />
-            <span>Tutup Shift Kasir</span>
+            <span>{t('shifts.closeShift', 'Tutup Shift Kasir')}</span>
           </Button>
         </div>
       </div>
 
-      {/* Ringkasan Shift Aktif */}
+      {/* Active Shift Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Status Shift & Kasir */}
+        {/* Current Shift Status & Cashier */}
         <Card className="rounded-xl shadow-none">
           <CardHeader className="p-4 pb-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground">Shift Saat Ini</span>
+              <span className="text-xs font-medium text-muted-foreground">
+                {t('shifts.currentShift', 'Shift Saat Ini')}
+              </span>
               <Badge
                 variant="secondary"
                 className="gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
               >
                 <CheckCircle2 className="size-3" />
-                <span>Shift 1 (Aktif)</span>
+                <span>{t('shifts.shiftActive', 'Shift 1 (Aktif)')}</span>
               </Badge>
             </div>
           </CardHeader>
@@ -84,19 +92,20 @@ export const ShiftsPage: React.FC = () => {
             <div className="text-xl font-bold text-foreground">{cashierName}</div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="size-3.5" />
-              <span>Dibuka hari ini, 08:00 WIB</span>
+              <span>{t('shifts.openedToday', 'Dibuka hari ini, 08:00 WIB')}</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              Terminal: <span className="text-foreground font-medium">{terminalName}</span>
+              {t('shifts.terminal', 'Terminal')}:{' '}
+              <span className="text-foreground font-medium">{terminalName}</span>
             </div>
           </CardContent>
         </Card>
 
-        {/* Modal Kas & Penjualan Tunai */}
+        {/* Cash Drawer Float & Physical Cash Balance */}
         <Card className="rounded-xl shadow-none">
           <CardHeader className="p-4 pb-2">
             <span className="text-xs font-medium text-muted-foreground">
-              Saldo Kas Fisik (Laci)
+              {t('shifts.cashDrawer', 'Saldo Kas Fisik (Laci)')}
             </span>
           </CardHeader>
           <CardContent className="p-4 pt-1 space-y-2">
@@ -104,11 +113,11 @@ export const ShiftsPage: React.FC = () => {
               {formatCurrency(initialCash + totalCashSalesToday)}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
-              <span>Modal Kas Awal:</span>
+              <span>{t('shifts.initialCash', 'Modal Kas Awal')}:</span>
               <span className="font-medium text-foreground">{formatCurrency(initialCash)}</span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Penjualan Tunai:</span>
+              <span>{t('shifts.cashSales', 'Penjualan Tunai')}:</span>
               <span className="font-medium text-foreground">
                 {formatCurrency(totalCashSalesToday)}
               </span>
@@ -116,21 +125,25 @@ export const ShiftsPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Non-Tunai & Transaksi */}
+        {/* Non-Cash & Order Statistics */}
         <Card className="rounded-xl shadow-none">
           <CardHeader className="p-4 pb-2">
-            <span className="text-xs font-medium text-muted-foreground">Transaksi Non-Tunai</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {t('shifts.nonCashSales', 'Transaksi Non-Tunai')}
+            </span>
           </CardHeader>
           <CardContent className="p-4 pt-1 space-y-2">
             <div className="text-2xl font-bold text-foreground">
               {formatCurrency(totalNonCashSalesToday)}
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
-              <span>Total Transaksi Shift:</span>
-              <span className="font-medium text-foreground">{todayOrders.length} Pesanan</span>
+              <span>{t('shifts.shiftOrders', 'Total Transaksi Shift')}:</span>
+              <span className="font-medium text-foreground">
+                {t('shifts.ordersCount', '{{count}} Pesanan', { count: todayOrders.length })}
+              </span>
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>QRIS & Transfer:</span>
+              <span>{t('shifts.qrisAndTransfer', 'QRIS & Transfer')}:</span>
               <span className="font-medium text-foreground">
                 {formatCurrency(totalNonCashSalesToday)}
               </span>
@@ -139,7 +152,7 @@ export const ShiftsPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Tindakan Operasional Kas Laci */}
+      {/* Cash Drawer Operational Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-5 rounded-xl shadow-none flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -147,15 +160,17 @@ export const ShiftsPage: React.FC = () => {
               <ArrowDownLeft className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-sm font-bold text-foreground">Kas Masuk (Paid-In)</div>
+              <div className="text-sm font-bold text-foreground">
+                {t('shifts.paidIn', 'Kas Masuk (Paid-In)')}
+              </div>
               <div className="text-xs text-muted-foreground">
-                Tambah uang kembalian / modal tambahan ke laci kasir.
+                {t('shifts.paidInDesc', 'Tambah uang kembalian / modal tambahan ke laci kasir.')}
               </div>
             </div>
           </div>
           <Button variant="outline" size="sm" className="gap-1.5 text-xs font-semibold shrink-0">
             <Plus className="h-3.5 w-3.5" />
-            <span>Kas Masuk</span>
+            <span>{t('shifts.paidInBtn', 'Kas Masuk')}</span>
           </Button>
         </Card>
 
@@ -165,15 +180,20 @@ export const ShiftsPage: React.FC = () => {
               <ArrowUpRight className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-sm font-bold text-foreground">Kas Keluar (Paid-Out)</div>
+              <div className="text-sm font-bold text-foreground">
+                {t('shifts.paidOut', 'Kas Keluar (Paid-Out)')}
+              </div>
               <div className="text-xs text-muted-foreground">
-                Ambil uang dari laci untuk kebutuhan mendesak / operasional toko.
+                {t(
+                  'shifts.paidOutDesc',
+                  'Ambil uang dari laci untuk kebutuhan mendesak / operasional toko.'
+                )}
               </div>
             </div>
           </div>
           <Button variant="outline" size="sm" className="gap-1.5 text-xs font-semibold shrink-0">
             <Plus className="h-3.5 w-3.5" />
-            <span>Kas Keluar</span>
+            <span>{t('shifts.paidOutBtn', 'Kas Keluar')}</span>
           </Button>
         </Card>
       </div>
