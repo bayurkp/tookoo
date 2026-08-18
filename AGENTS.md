@@ -109,65 +109,56 @@ src/features/<feature-name>/
 ├── src/
 │   ├── app/                          // Application Layer
 │   │   ├── pages/                    // Page compositions (Lazy Loaded)
-│   │   │   ├── cashier-page.tsx      // [Domain 1] Front-End Kasir Terminal POS
-│   │   │   ├── orders-page.tsx       // [Domain 1] Riwayat Transaksi & Cetak Ulang Struk
-│   │   │   ├── shifts-page.tsx       // [Domain 1] Shift & Uang Kas (Coming Soon)
-│   │   │   ├── store-profile-page.tsx// [Domain 2] Profil Toko, Mata Uang, & Terminal
-│   │   │   ├── products-page.tsx     // [Domain 2] Katalog Produk, Kategori, UOM, Varian, Modifiers
-│   │   │   ├── discounts-page.tsx    // [Domain 2] Pengaturan Diskon & Promosi
-│   │   │   ├── taxes-page.tsx        // [Domain 2] Pajak PB1/PPN & Biaya Layanan Service Charge
-│   │   │   ├── customers-page.tsx    // [Domain 2] Database Pelanggan & Member Toko
-│   │   │   ├── suppliers-page.tsx    // [Domain 2] Database Pemasok & Vendor Kulakan
-│   │   │   ├── tables-page.tsx       // [Domain 2] Denah Meja & Ruangan Interaktif
-│   │   │   ├── receipt-page.tsx      // [Domain 2] Desain & Kustomisasi Nota/Struk Thermal
-│   │   │   ├── expenses-page.tsx     // [Domain 3] Pengeluaran Operasional & Pembelian Stok (PO)
-│   │   │   ├── stock-adjustment-page.tsx // [Domain 3] Penyesuaian Stok (Stock Opname)
-│   │   │   ├── dashboard-page.tsx    // [Domain 4] Dasbor Ringkasan Bisnis & Penjualan Hari Ini
-│   │   │   ├── reports-page.tsx      // [Domain 4] Laporan P&L, Produk, Pembayaran, & Tutup Buku
-│   │   │   ├── sync-page.tsx         // [Domain 5] Sinkronisasi WebRTC P2P & QR Code Pairing
-│   │   │   └── settings-page.tsx     // [Domain 5] Pengaturan Sistem (Tampilan, PIN, Backup Data)
+│   │   │   ├── __tests__/            // Page integration tests
+│   │   │   │   └── cashier-page.test.tsx
+│   │   │   ├── cashier-page.tsx      // Cashier terminal & cart layout composition
+│   │   │   ├── products-page.tsx     // Product catalog management screen
+│   │   │   ├── orders-page.tsx       // Receipts history & daily sales report
+│   │   │   └── sync-page.tsx         // P2P pairing & synchronization screen
 │   │   ├── app.tsx                   // Root App component with ErrorBoundary & MainLayout
 │   │   ├── provider.tsx              // Global Providers (QueryClientProvider, ErrorBoundary, Toaster)
-│   │   └── router.tsx                // Router configuration with React.lazy & RootErrorBoundary
+│   │   └── router.tsx                // Router configuration with React.lazy & localized ErrorBoundaries
 │   │
 │   ├── assets/                       // Static assets (images, icons, fonts)
 │   │
 │   ├── components/                   // Shared Global UI Components (shadcn/ui model)
-│   │   ├── ui/                       // button.tsx, card.tsx, dialog.tsx, input.tsx, sidebar.tsx...
-│   │   ├── app-sidebar.tsx           // 4-Domain Collapsible Sidebar Navigation
-│   │   ├── nav-main.tsx              // Modular Tree Navigation for Sidebar
-│   │   ├── nav-user.tsx              // Store Profile & User Role Switcher Dropdown
-│   │   ├── nav-secondary.tsx         // Secondary Navigation Items
+│   │   ├── ui/                       // button.tsx, card.tsx, dialog.tsx, input.tsx, badge.tsx...
+│   │   │   └── __tests__/            // Unit tests for core UI components
 │   │   ├── error-fallback.tsx        // Fallback UI for caught runtime component errors
 │   │   ├── header-status-badge.tsx   // Dynamic P2P WebRTC connection status indicator
-│   │   └── main-layout.tsx           // Primary navigation layout frame (SidebarProvider + SidebarInset)
+│   │   └── main-layout.tsx           // Primary navigation layout frame
 │   │
 │   ├── config/                       // Global configuration & environment constants
 │   │   └── env.ts
 │   │
 │   ├── features/                     // Feature-Based Modules
-│   │   ├── cashier/                  // Cashier terminal, cart store, & payment dialogs
-│   │   ├── customers/                // Customer database & membership tiers
-│   │   ├── expenses/                 // Operational expenses & purchase orders (PO)
-│   │   ├── inventory/                // Stock opname & inventory adjustments
-│   │   ├── onboarding/               // Store initialization wizard & starter templates
-│   │   ├── orders/                   // Sales history, receipt preview, & daily sales card
-│   │   ├── products/                 // Product catalog, categories, UOM, variants, & modifiers
-│   │   ├── reports/                  // Profit & Loss (P&L), sales analytics, & book closing
-│   │   ├── settings/                 // Data backup, import/export, & system preferences
-│   │   ├── suppliers/                // Supplier & vendor directory
-│   │   ├── sync/                     // WebRTC DataChannel P2P sync engine & QR pairing
-│   │   └── tables/                   // Interactive table layout & canvas floor plan
+│   │   ├── cashier/                  // Cashier terminal & transaction flow
+│   │   │   ├── components/           // product-grid.tsx, cart-sheet.tsx, payment-modal.tsx
+│   │   │   ├── hooks/                // use-cashier-actions.ts
+│   │   │   ├── stores/               // cart-store.ts (Zustand with atomic selectors)
+│   │   │   └── types/                // cart.types.ts
+│   │   │
+│   │   ├── products/                 // Product Catalog & Inventory Management
+│   │   │   ├── api/                  // get-products.ts, upsert-product.ts, delete-product.ts
+│   │   │   ├── components/           // product-card.tsx, product-form-dialog.tsx (RHF + Zod)
+│   │   │   ├── hooks/                // use-products.ts (TanStack Query hooks)
+│   │   │   └── types/                // product-form.types.ts
+│   │   │
+│   │   ├── orders/                   // Sales History & Receipts
+│   │   │   ├── api/                  // get-orders.ts, upsert-order.ts
+│   │   │   ├── components/           // order-receipt-dialog.tsx, daily-summary-card.tsx
+│   │   │   └── hooks/                // use-orders.ts (TanStack Query hooks)
+│   │   │
+│   │   └── sync/                     // P2P Pairing & Store Keys
+│   │       ├── components/           // qr-display-card.tsx, qr-scanner-modal.tsx, passphrase-form.tsx
+│   │       └── hooks/                // use-p2p-sync.ts
 │   │
 │   ├── hooks/                        // Shared Global Hooks
-│   │   ├── use-app-mode.ts           // Simple (Lite) vs Advanced (Pro) mode switcher
-│   │   ├── use-mobile.ts             // Responsive viewport breakpoint detector
-│   │   ├── use-online-status.ts      // Network online/offline status
-│   │   └── use-theme.ts              // Light/Dark mode state & system theme sync
+│   │   └── use-online-status.ts
 │   │
 │   ├── lib/                          // Preconfigured Reusable Libraries
 │   │   ├── cn.ts                     // Class merging helper (clsx + tailwind-merge)
-│   │   ├── db.ts                     // Dexie.js DB instance (IndexedDB V7 with 13 tables)
+│   │   ├── db.ts                     // Dexie.js DB instance (products, orders, settings tables)
 │   │   ├── i18n.ts                   // Internationalization (i18next) configuration
 │   │   ├── passphrase.ts             // BIP-39 12-word mnemonic helper
 │   │   ├── query-client.ts           // TanStack QueryClient setup with global error handlers
@@ -178,7 +169,6 @@ src/features/<feature-name>/
 │   │   └── id.json                   // Bahasa Indonesia dictionary (Default)
 │   │
 │   ├── stores/                       // Global Application State (Zustand)
-│   │   ├── auth-store.ts             // Current User Role & RBAC permissions state
 │   │   └── notification-store.ts     // Global Toast Notification Store
 │   │
 │   ├── testing/                      // Testing Utilities, Fixtures & Setup
@@ -187,25 +177,15 @@ src/features/<feature-name>/
 │   │   └── mocks/                    // Mock data generators (products, orders)
 │   │
 │   ├── types/                        // Shared TypeScript Entity Types
-│   │   ├── cloud-backup.types.ts
-│   │   ├── currency.types.ts
-│   │   ├── customer.types.ts
-│   │   ├── expense.types.ts
-│   │   ├── master-data.types.ts
-│   │   ├── order.types.ts
 │   │   ├── product.types.ts
-│   │   ├── stock-adjustment.types.ts
+│   │   ├── order.types.ts
 │   │   ├── store.types.ts
-│   │   ├── supplier.types.ts
-│   │   ├── sync.types.ts
-│   │   └── table.types.ts
+│   │   └── sync.types.ts
 │   │
 │   ├── utils/                        // Shared Pure Utility Functions
-│   │   ├── audio.ts                  // POS notification sounds synthesizer
-│   │   ├── currency-config.ts        // Multi-currency formatter & symbols
-│   │   ├── format-currency.ts        // Currency formatter helper
-│   │   ├── image-compressor.ts       // Client-side image compression for offline DB
-│   │   └── uuid.ts                   // crypto.randomUUID() generator
+│   │   ├── __tests__/                // Unit tests for pure helpers
+│   │   ├── uuid.ts                   // crypto.randomUUID()
+│   │   └── format-currency.ts        // Indonesian Rupiah (IDR) currency formatter
 │   │
 │   └── main.tsx                      // React Root Application Entry Point
 ```
@@ -272,7 +252,6 @@ When receiving a sync message from a peer over WebRTC:
 2. **Application State (Zustand):**
    - Cashier Shopping Cart (`cart-store.ts`): items, add/remove, quantity adjustment, discount.
    - Global Toast Notifications (`notification-store.ts`).
-   - Current User Role & RBAC permissions (`auth-store.ts`).
    - Always use **Atomic Selectors** (`useCartStore(state => state.items)`) to eliminate unnecessary re-renders.
 3. **Database / Cache State (TanStack Query):**
    - All reads from Dexie tables are wrapped in `useQuery`.
@@ -280,25 +259,11 @@ When receiving a sync message from a peer over WebRTC:
 4. **Form State (React Hook Form + Zod):**
    - All forms (Add/Edit Product, Passphrase Input) MUST be validated against Zod schemas.
 5. **URL State (React Router):**
-   - Category filters, cashier search queries, and settings sub-tabs are synchronized with `useSearchParams()`.
+   - Category filters and cashier search queries are synchronized with `useSearchParams()`.
 
 ---
 
-## 8. The 4-Domain Information Architecture (POS Operating Model)
-
-To keep the application intuitive, modular, and aligned with retail and F&B business flows, all features and navigation are organized into 4 primary operational domains plus 1 infrastructure domain:
-
-| Domain                                                     | Scope & Purpose                                                                                                              | Core Pages & Routes                                                                                                                                                                                                                               |
-| :--------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1. Domain Penjualan** _(Front-End Kasir)_                | Interaksi transaksi langsung di toko, kecepatan kasir, keranjang belanja, holding cart, struk, dan laci kasir.               | `/` (Kasir POS), `/orders` (Riwayat Transaksi), `/shifts` (Shift & Uang Kas)                                                                                                                                                                      |
-| **2. Domain Data Toko** _(Pusat Data Induk)_               | Master data & parameter operasional yang ditarik saat transaksi kasir.                                                       | `/store-profile` (Profil Toko), `/products` (Katalog, Kategori, UOM, Varian, Modifier), `/discounts` (Promo), `/taxes` (PB1/PPN/Service Charge), `/customers` (Member), `/suppliers` (Vendor), `/tables` (Denah Meja), `/receipt-settings` (Nota) |
-| **3. Domain Akuntansi & Inventaris** _(Back-Office)_       | Arus kas keluar (biaya sewa, gaji, utilitas), pengadaan barang (PO kulakan), dan pencocokan fisik stok.                      | `/expenses` (Pengeluaran Kas), `/expenses?type=PURCHASE_STOCK` (Pembelian PO), `/inventory/adjustments` (Stock Opname)                                                                                                                            |
-| **4. Domain Laporan & Analitik** _(Business Intelligence)_ | Dashboard performa penjualan real-time, grafik tren harian, metode pembayaran terlaris, dan perhitungan P&L bersih.          | `/dashboard` (Dasbor Ringkasan), `/reports?tab=pnl` (Laba Rugi P&L), `/reports?tab=products` (Produk Terlaris), `/reports?tab=payments` (Metode Bayar), `/reports?tab=export` (Tutup Buku)                                                        |
-| **5. Domain Sistem & Infrastruktur** _(Platform & P2P)_    | Sinkronisasi terdesentralisasi antar-perangkat, preferensi visual/suara, otorisasi PIN, dan manajemen cadangan data offline. | `/sync` (Sinkronisasi P2P WebRTC), `/settings?tab=appearance` (Tampilan & Suara), `/settings?tab=security` (Keamanan PIN), `/settings?tab=data` (Backup & Reset DB)                                                                               |
-
----
-
-## 9. Project Standards & Tooling
+## 8. Project Standards & Tooling
 
 ### 1. ESLint & Static Analysis
 
