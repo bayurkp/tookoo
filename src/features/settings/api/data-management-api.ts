@@ -26,6 +26,8 @@ export interface DataManagementSummary {
   totalRecords: number;
 }
 
+export type DataCountSummary = DataManagementSummary;
+
 /**
  * Fetch total record counts across all local IndexedDB tables
  */

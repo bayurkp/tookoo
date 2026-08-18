@@ -108,7 +108,9 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
               {product.name}
             </p>
             {hasVariants && (
-              <Sparkles className="h-3 w-3 text-primary shrink-0" title="Memiliki Varian" />
+              <span title="Memiliki Varian">
+                <Sparkles className="h-3 w-3 text-primary shrink-0" />
+              </span>
             )}
           </div>
           <div className="flex items-center justify-between">

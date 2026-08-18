@@ -4,7 +4,7 @@ import { getTables, upsertTable, updateTableStatus, deleteTable } from '../table
 
 describe('Tables API', () => {
   beforeEach(async () => {
-    await db.tables.clear();
+    await db.restaurantTables.clear();
   });
 
   it('upserts and retrieves tables', async () => {
@@ -46,7 +46,7 @@ describe('Tables API', () => {
       orderTotal: 150000,
     });
 
-    const updated = await db.tables.get(table.id);
+    const updated = await db.restaurantTables.get(table.id);
     expect(updated?.status).toBe('OCCUPIED');
     expect(updated?.currentOrderId).toBe('order-123');
     expect(updated?.activeOrderTotal).toBe(150000);
@@ -69,7 +69,7 @@ describe('Tables API', () => {
     const active = await getTables();
     expect(active.some((t) => t.id === table.id)).toBe(false);
 
-    const inDb = await db.tables.get(table.id);
+    const inDb = await db.restaurantTables.get(table.id);
     expect(inDb?.deletedAt).not.toBeNull();
   });
 });

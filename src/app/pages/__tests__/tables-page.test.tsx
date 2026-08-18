@@ -16,7 +16,7 @@ const createWrapper = () => {
 
 describe('TablesPage', () => {
   beforeEach(async () => {
-    await db.tables.clear();
+    await db.restaurantTables.clear();
   });
 
   it('renders table summary cards and canvas', async () => {

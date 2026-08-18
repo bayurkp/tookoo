@@ -234,7 +234,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
 
                     <div className="flex items-center gap-1.5 shrink-0">
                       <p className="font-bold text-foreground font-mono mr-1">
-                        {formatCurrency(item.totalPrice, settings?.currency)}
+                        {formatCurrency(item.unitPrice * item.quantity, settings?.currency)}
                       </p>
 
                       <div className="flex items-center border rounded-md bg-background">

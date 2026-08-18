@@ -70,7 +70,7 @@ export const JoinStoreWizard: React.FC<JoinStoreWizardProps> = ({
 
       const finalStoreName = scannedPayload?.storeName || storeNameInput.trim() || 'Toko Terhubung';
       const finalSecretKey =
-        scannedPayload?.storeSecretKey || currentSettings?.storeSecretKey || '';
+        scannedPayload?.storeId || currentSettings?.storeSecretKey || crypto.randomUUID();
 
       const updatedSettings: StoreSettings = {
         id: currentSettings?.id || crypto.randomUUID(),

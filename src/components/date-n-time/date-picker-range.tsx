@@ -15,7 +15,7 @@ export interface DateRange {
   to?: Date;
 }
 
-export interface DatePickerWithRangeProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DatePickerWithRangeProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   date?: DateRange | undefined;
   onSelect?: (date: DateRange | undefined) => void;
   placeholder?: string;
@@ -73,7 +73,6 @@ export function DatePickerWithRange({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
             mode="range"
             defaultMonth={selectedRange?.from}
             selected={selectedRange as any}

@@ -40,7 +40,7 @@ export const WelcomeOnboardingDialog: React.FC<WelcomeOnboardingDialogProps> = (
   const isOpen =
     forceOpen !== undefined
       ? forceOpen
-      : !isLoading && settings !== null && settings.isSetupComplete === false;
+      : !isLoading && Boolean(settings) && settings?.isSetupComplete === false;
 
   const handleComplete = () => {
     queryClient.invalidateQueries({ queryKey: ['settings'] });

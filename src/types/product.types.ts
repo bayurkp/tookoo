@@ -1,3 +1,5 @@
+export type ProductType = 'RETAIL' | 'FNB' | 'SERVICE';
+
 export interface ProductVariantDimension {
   id: string; // UUID v4
   name: string; // e.g. "Ukuran", "Warna", "Bahan", "Suhu", "Level Gula"

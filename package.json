@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint && tsc --noEmit",
-    "typecheck": "tsc --noEmit",
+    "lint": "oxlint && tsc -b --noEmit",
+    "typecheck": "tsc -b --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",

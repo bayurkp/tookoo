@@ -18,7 +18,7 @@ describe('DataManagementSection', () => {
   beforeEach(async () => {
     await db.orders.clear();
     await db.products.clear();
-    await db.tables.clear();
+    await db.restaurantTables.clear();
   });
 
   it('renders data management summary and action cards', async () => {

@@ -224,7 +224,7 @@ export const ModifierManagerTab: React.FC<ModifierManagerTabProps> = ({
                       {group.name}
                     </CardTitle>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      {group.maxSelect > 1
+                      {(group.maxSelect ?? 1) > 1
                         ? `Pilihan Bebas (Maks ${group.maxSelect})`
                         : 'Pilihan Tunggal (Pilih 1)'}
                     </p>

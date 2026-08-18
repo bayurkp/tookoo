@@ -88,7 +88,7 @@ export const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
 }) => {
   const { data: products = [] } = useProducts();
   const createMutation = useCreateStockAdjustment();
-  const currentRole = useAuthStore((state) => state.role);
+  const currentRole = useAuthStore((state) => state.currentRole);
 
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');

@@ -14,7 +14,7 @@ describe('Data Management API', () => {
   beforeEach(async () => {
     await db.orders.clear();
     await db.products.clear();
-    await db.tables.clear();
+    await db.restaurantTables.clear();
     await db.masterDiscounts.clear();
     await db.masterTaxes.clear();
     await db.stockAdjustments.clear();
@@ -106,7 +106,7 @@ describe('Data Management API', () => {
   });
 
   it('clears tables and promo data', async () => {
-    await db.tables.put({
+    await db.restaurantTables.put({
       id: 'tbl-1',
       name: 'Meja 1',
       zone: 'Indoor',
@@ -136,7 +136,7 @@ describe('Data Management API', () => {
     });
 
     expect((await clearTablesData()).deletedCount).toBe(1);
-    expect(await db.tables.count()).toBe(0);
+    expect(await db.restaurantTables.count()).toBe(0);
 
     const promoRes = await clearDiscountsAndTaxesData();
     expect(promoRes.discountsCount).toBe(1);
@@ -147,7 +147,7 @@ describe('Data Management API', () => {
     await resetMasterDataToDefaults();
     expect(await db.masterCategories.count()).toBeGreaterThan(0);
     expect(await db.masterUoms.count()).toBeGreaterThan(0);
-    expect(await db.tables.count()).toBeGreaterThan(0);
+    expect(await db.restaurantTables.count()).toBeGreaterThan(0);
 
     await resetFullDatabase({ newStoreName: 'Toko Baru' });
     const settings = await db.settings.toArray();
