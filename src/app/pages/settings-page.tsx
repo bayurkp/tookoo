@@ -25,6 +25,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
 import { PinModal } from '@/components/pin-modal';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useTheme } from '@/hooks/use-theme';
@@ -259,19 +267,24 @@ export const SettingsPage: React.FC = () => {
                   <FieldLabel htmlFor="store-currency">
                     {t('settings.storeProfile.currency', 'Mata Uang & Format Uang Toko')}
                   </FieldLabel>
-                  <select
-                    id="store-currency"
+                  <Select
                     value={currency}
-                    onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                    onValueChange={(val) => setCurrency(val as CurrencyCode)}
                     disabled={isSettingsLoading}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-semibold ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                   >
-                    {Object.values(SUPPORTED_CURRENCIES).map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.name} — {c.symbol}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="store-currency" className="w-full font-semibold">
+                      <SelectValue placeholder="Pilih Mata Uang" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {Object.values(SUPPORTED_CURRENCIES).map((c) => (
+                          <SelectItem key={c.code} value={c.code}>
+                            {c.name} ({c.code}) — {c.symbol}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                   <p className="text-[11px] text-muted-foreground mt-1">
                     Format pemisah ribuan (&ldquo;{SUPPORTED_CURRENCIES[currency].thousandSeparator}&rdquo;) dan desimal ({SUPPORTED_CURRENCIES[currency].decimalDigits} digit) akan otomatis diterapkan di kasir, produk, dan laporan keuangan.
                   </p>

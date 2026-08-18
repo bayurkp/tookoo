@@ -42,12 +42,15 @@ describe('StockAdjustmentDialog', () => {
 
     // Wait for products to load from Dexie into select
     await waitFor(() => {
-      expect(screen.getByText(/Kopi Susu Aren/i)).toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
 
-    // Select the product
-    const selectProduct = screen.getByRole('combobox');
-    fireEvent.change(selectProduct, { target: { value: 'prod-10' } });
+    // Open select combobox and pick product
+    const selectTrigger = screen.getByRole('combobox');
+    fireEvent.keyDown(selectTrigger, { key: 'Enter' });
+
+    const option = await screen.findByRole('option', { name: /Kopi Susu Aren/i });
+    fireEvent.click(option);
 
     // Wait for current stock banner to display
     await waitFor(() => {
