@@ -19,6 +19,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/page-header';
+import { StatCard } from '@/components/stat-card';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStats } from '@/features/dashboard/hooks/use-dashboard-stats';
 import { formatCurrency } from '@/utils/format-currency';
@@ -63,77 +64,45 @@ export const DashboardPage: React.FC = () => {
       {/* 4 Main KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Omzet Hari Ini */}
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Omzet Penjualan
-            </CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-primary">
-              {formatCurrency(stats.todayRevenue)}
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Total kotor dari transaksi hari ini
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Omzet Penjualan"
+          value={formatCurrency(stats.todayRevenue)}
+          icon={DollarSign}
+          variant="primary"
+          subtitle="Total kotor dari transaksi hari ini"
+        />
 
         {/* 2. Estimasi Laba Bersih */}
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Estimasi Laba Kotor
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              {formatCurrency(stats.todayProfit)}
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Omzet dikurangi modal HPP barang
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Estimasi Laba Kotor"
+          value={formatCurrency(stats.todayProfit)}
+          icon={TrendingUp}
+          variant="success"
+          subtitle="Omzet dikurangi modal HPP barang"
+        />
 
         {/* 3. Jumlah Transaksi */}
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Total Transaksi
-            </CardTitle>
-            <Receipt className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-foreground">
+        <StatCard
+          title="Total Transaksi"
+          value={
+            <>
               {stats.todayOrderCount}{' '}
               <span className="text-sm font-normal text-muted-foreground">struk</span>
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Struk berhasil terbit hari ini
-            </p>
-          </CardContent>
-        </Card>
+            </>
+          }
+          icon={Receipt}
+          variant="default"
+          subtitle="Struk berhasil terbit hari ini"
+        />
 
         {/* 4. Rata-rata Belanja (AOV) */}
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Rata-rata Belanja
-            </CardTitle>
-            <Sparkles className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-foreground">
-              {formatCurrency(stats.todayAov)}
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Rata-rata pengeluaran per pelanggan
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Rata-rata Belanja"
+          value={formatCurrency(stats.todayAov)}
+          icon={Sparkles}
+          variant="info"
+          subtitle="Rata-rata pengeluaran per pelanggan"
+        />
       </div>
 
       {/* Main Content Grid: Left (Insights) & Right (Operations) */}

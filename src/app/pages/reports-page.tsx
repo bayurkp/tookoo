@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/page-header';
+import { StatCard } from '@/components/stat-card';
 import { useTranslation } from 'react-i18next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
@@ -165,78 +166,54 @@ export const ReportsPage: React.FC = () => {
           {/* 4 Financial KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Omzet Bersih */}
-            <Card className="border bg-card rounded-xl shadow-none">
-              <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Omzet Bersih
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-primary" />
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-extrabold text-primary">
-                  {formatCurrency(analytics.netSales)}
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+            <StatCard
+              title="Omzet Bersih"
+              value={formatCurrency(analytics.netSales)}
+              icon={DollarSign}
+              variant="primary"
+              subtitle={
+                <span>
                   Omzet kotor {formatCurrency(analytics.grossSales)}
                   {analytics.totalDiscounts > 0 &&
                     ` (-Diskon ${formatCurrency(analytics.totalDiscounts)})`}
-                </p>
-              </CardContent>
-            </Card>
+                </span>
+              }
+            />
 
             {/* Total Modal HPP */}
-            <Card className="border bg-card rounded-xl shadow-none">
-              <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Modal Barang (HPP)
-                </CardTitle>
-                <Layers className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-extrabold text-muted-foreground">
-                  {formatCurrency(analytics.totalCost)}
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Total biaya beli/modal produk terjual
-                </p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Modal Barang (HPP)"
+              value={formatCurrency(analytics.totalCost)}
+              icon={Layers}
+              variant="default"
+              subtitle="Total biaya beli/modal produk terjual"
+            />
 
             {/* Laba Kotor */}
-            <Card className="border bg-card rounded-xl shadow-none">
-              <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Laba Kotor
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-                  {formatCurrency(analytics.grossProfit)}
-                </p>
-                <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
-                  Margin Laba: {analytics.profitMargin}%
-                </p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Laba Kotor"
+              value={formatCurrency(analytics.grossProfit)}
+              icon={TrendingUp}
+              variant="success"
+              badge={
+                <Badge
+                  variant="outline"
+                  className="text-[10px] font-semibold px-1.5 py-0 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                >
+                  Margin: {analytics.profitMargin}%
+                </Badge>
+              }
+              subtitle="Total keuntungan kotor penjualan"
+            />
 
             {/* Rata-rata Belanja & Transaksi */}
-            <Card className="border bg-card rounded-xl shadow-none">
-              <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Rata-rata Transaksi (AOV)
-                </CardTitle>
-                <Receipt className="h-4 w-4 text-primary" />
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-extrabold text-foreground">
-                  {formatCurrency(analytics.averageOrderValue)}
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Dari total {analytics.orderCount} transaksi struk
-                </p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Rata-rata Transaksi (AOV)"
+              value={formatCurrency(analytics.averageOrderValue)}
+              icon={Receipt}
+              variant="info"
+              subtitle={`Dari total ${analytics.orderCount} transaksi struk`}
+            />
           </div>
 
           {/* Daily Trend Overview Table / Chart */}

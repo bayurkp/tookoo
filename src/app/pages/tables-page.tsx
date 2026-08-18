@@ -13,8 +13,8 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
+import { StatCard } from '@/components/stat-card';
 import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
@@ -324,66 +324,42 @@ export const TablesPage: React.FC = () => {
       />
 
       {/* Metric Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {/* Total Meja */}
-        <Card className="border bg-card rounded-xl shadow-none p-3 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Total Meja {selectedZone !== 'ALL' && `(${selectedZone})`}
-            </p>
-            <p className="text-xl font-extrabold text-foreground">{stats.total}</p>
-            <p className="text-[10px] text-muted-foreground">{stats.totalSeats} Total Kursi</p>
-          </div>
-          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
-            <Square className="h-4 w-4" />
-          </div>
-        </Card>
+        <StatCard
+          title={`Total Meja ${selectedZone !== 'ALL' ? `(${selectedZone})` : ''}`}
+          value={stats.total}
+          icon={Square}
+          variant="info"
+          subtitle={`${stats.totalSeats} Total Kursi`}
+        />
 
         {/* Meja Kosong */}
-        <Card className="border bg-card rounded-xl shadow-none p-3 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Kosong (Tersedia)
-            </p>
-            <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              {stats.available}
-            </p>
-            <p className="text-[10px] text-muted-foreground">Siap ditempati</p>
-          </div>
-          <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <CheckCircle2 className="h-4 w-4" />
-          </div>
-        </Card>
+        <StatCard
+          title="Kosong (Tersedia)"
+          value={stats.available}
+          icon={CheckCircle2}
+          variant="success"
+          subtitle="Siap ditempati"
+        />
 
         {/* Meja Terisi */}
-        <Card className="border bg-card rounded-xl shadow-none p-3 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Terisi / Ada Bill
-            </p>
-            <p className="text-xl font-extrabold text-amber-600 dark:text-amber-400">
-              {stats.occupied}
-            </p>
-            <p className="text-[10px] text-muted-foreground">Sedang makan / transaksi</p>
-          </div>
-          <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <Clock className="h-4 w-4" />
-          </div>
-        </Card>
+        <StatCard
+          title="Terisi / Ada Bill"
+          value={stats.occupied}
+          icon={Clock}
+          variant="warning"
+          subtitle="Sedang makan / transaksi"
+        />
 
         {/* Reservasi */}
-        <Card className="border bg-card rounded-xl shadow-none p-3 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Booking / Reservasi
-            </p>
-            <p className="text-xl font-extrabold text-primary">{stats.reserved}</p>
-            <p className="text-[10px] text-muted-foreground">Telah dipesan</p>
-          </div>
-          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-            <Bookmark className="h-4 w-4" />
-          </div>
-        </Card>
+        <StatCard
+          title="Booking / Reservasi"
+          value={stats.reserved}
+          icon={Bookmark}
+          variant="primary"
+          subtitle="Telah dipesan"
+        />
       </div>
 
       {/* Zone Filter Tabs & Search */}

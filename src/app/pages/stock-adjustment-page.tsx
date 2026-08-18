@@ -3,7 +3,7 @@ import { Plus, Search, AlertTriangle, TrendingUp, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { StatCard } from '@/components/stat-card';
 import {
   Table,
   TableHeader,
@@ -92,50 +92,29 @@ export const StockAdjustmentPage: React.FC = () => {
 
       {/* Metric Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Total Riwayat Penyesuaian
-            </CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-foreground">{adjustments.length}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Dokumen tercatat di perangkat
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Riwayat Penyesuaian"
+          value={adjustments.length}
+          icon={Layers}
+          variant="default"
+          subtitle="Dokumen tercatat di perangkat"
+        />
 
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Total Barang Masuk (Kulakan)
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              +{totalRestockCount} unit
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Penambahan dari kulakan baru</p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Barang Masuk (Kulakan)"
+          value={`+${totalRestockCount} unit`}
+          icon={TrendingUp}
+          variant="success"
+          subtitle="Penambahan dari kulakan baru"
+        />
 
-        <Card className="border bg-card rounded-xl shadow-none">
-          <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Barang Rusak / Kadaluarsa
-            </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-destructive">-{totalDamagedCount} unit</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Kerusakan fisik atau kadaluarsa
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Barang Rusak / Kadaluarsa"
+          value={`-${totalDamagedCount} unit`}
+          icon={AlertTriangle}
+          variant="danger"
+          subtitle="Kerusakan fisik atau kadaluarsa"
+        />
       </div>
 
       {/* Search & History Table */}
