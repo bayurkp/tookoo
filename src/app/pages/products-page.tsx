@@ -14,8 +14,6 @@ import {
   Layers,
   Sparkles,
   Scale,
-  Tag,
-  Receipt,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -50,8 +48,6 @@ import { CategoryManagerTab } from '@/features/products/components/category-mana
 import { UomManagerTab } from '@/features/products/components/uom-manager-tab';
 import { VariantAttributeManagerTab } from '@/features/products/components/variant-attribute-manager-tab';
 import { ModifierManagerTab } from '@/features/products/components/modifier-manager-tab';
-import { DiscountManagerTab } from '@/features/products/components/discount-manager-tab';
-import { TaxManagerTab } from '@/features/products/components/tax-manager-tab';
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog';
 import { PinModal } from '@/components/pin-modal';
 import type { Product } from '@/types/product.types';
@@ -66,8 +62,7 @@ export const ProductsPage: React.FC = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab =
-    (searchParams.get('tab') as
-      'products' | 'categories' | 'uom' | 'variants' | 'modifiers' | 'discounts' | 'taxes') ||
+    (searchParams.get('tab') as 'products' | 'categories' | 'uom' | 'variants' | 'modifiers') ||
     'products';
   const setActiveTab = (tab: string) => setSearchParams({ tab });
 
@@ -393,14 +388,6 @@ export const ProductsPage: React.FC = () => {
                 <Layers className="h-3.5 w-3.5" />
                 <span>Master Modifier</span>
               </TabsTrigger>
-              <TabsTrigger value="discounts" className="gap-2 text-xs font-bold px-3 py-1.5">
-                <Tag className="h-3.5 w-3.5" />
-                <span>Master Diskon</span>
-              </TabsTrigger>
-              <TabsTrigger value="taxes" className="gap-2 text-xs font-bold px-3 py-1.5">
-                <Receipt className="h-3.5 w-3.5" />
-                <span>Pajak & Biaya</span>
-              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -438,16 +425,6 @@ export const ProductsPage: React.FC = () => {
               onOpenEditProduct={handleOpenEdit}
               onOpenCreateProduct={() => handleOpenCreate()}
             />
-          </TabsContent>
-
-          {/* TAB 6: MASTER DISKON */}
-          <TabsContent value="discounts" className="space-y-4 m-0">
-            <DiscountManagerTab />
-          </TabsContent>
-
-          {/* TAB 7: MASTER PAJAK & BIAYA */}
-          <TabsContent value="taxes" className="space-y-4 m-0">
-            <TaxManagerTab />
           </TabsContent>
         </Tabs>
       )}
