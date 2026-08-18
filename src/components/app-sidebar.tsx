@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -7,7 +7,6 @@ import {
   Package,
   TrendingUp,
   Settings,
-  ChevronRight,
   Store,
   Wallet,
   Users,
@@ -19,33 +18,23 @@ import { db } from '@/lib/db';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAppMode } from '@/hooks/use-app-mode';
 import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { NavMain, type NavMainItem } from '@/components/nav-main';
 import { AppModeSwitcher } from '@/components/app-mode-switcher';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
   const currentRole = useAuthStore((state) => state.currentRole);
   const { isSimple } = useAppMode();
-
-  const searchParams = new URLSearchParams(location.search);
-  const currentTab = searchParams.get('tab');
-  const currentType = searchParams.get('type');
 
   // Fetch current store settings
   const { data: settings } = useQuery({
@@ -61,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const roleLabel =
     currentRole === 'OWNER' ? 'Pemilik Toko' : currentRole === 'MANAGER' ? 'Manajer Toko' : 'Kasir';
 
-  // Active domain states
+  // Active domain state indicators
   const isSalesActive =
     location.pathname === '/' ||
     location.pathname.startsWith('/orders') ||
@@ -85,31 +74,50 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isSystemActive =
     location.pathname.startsWith('/sync') || location.pathname.startsWith('/settings');
 
-  // Sub-item active status detector
-  const isSubItemActive = (url: string) => {
-    if (url === '/') {
-      return location.pathname === '/';
-    }
-    if (url.includes('?')) {
-      const [path, query] = url.split('?');
-      const params = new URLSearchParams(query);
-      const expectedTab = params.get('tab');
-      const expectedType = params.get('type');
+  // Simple Mode Navigation Data
+  const simpleNavItems: NavMainItem[] = [
+    {
+      title: 'Kasir (POS)',
+      url: '/',
+      icon: ShoppingCart,
+    },
+    {
+      title: 'Riwayat Transaksi',
+      url: '/orders',
+      icon: Receipt,
+    },
+    {
+      title: 'Produk & Menu',
+      url: '/products',
+      icon: Package,
+    },
+    {
+      title: 'Pelanggan & Member',
+      url: '/customers',
+      icon: Users,
+    },
+    {
+      title: 'Biaya Operasional',
+      url: '/expenses',
+      icon: Wallet,
+    },
+    {
+      title: 'Pengaturan Toko',
+      url: '/settings',
+      icon: Settings,
+    },
+  ];
 
-      if (expectedTab) {
-        return location.pathname === path && currentTab === expectedTab;
-      }
-      if (expectedType) {
-        return location.pathname === path && currentType === expectedType;
-      }
-      return location.pathname === path;
-    }
-    return location.pathname.startsWith(url);
-  };
-
-  const navMain = [
+  // Advanced / Pro Mode: 100% aligned with 4-Domain Framework & Business Flow
+  const advancedNavItems: NavMainItem[] = [
+    {
+      title: 'Dasbor',
+      url: '/dashboard',
+      icon: LayoutDashboard,
+    },
     {
       title: 'Penjualan',
+      url: '/',
       icon: ShoppingCart,
       isActive: isSalesActive,
       items: [
@@ -120,6 +128,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: 'Data Toko',
+      url: '/store-profile',
       icon: Store,
       isActive: isStoreDataActive,
       items: [
@@ -135,6 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: 'Akuntansi & Inventaris',
+      url: '/expenses',
       icon: Wallet,
       isActive: isInventoryActive,
       items: [
@@ -145,6 +155,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: 'Laporan & Analitik',
+      url: '/reports?tab=pnl',
       icon: TrendingUp,
       isActive: isReportsActive,
       items: [
@@ -156,6 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: 'Sistem',
+      url: '/sync',
       icon: Settings,
       isActive: isSystemActive,
       items: [
@@ -170,7 +182,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" className="border-r" {...props}>
       {/* Sidebar Header: Store & Terminal Identity */}
-      <SidebarHeader className="p-3">
+      <SidebarHeader className="p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -194,166 +206,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       {/* Sidebar Content: Navigation Sections */}
-      <SidebarContent className="px-2">
-        {/* ========================================================================= */}
-        {/* 1. SIMPLE MODE NAVIGATION (Fast, Focused Essential Menus) */}
-        {/* ========================================================================= */}
+      <SidebarContent>
         {isSimple ? (
-          <SidebarGroup>
-            <SidebarGroupLabel>Menu Kasir</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === '/'}
-                    tooltip="Kasir (POS)"
-                  >
-                    <NavLink to="/">
-                      <ShoppingCart />
-                      <span>Kasir (POS)</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname.startsWith('/orders')}
-                    tooltip="Riwayat Transaksi"
-                  >
-                    <NavLink to="/orders">
-                      <Receipt />
-                      <span>Riwayat Transaksi</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname.startsWith('/products')}
-                    tooltip="Produk & Menu"
-                  >
-                    <NavLink to="/products">
-                      <Package />
-                      <span>Produk & Menu</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname.startsWith('/customers')}
-                    tooltip="Pelanggan & Member"
-                  >
-                    <NavLink to="/customers">
-                      <Users />
-                      <span>Pelanggan & Member</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname.startsWith('/expenses')}
-                    tooltip="Biaya Operasional"
-                  >
-                    <NavLink to="/expenses">
-                      <Wallet />
-                      <span>Biaya Operasional</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname.startsWith('/settings')}
-                    tooltip="Pengaturan Toko"
-                  >
-                    <NavLink to="/settings">
-                      <Settings />
-                      <span>Pengaturan Toko</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <NavMain items={simpleNavItems} label="Menu Kasir" />
         ) : (
-          /* ========================================================================= */
-          /* 2. ADVANCED / PRO MODE: SHADCN/UI NAVMAIN PATTERN WITH SUB-TREE BORDERS */
-          /* ========================================================================= */
-          <SidebarGroup>
-            <SidebarGroupLabel>Menu Aplikasi</SidebarGroupLabel>
-            <SidebarMenu>
-              {/* 1. Dasbor Toko (Single Item) */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location.pathname === '/dashboard'}
-                  tooltip="Dasbor"
-                >
-                  <NavLink to="/dashboard">
-                    <LayoutDashboard />
-                    <span>Dasbor</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* 2. Collapsible NavMain Items */}
-              {navMain.map((item) => (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                  className="group/collapsible"
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.title}>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                        <ChevronRight className="ml-auto size-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild isActive={isSubItemActive(subItem.url)}>
-                              <NavLink
-                                to={subItem.url}
-                                className="flex items-center justify-between w-full"
-                              >
-                                <span className="truncate">{subItem.title}</span>
-                                {subItem.badge && (
-                                  <Badge
-                                    variant="outline"
-                                    className="text-[8px] px-1 py-0 h-3.5 text-muted-foreground border-muted-foreground/30 font-medium shrink-0 ml-1"
-                                  >
-                                    {subItem.badge}
-                                  </Badge>
-                                )}
-                              </NavLink>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
+          <NavMain items={advancedNavItems} label="Platform" />
         )}
       </SidebarContent>
 
       {/* Sidebar Footer: App Mode Switcher & Device Details */}
-      <SidebarFooter className="p-3 border-t">
+      <SidebarFooter className="p-2 border-t">
         <AppModeSwitcher variant="sidebar" />
 
         <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40 text-xs">
