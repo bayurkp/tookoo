@@ -13,6 +13,7 @@ import {
   Sparkles,
   RefreshCw,
   FileSpreadsheet,
+  CheckCircle2,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,10 @@ export const DashboardPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-bold tracking-tight">Dashboard Toko</h2>
-            <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5 bg-primary/5 text-primary border-primary/20">
+            <Badge
+              variant="outline"
+              className="text-xs font-semibold px-2 py-0.5 bg-primary/5 text-primary border-primary/20"
+            >
               Live Hari Ini
             </Badge>
           </div>
@@ -106,7 +110,8 @@ export const DashboardPage: React.FC = () => {
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <p className="text-2xl font-extrabold text-foreground">
-              {stats.todayOrderCount} <span className="text-sm font-normal text-muted-foreground">struk</span>
+              {stats.todayOrderCount}{' '}
+              <span className="text-sm font-normal text-muted-foreground">struk</span>
             </p>
             <p className="text-[11px] text-muted-foreground mt-0.5">
               Struk berhasil terbit hari ini
@@ -120,7 +125,7 @@ export const DashboardPage: React.FC = () => {
             <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Rata-rata Belanja
             </CardTitle>
-            <Sparkles className="h-4 w-4 text-amber-500" />
+            <Sparkles className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <p className="text-2xl font-extrabold text-foreground">
@@ -164,7 +169,9 @@ export const DashboardPage: React.FC = () => {
               ) : stats.topProducts.length === 0 ? (
                 <div className="p-8 text-center border border-dashed rounded-xl bg-muted/20">
                   <Package className="h-8 w-8 text-muted-foreground/40 mx-auto mb-1.5" />
-                  <p className="text-xs font-semibold text-foreground">Belum ada transaksi hari ini</p>
+                  <p className="text-xs font-semibold text-foreground">
+                    Belum ada transaksi hari ini
+                  </p>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
                     Produk yang terjual di kasir hari ini akan muncul di sini.
                   </p>
@@ -182,10 +189,10 @@ export const DashboardPage: React.FC = () => {
                             index === 0
                               ? 'bg-amber-500 text-white shadow-xs'
                               : index === 1
-                              ? 'bg-slate-300 dark:bg-slate-700 text-foreground font-bold'
-                              : index === 2
-                              ? 'bg-amber-700 text-white font-bold'
-                              : 'bg-muted text-muted-foreground'
+                                ? 'bg-slate-300 dark:bg-slate-700 text-foreground font-bold'
+                                : index === 2
+                                  ? 'bg-amber-700 text-white font-bold'
+                                  : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           #{index + 1}
@@ -234,7 +241,9 @@ export const DashboardPage: React.FC = () => {
             <CardContent className="p-4">
               {stats.recentOrders.length === 0 ? (
                 <div className="p-6 text-center border border-dashed rounded-xl bg-muted/20">
-                  <p className="text-xs text-muted-foreground">Belum ada transaksi struk tercatat.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Belum ada transaksi struk tercatat.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -300,11 +309,12 @@ export const DashboardPage: React.FC = () => {
             </CardHeader>
             <CardContent className="p-4">
               {stats.lowStockProducts.length === 0 ? (
-                <div className="p-6 text-center border border-dashed rounded-xl bg-emerald-500/5 border-emerald-500/20">
-                  <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                    Stok Semua Produk Aman! 👍
+                <div className="p-6 text-center border border-dashed rounded-xl bg-emerald-500/5 border-emerald-500/20 space-y-1">
+                  <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Stok Semua Produk Aman</span>
                   </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <p className="text-[11px] text-muted-foreground">
                     Tidak ada barang yang habis atau di bawah batas minimum.
                   </p>
                 </div>

@@ -18,11 +18,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { HoldOrderDialog } from './hold-order-dialog';
 import { useCartStore } from '../stores/cart-store';
+import { useMasterDiscounts } from '@/features/products/hooks/use-master-data';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { useAppMode } from '@/hooks/use-app-mode';
 import { getCurrencyConfig } from '@/utils/currency-config';
 import { formatCurrency } from '@/utils/format-currency';
+import type { MasterDiscount } from '@/types/master-data.types';
 
 interface CartPanelProps {
   onProceedToPayment: () => void;
@@ -31,6 +34,7 @@ interface CartPanelProps {
 
 export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHoldSuccess }) => {
   const { t } = useTranslation();
+  const { isAdvanced } = useAppMode();
   const { settings } = useP2pSync();
   const currencyConfig = getCurrencyConfig(settings?.currency);
 
@@ -46,6 +50,8 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   const getTotal = useCartStore((state) => state.getTotal);
   const getItemCount = useCartStore((state) => state.getItemCount);
 
+  const { data: masterDiscounts = [] } = useMasterDiscounts();
+
   const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [discountValue, setDiscountValue] = useState('');
   const [discountType, setDiscountType] = useState<'PERCENTAGE' | 'FIXED'>('PERCENTAGE');
@@ -56,6 +62,36 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   const discountAmount = getDiscountAmount();
   const total = getTotal();
   const itemCount = getItemCount();
+
+  const activeMasterDiscounts = React.useMemo(() => {
+    const now = Date.now();
+    return masterDiscounts.filter((d) => {
+      if (!d.isActive) return false;
+      if (d.hasExpiry) {
+        if (d.startDate && now < d.startDate) return false;
+        if (d.endDate && now > d.endDate) return false;
+      }
+      return true;
+    });
+  }, [masterDiscounts]);
+
+  const handleSelectMasterDiscount = (d: MasterDiscount) => {
+    setDiscount({
+      id: d.id,
+      name: d.name,
+      code: d.code,
+      type: d.type,
+      value: d.value,
+      scope: d.scope,
+      targetProductId: d.targetProductId,
+      targetProductName: d.targetProductName,
+      targetVariantId: d.targetVariantId,
+      targetVariantName: d.targetVariantName,
+      minPurchaseAmount: d.minPurchaseAmount,
+      maxDiscountAmount: d.maxDiscountAmount,
+    });
+    setShowDiscountInput(false);
+  };
 
   const handleApplyDiscount = () => {
     const val = Number(discountValue);
@@ -134,15 +170,22 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
               <div className="p-3 bg-muted rounded-full">
                 <ShoppingCart className="h-6 w-6" />
               </div>
-              <p className="text-sm font-medium">{t('cashier.cart.empty', 'Keranjang masih kosong')}</p>
+              <p className="text-sm font-medium">
+                {t('cashier.cart.empty', 'Keranjang masih kosong')}
+              </p>
               <p className="text-xs text-muted-foreground max-w-[200px]">
-                {t('cashier.cart.emptySubtitle', 'Pilih produk di sebelah kiri untuk menambahkan ke pesanan.')}
+                {t(
+                  'cashier.cart.emptySubtitle',
+                  'Pilih produk di sebelah kiri untuk menambahkan ke pesanan.'
+                )}
               </p>
             </div>
           ) : (
             <div className="space-y-3 pr-2">
               {items.map((item) => {
-                const maxStock = item.selectedVariant ? item.selectedVariant.stock : item.product.stock;
+                const maxStock = item.selectedVariant
+                  ? item.selectedVariant.stock
+                  : item.product.stock;
                 return (
                   <div
                     key={item.id}
@@ -161,7 +204,8 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                         </p>
                       )}
                       <p className="text-muted-foreground font-mono mt-0.5">
-                        {item.quantity} {item.selectedVariant ? 'unit' : (item.product.unit || 'pcs')} @ {formatCurrency(item.unitPrice, settings?.currency)}
+                        {item.quantity} {item.selectedVariant ? 'unit' : item.product.unit || 'pcs'}{' '}
+                        @ {formatCurrency(item.unitPrice, settings?.currency)}
                       </p>
                     </div>
 
@@ -219,80 +263,119 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
           <div className="w-full space-y-2">
             {discount ? (
               <div className="flex items-center justify-between p-2 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-xs">
-                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
-                  <Tag className="h-3.5 w-3.5" />
-                  <span>
-                    Diskon{' '}
-                    {discount.type === 'PERCENTAGE'
-                      ? `${discount.value}%`
-                      : formatCurrency(discount.value, settings?.currency)}
+                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium min-w-0">
+                  <Tag className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">
+                    {discount.name
+                      ? `${discount.name} (${discount.type === 'PERCENTAGE' ? `${discount.value}%` : formatCurrency(discount.value, settings?.currency)})`
+                      : `Diskon ${discount.type === 'PERCENTAGE' ? `${discount.value}%` : formatCurrency(discount.value, settings?.currency)}`}
                   </span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleRemoveDiscount}
-                  className="h-5 px-1.5 text-xs text-destructive hover:bg-transparent cursor-pointer"
+                  className="h-5 px-1.5 text-xs text-destructive hover:bg-transparent cursor-pointer shrink-0"
                 >
                   {t('common.actions.delete', 'Hapus')}
                 </Button>
               </div>
             ) : showDiscountInput ? (
-              <div className="flex items-center gap-2 p-2 rounded-md border bg-card">
-                <div className="flex rounded-md border overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => setDiscountType('PERCENTAGE')}
-                    className={`px-2 py-1 text-xs ${
-                      discountType === 'PERCENTAGE'
-                        ? 'bg-primary text-primary-foreground font-bold'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    <Percent className="h-3 w-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDiscountType('FIXED')}
-                    className={`px-2 py-1 text-xs font-semibold ${
-                      discountType === 'FIXED'
-                        ? 'bg-primary text-primary-foreground font-bold'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    {currencyConfig.symbol}
-                  </button>
-                </div>
-                {discountType === 'FIXED' ? (
-                  <CurrencyInput
-                    value={Number(discountValue) || 0}
-                    currencyCode={settings?.currency}
-                    onValueChange={(val) => setDiscountValue(String(val))}
-                    placeholder="0"
-                    className="h-7 text-xs flex-1"
-                  />
-                ) : (
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="10%"
-                    value={discountValue}
-                    onChange={(e) => setDiscountValue(e.target.value)}
-                    className="h-7 text-xs flex-1"
-                  />
+              <div className="space-y-2 p-2.5 rounded-xl border bg-card text-xs">
+                {/* Active Master Discounts Presets */}
+                {activeMasterDiscounts.length > 0 && (
+                  <div className="space-y-1.5 pb-2 border-b">
+                    <span className="text-[11px] font-semibold text-muted-foreground">
+                      Pilih Promo Master:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                      {activeMasterDiscounts.map((d) => (
+                        <button
+                          key={d.id}
+                          type="button"
+                          onClick={() => handleSelectMasterDiscount(d)}
+                          className="px-2 py-1 rounded-md text-[11px] font-semibold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 transition-colors cursor-pointer text-left"
+                        >
+                          <span>{d.name}</span>
+                          <span className="ml-1 opacity-80">
+                            (
+                            {d.type === 'PERCENTAGE'
+                              ? `${d.value}%`
+                              : formatCurrency(d.value, settings?.currency)}
+                            )
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                <Button size="sm" onClick={handleApplyDiscount} className="h-7 px-2.5 text-xs">
-                  {t('common.actions.apply', 'Pasang')}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDiscountInput(false)}
-                  className="h-7 px-1 text-xs"
-                >
-                  {t('common.actions.cancel', 'Batal')}
-                </Button>
+
+                {/* Manual Custom Discount Input */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground">
+                    Atau Masukkan Manual:
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex rounded-md border overflow-hidden shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setDiscountType('PERCENTAGE')}
+                        className={`px-2 py-1 text-xs ${
+                          discountType === 'PERCENTAGE'
+                            ? 'bg-primary text-primary-foreground font-bold'
+                            : 'bg-muted'
+                        }`}
+                      >
+                        <Percent className="h-3 w-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDiscountType('FIXED')}
+                        className={`px-2 py-1 text-xs font-semibold ${
+                          discountType === 'FIXED'
+                            ? 'bg-primary text-primary-foreground font-bold'
+                            : 'bg-muted'
+                        }`}
+                      >
+                        {currencyConfig.symbol}
+                      </button>
+                    </div>
+                    {discountType === 'FIXED' ? (
+                      <CurrencyInput
+                        value={Number(discountValue) || 0}
+                        currencyCode={settings?.currency}
+                        onValueChange={(val) => setDiscountValue(String(val))}
+                        placeholder="0"
+                        className="h-7 text-xs flex-1"
+                      />
+                    ) : (
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        placeholder="10%"
+                        value={discountValue}
+                        onChange={(e) => setDiscountValue(e.target.value)}
+                        className="h-7 text-xs flex-1"
+                      />
+                    )}
+                    <Button
+                      size="sm"
+                      onClick={handleApplyDiscount}
+                      className="h-7 px-2.5 text-xs font-bold"
+                    >
+                      {t('common.actions.apply', 'Pasang')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDiscountInput(false)}
+                      className="h-7 px-1 text-xs"
+                    >
+                      {t('common.actions.cancel', 'Batal')}
+                    </Button>
+                  </div>
+                </div>
               </div>
             ) : (
               <Button
@@ -302,7 +385,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                 className="w-full text-xs h-7 border-dashed gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <Tag className="h-3 w-3" />
-                <span>{t('cashier.cart.addDiscount', 'Tambah Diskon / Potongan')}</span>
+                <span>{t('cashier.cart.addDiscount', 'Tambah Diskon / Promo')}</span>
               </Button>
             )}
           </div>
@@ -318,29 +401,35 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
           {discountAmount > 0 && (
             <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
               <span>{t('cashier.cart.discount', 'Potongan')}</span>
-              <span className="font-mono">-{formatCurrency(discountAmount, settings?.currency)}</span>
+              <span className="font-mono">
+                -{formatCurrency(discountAmount, settings?.currency)}
+              </span>
             </div>
           )}
 
           <div className="flex justify-between text-base font-bold pt-2 border-t text-foreground">
             <span>{t('cashier.cart.total', 'Total')}</span>
-            <span className="text-primary font-mono text-lg">{formatCurrency(total, settings?.currency)}</span>
+            <span className="text-primary font-mono text-lg">
+              {formatCurrency(total, settings?.currency)}
+            </span>
           </div>
         </div>
 
         {/* Action Buttons: Hold Order & Pay Now */}
         <div className="w-full flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={items.length === 0}
-            onClick={() => setIsHoldDialogOpen(true)}
-            className="h-11 px-3 border-amber-500/40 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-xs gap-1.5 cursor-pointer shrink-0"
-            title="Simpan pesanan untuk dibayar nanti"
-          >
-            <BookmarkPlus className="h-4 w-4" />
-            <span className="hidden sm:inline">Tunda Bayar</span>
-          </Button>
+          {isAdvanced && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={items.length === 0}
+              onClick={() => setIsHoldDialogOpen(true)}
+              className="h-11 px-3 border-amber-500/40 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-xs gap-1.5 cursor-pointer shrink-0"
+              title="Simpan pesanan untuk dibayar nanti"
+            >
+              <BookmarkPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">Tunda Bayar</span>
+            </Button>
+          )}
 
           <Button
             className="flex-1 h-11 text-sm font-bold gap-2 cursor-pointer shadow-sm"

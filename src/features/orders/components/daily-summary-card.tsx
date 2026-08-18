@@ -20,9 +20,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
     const endOfToday = startOfToday + 86400000;
     const startOfYesterday = startOfToday - 86400000;
 
-    const completedOrders = orders.filter(
-      (o) => o.status !== 'PENDING' && o.deletedAt === null
-    );
+    const completedOrders = orders.filter((o) => o.status !== 'PENDING' && o.deletedAt === null);
 
     const todayOrders = completedOrders.filter(
       (order) => order.createdAt >= startOfToday && order.createdAt < endOfToday
@@ -53,8 +51,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
 
     // 3. Average ticket (AOV)
     const todayAverage = todayCount > 0 ? Math.round(todayRevenue / todayCount) : 0;
-    const yesterdayAverage =
-      yesterdayCount > 0 ? Math.round(yesterdayRevenue / yesterdayCount) : 0;
+    const yesterdayAverage = yesterdayCount > 0 ? Math.round(yesterdayRevenue / yesterdayCount) : 0;
     const averageGrowth =
       yesterdayAverage > 0
         ? ((todayAverage - yesterdayAverage) / yesterdayAverage) * 100
@@ -122,9 +119,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
               <TrendingDown className="h-3.5 w-3.5 text-rose-500 shrink-0" />
             )}
           </p>
-          <p className="text-xs text-muted-foreground">
-            Akumulasi penjualan kasir hari ini
-          </p>
+          <p className="text-xs text-muted-foreground">Akumulasi penjualan kasir hari ini</p>
         </div>
       </Card>
 
@@ -158,14 +153,10 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
 
         <div className="space-y-0.5 pt-1">
           <p className="text-sm font-semibold text-foreground flex items-center gap-1">
-            <span>
-              {metrics.todayCount > 0 ? 'Kunjungan kasir stabil' : 'Belum ada transaksi'}
-            </span>
+            <span>{metrics.todayCount > 0 ? 'Kunjungan kasir stabil' : 'Belum ada transaksi'}</span>
             <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           </p>
-          <p className="text-xs text-muted-foreground">
-            Struk belanja tercatat di terminal
-          </p>
+          <p className="text-xs text-muted-foreground">Struk belanja tercatat di terminal</p>
         </div>
       </Card>
 
@@ -202,9 +193,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
             <span>Nilai belanja per pembeli</span>
             <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           </p>
-          <p className="text-xs text-muted-foreground">
-            Rata-rata nominal pengeluaran per struk
-          </p>
+          <p className="text-xs text-muted-foreground">Rata-rata nominal pengeluaran per struk</p>
         </div>
       </Card>
 
@@ -236,9 +225,7 @@ export const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ orders }) =>
             </span>
             <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           </p>
-          <p className="text-xs text-muted-foreground">
-            Total penerimaan QRIS & transfer bank
-          </p>
+          <p className="text-xs text-muted-foreground">Total penerimaan QRIS & transfer bank</p>
         </div>
       </Card>
     </div>

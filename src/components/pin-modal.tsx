@@ -70,10 +70,7 @@ export const PinModal: React.FC<PinModalProps> = ({
             </DialogTitle>
             <DialogDescription className="text-center text-xs">
               {description ||
-                t(
-                  'auth.pinDesc',
-                  'Masukkan 4-6 digit PIN Pemilik untuk melanjutkan tindakan ini.'
-                )}
+                t('auth.pinDesc', 'Masukkan 4-6 digit PIN Pemilik untuk melanjutkan tindakan ini.')}
             </DialogDescription>
           </DialogHeader>
 

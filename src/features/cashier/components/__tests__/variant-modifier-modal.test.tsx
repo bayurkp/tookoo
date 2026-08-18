@@ -68,9 +68,7 @@ describe('VariantModifierModal', () => {
       mockProductWithVariantsAndModifiers,
       1,
       expect.objectContaining({ id: 'v-lrg', name: 'Large', price: 24000 }),
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'Ekstra Boba', price: 4000 }),
-      ])
+      expect.arrayContaining([expect.objectContaining({ name: 'Ekstra Boba', price: 4000 })])
     );
   });
 });

@@ -101,9 +101,7 @@ export const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
   const selectedVariant = selectedProduct?.variants?.find((v) => v.id === selectedVariantId);
 
   // Determine current stock
-  const currentStock = selectedVariant
-    ? selectedVariant.stock
-    : selectedProduct?.stock ?? 0;
+  const currentStock = selectedVariant ? selectedVariant.stock : (selectedProduct?.stock ?? 0);
 
   // Compute final adjusted stock & difference
   const numInput = Number(valueInput) || 0;
@@ -281,7 +279,9 @@ export const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
             {/* 4. Value Input */}
             <Field>
               <FieldLabel className="text-xs font-bold">
-                {mode === 'NEW_VALUE' ? 'Jumlah Stok Fisik Riil Sekarang *' : 'Jumlah Penambahan / Pengurangan (+/-) *'}
+                {mode === 'NEW_VALUE'
+                  ? 'Jumlah Stok Fisik Riil Sekarang *'
+                  : 'Jumlah Penambahan / Pengurangan (+/-) *'}
               </FieldLabel>
               <Input
                 type="number"

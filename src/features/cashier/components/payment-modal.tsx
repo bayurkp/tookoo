@@ -72,9 +72,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   // Dynamic quick nominal cash suggestions
   const quickCashOptions = useMemo(() => {
-    const list: { label: string; value: number }[] = [
-      { label: 'Uang Pas', value: total },
-    ];
+    const list: { label: string; value: number }[] = [{ label: 'Uang Pas', value: total }];
 
     currencyConfig.quickNominals.forEach((nom) => {
       if (nom >= total && !list.some((item) => item.value === nom)) {
@@ -208,7 +206,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
             {/* Cash Tab Content */}
             <TabsContent value="CASH" className="space-y-3 pt-2">
-              <Field data-invalid={Boolean(errorMessage || (cashTendered > 0 && cashTendered < total))}>
+              <Field
+                data-invalid={Boolean(errorMessage || (cashTendered > 0 && cashTendered < total))}
+              >
                 <FieldLabel htmlFor="cashTendered">
                   {t('cashier.payment.amountReceivedLabel', 'Uang Diterima *')}
                 </FieldLabel>
@@ -250,7 +250,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </span>
                 <span
                   className={`text-lg font-bold ${
-                    isCashInsufficient ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'
+                    isCashInsufficient
+                      ? 'text-destructive'
+                      : 'text-emerald-600 dark:text-emerald-400'
                   }`}
                 >
                   {isCashInsufficient
@@ -273,7 +275,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total, settings?.currency)}.`,
                   })}
                 </p>
-                <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1 mt-2 font-medium">
+                <Badge
+                  variant="outline"
+                  className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 gap-1 mt-2 font-medium"
+                >
                   <CheckCircle2 className="h-3 w-3" />
                   <span>{t('cashier.payment.ready', 'Siap Transaksi')}</span>
                 </Badge>

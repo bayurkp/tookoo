@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ShoppingCart, BookmarkCheck } from 'lucide-react';
 import { useProducts } from '@/features/products/hooks/use-products';
 import { useOrders, useUpsertOrder } from '@/features/orders/hooks/use-orders';
+import { useAppMode } from '@/hooks/use-app-mode';
 import { ProductGrid } from '@/features/cashier/components/product-grid';
 import { CartPanel } from '@/features/cashier/components/cart-panel';
 import { PaymentModal } from '@/features/cashier/components/payment-modal';
@@ -24,6 +25,7 @@ import type { Product } from '@/types/product.types';
 
 export const CashierPage: React.FC = () => {
   const { t } = useTranslation();
+  const { isSimple, isAdvanced } = useAppMode();
   const { data: products = [], isLoading } = useProducts();
   const { data: orders = [] } = useOrders();
   const upsertOrderMutation = useUpsertOrder();
@@ -34,14 +36,15 @@ export const CashierPage: React.FC = () => {
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
 
-  const itemCount = useCartStore((state) => state.getItemCount());
-  const cartTotal = useCartStore((state) => state.getTotal());
+  const getItemCount = useCartStore((state) => state.getItemCount);
+  const getTotal = useCartStore((state) => state.getTotal);
   const clearCart = useCartStore((state) => state.clearCart);
   const addItem = useCartStore((state) => state.addItem);
 
-  const pendingOrders = orders.filter(
-    (o) => o.status === 'PENDING' && o.deletedAt === null
-  );
+  const itemCount = getItemCount();
+  const cartTotal = getTotal();
+
+  const pendingOrders = orders.filter((o) => o.status === 'PENDING' && o.deletedAt === null);
 
   const handlePaymentSuccess = (order: Order) => {
     setIsMobileCartOpen(false);
@@ -77,9 +80,7 @@ export const CashierPage: React.FC = () => {
         deletedAt: null,
       };
 
-      const matchedVariant = existingProduct?.variants?.find(
-        (v) => v.name === item.variantName
-      );
+      const matchedVariant = existingProduct?.variants?.find((v) => v.name === item.variantName);
 
       addItem(productObj, item.qty, matchedVariant);
     });
@@ -101,25 +102,32 @@ export const CashierPage: React.FC = () => {
             {t('cashier.title', 'Terminal Kasir')}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {t('cashier.subtitle', 'Pilih menu untuk menambahkan ke keranjang belanja pelanggan.')}
+            {isSimple
+              ? t('cashier.simpleSubtitle', 'Klik produk untuk menambahkan ke keranjang belanja.')
+              : t(
+                  'cashier.subtitle',
+                  'Pilih menu untuk menambahkan ke keranjang belanja pelanggan.'
+                )}
           </p>
         </div>
 
         {/* Pending Orders (Open Bills) Quick Button */}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setIsPendingOrdersOpen(true)}
-          className="gap-2 border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold text-xs h-9 cursor-pointer"
-        >
-          <BookmarkCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          <span>{t('cashier.pendingOrders.button', 'Pesanan Tertunda')}</span>
-          {pendingOrders.length > 0 && (
-            <Badge className="bg-amber-600 text-white font-extrabold text-[11px] px-1.5 py-0 h-5">
-              {pendingOrders.length}
-            </Badge>
-          )}
-        </Button>
+        {(isAdvanced || pendingOrders.length > 0) && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsPendingOrdersOpen(true)}
+            className="gap-2 border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold text-xs h-9 cursor-pointer"
+          >
+            <BookmarkCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <span>{t('cashier.pendingOrders.button', 'Pesanan Tertunda')}</span>
+            {pendingOrders.length > 0 && (
+              <Badge className="bg-amber-600 text-white font-extrabold text-[11px] px-1.5 py-0 h-5">
+                {pendingOrders.length}
+              </Badge>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Main Cashier Work Area */}

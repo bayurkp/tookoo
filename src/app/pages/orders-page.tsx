@@ -19,6 +19,7 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table';
+import { DatePickerWithRange, type DateRange } from '@/components/date-n-time';
 import { formatCurrency } from '@/utils/format-currency';
 import type { Order } from '@/types/order.types';
 
@@ -30,6 +31,7 @@ export const OrdersPage: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'PENDING'>('ALL');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
 
@@ -51,9 +53,20 @@ export const OrdersPage: React.FC = () => {
         (statusFilter === 'PENDING' && isOrderPending) ||
         (statusFilter === 'PAID' && !isOrderPending);
 
-      return matchesSearch && matchesStatus;
+      let matchesDate = true;
+      if (dateRange?.from) {
+        const orderTime = new Date(order.createdAt).setHours(0, 0, 0, 0);
+        const fromTime = new Date(dateRange.from).setHours(0, 0, 0, 0);
+        if (orderTime < fromTime) matchesDate = false;
+        if (dateRange.to) {
+          const toTime = new Date(dateRange.to).setHours(23, 59, 59, 999);
+          if (orderTime > toTime) matchesDate = false;
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesDate;
     });
-  }, [orders, searchQuery, statusFilter]);
+  }, [orders, searchQuery, statusFilter, dateRange]);
 
   return (
     <div className="space-y-6">
@@ -122,6 +135,27 @@ export const OrdersPage: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-8 h-8 text-xs bg-background"
               />
+            </div>
+
+            {/* Date Range Filter */}
+            <div className="flex items-center gap-1.5">
+              <DatePickerWithRange
+                date={dateRange}
+                onSelect={setDateRange}
+                placeholder="Pilih Rentang Tanggal"
+                className="w-[210px]"
+              />
+              {dateRange && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDateRange(undefined)}
+                  className="h-8 px-2 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer"
+                  title="Reset Filter Tanggal"
+                >
+                  Reset
+                </Button>
+              )}
             </div>
 
             {/* Status Filter Pills */}

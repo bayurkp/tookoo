@@ -33,9 +33,7 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
         }
       }}
       className={`group overflow-hidden transition-colors select-none flex flex-col justify-between relative cursor-pointer border border-border bg-card rounded-lg hover:border-foreground/30 shadow-none ${
-        isOutOfStock
-          ? 'opacity-50 cursor-not-allowed pointer-events-none'
-          : 'active:scale-[0.99]'
+        isOutOfStock ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'active:scale-[0.99]'
       }`}
     >
       <div>
@@ -72,7 +70,10 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
           {/* Stock Badges */}
           <div className="absolute top-2.5 right-2.5">
             {isService ? (
-              <Badge variant="outline" className="bg-background/90 text-primary border-primary/30 font-semibold text-[10px] backdrop-blur-xs">
+              <Badge
+                variant="outline"
+                className="bg-background/90 text-primary border-primary/30 font-semibold text-[10px] backdrop-blur-xs"
+              >
                 Jasa
               </Badge>
             ) : isOutOfStock ? (
@@ -80,7 +81,10 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
                 {t('products.outOfStock', 'Habis')}
               </Badge>
             ) : isLowStock ? (
-              <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 font-semibold text-[10px] backdrop-blur-xs">
+              <Badge
+                variant="outline"
+                className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 font-semibold text-[10px] backdrop-blur-xs"
+              >
                 Sisa {product.stock} {product.unit || 'pcs'}
               </Badge>
             ) : (

@@ -90,10 +90,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
   // Max available stock for current selection
   const currentMaxStock = selectedVariant ? selectedVariant.stock : product.stock;
 
-  const handleToggleModifier = (
-    group: ProductModifierGroup,
-    option: ProductModifierOption
-  ) => {
+  const handleToggleModifier = (group: ProductModifierGroup, option: ProductModifierOption) => {
     const isSingleSelect = group.maxSelect === 1;
 
     setSelectedModifiers((prev) => {
@@ -165,9 +162,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <DialogTitle className="text-base font-bold truncate">
-                  {product.name}
-                </DialogTitle>
+                <DialogTitle className="text-base font-bold truncate">{product.name}</DialogTitle>
                 <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                   {product.category}
                 </Badge>
@@ -212,8 +207,8 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                         isSelected
                           ? 'border-primary bg-primary/5 text-primary font-bold shadow-xs'
                           : isOutOfStock
-                          ? 'border-border/50 opacity-40 bg-muted cursor-not-allowed'
-                          : 'border-border hover:bg-muted/40 text-foreground'
+                            ? 'border-border/50 opacity-40 bg-muted cursor-not-allowed'
+                            : 'border-border hover:bg-muted/40 text-foreground'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full">
@@ -241,7 +236,10 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-foreground text-xs">{group.name}</span>
                     {group.required ? (
-                      <Badge variant="outline" className="text-[10px] px-1 py-0 border-primary/40 text-primary bg-primary/5">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] px-1 py-0 border-primary/40 text-primary bg-primary/5"
+                      >
                         Wajib
                       </Badge>
                     ) : (

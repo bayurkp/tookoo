@@ -7,10 +7,7 @@ import { CashierProductCard } from './cashier-product-card';
 import { VariantModifierModal } from './variant-modifier-modal';
 import { useCartStore } from '../stores/cart-store';
 import { sounds } from '@/utils/audio';
-import type {
-  Product,
-  ProductVariantOption,
-} from '@/types/product.types';
+import type { Product, ProductVariantOption } from '@/types/product.types';
 import type { SelectedModifier } from '../types/cart.types';
 
 interface ProductGridProps {

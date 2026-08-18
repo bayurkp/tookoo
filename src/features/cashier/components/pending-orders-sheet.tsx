@@ -52,9 +52,7 @@ export const PendingOrdersSheet: React.FC<PendingOrdersSheetProps> = ({
   const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
 
   // Filter only pending (unpaid / hold) orders
-  const pendingOrders = orders.filter(
-    (o) => o.status === 'PENDING' && o.deletedAt === null
-  );
+  const pendingOrders = orders.filter((o) => o.status === 'PENDING' && o.deletedAt === null);
 
   const handleCancelConfirm = async () => {
     if (!orderToCancel) return;
@@ -146,7 +144,10 @@ export const PendingOrdersSheet: React.FC<PendingOrdersSheetProps> = ({
                     {/* Items List Summary */}
                     <div className="space-y-1 bg-muted/30 p-2.5 rounded-lg text-xs">
                       {order.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center text-muted-foreground">
+                        <div
+                          key={idx}
+                          className="flex justify-between items-center text-muted-foreground"
+                        >
                           <span className="truncate flex-1 pr-2">
                             {item.qty}x {item.name}
                             {item.variantName && ` (${item.variantName})`}
@@ -232,14 +233,14 @@ export const PendingOrdersSheet: React.FC<PendingOrdersSheetProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Batalkan Pesanan Tertunda?</AlertDialogTitle>
             <AlertDialogDescription>
-              Pesanan untuk <strong>{orderToCancel?.customerName || orderToCancel?.orderNumber}</strong> sebesar{' '}
-              <strong>{formatCurrency(orderToCancel?.totalAmount || 0)}</strong> akan dibatalkan dan dihapus dari daftar meja aktif.
+              Pesanan untuk{' '}
+              <strong>{orderToCancel?.customerName || orderToCancel?.orderNumber}</strong> sebesar{' '}
+              <strong>{formatCurrency(orderToCancel?.totalAmount || 0)}</strong> akan dibatalkan dan
+              dihapus dari daftar meja aktif.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setOrderToCancel(null)}>
-              Tutup
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setOrderToCancel(null)}>Tutup</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"

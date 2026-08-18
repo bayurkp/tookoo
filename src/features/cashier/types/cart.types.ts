@@ -1,4 +1,5 @@
 import type { Product, ProductVariantOption } from '@/types/product.types';
+import type { DiscountScope } from '@/types/master-data.types';
 
 export interface SelectedModifier {
   groupId: string;
@@ -20,8 +21,18 @@ export interface CartItem {
 export type DiscountType = 'PERCENTAGE' | 'FIXED';
 
 export interface CartDiscount {
+  id?: string;
+  name?: string;
+  code?: string;
   type: DiscountType;
   value: number;
+  scope?: DiscountScope;
+  targetProductId?: string | null;
+  targetProductName?: string | null;
+  targetVariantId?: string | null;
+  targetVariantName?: string | null;
+  minPurchaseAmount?: number | null;
+  maxDiscountAmount?: number | null;
 }
 
 export type PaymentMethod = 'CASH' | 'QRIS' | 'TRANSFER';

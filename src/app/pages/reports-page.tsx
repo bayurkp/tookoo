@@ -44,7 +44,16 @@ export const ReportsPage: React.FC = () => {
 
   const handleExportCSV = () => {
     const rows = [
-      ['No', 'Nama Produk', 'Kategori', 'Qty Terjual', 'Total Omzet (Rp)', 'Total HPP (Rp)', 'Laba Bersih (Rp)', 'Margin (%)'],
+      [
+        'No',
+        'Nama Produk',
+        'Kategori',
+        'Qty Terjual',
+        'Total Omzet (Rp)',
+        'Total HPP (Rp)',
+        'Laba Bersih (Rp)',
+        'Margin (%)',
+      ],
       ...analytics.productsPerformance.map((p, idx) => [
         idx + 1,
         `"${p.name.replace(/"/g, '""')}"`,
@@ -57,7 +66,8 @@ export const ReportsPage: React.FC = () => {
       ]),
     ];
 
-    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + rows.map((e) => e.join(',')).join('\n');
+    const csvContent =
+      'data:text/csv;charset=utf-8,\uFEFF' + rows.map((e) => e.join(',')).join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -111,7 +121,12 @@ export const ReportsPage: React.FC = () => {
       </div>
 
       {/* Main Tabs */}
-      <Tabs value={activeTab} defaultValue="pnl" onValueChange={handleTabChange} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        defaultValue="pnl"
+        onValueChange={handleTabChange}
+        className="space-y-4"
+      >
         <div className="border-b pb-1 flex items-center justify-between overflow-x-auto scrollbar-none">
           <TabsList className="h-10 p-1 bg-muted/60">
             <TabsTrigger value="pnl" className="gap-2 text-xs font-bold px-3 py-1.5">
@@ -161,7 +176,8 @@ export const ReportsPage: React.FC = () => {
                 </p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   Omzet kotor {formatCurrency(analytics.grossSales)}
-                  {analytics.totalDiscounts > 0 && ` (-Diskon ${formatCurrency(analytics.totalDiscounts)})`}
+                  {analytics.totalDiscounts > 0 &&
+                    ` (-Diskon ${formatCurrency(analytics.totalDiscounts)})`}
                 </p>
               </CardContent>
             </Card>
@@ -208,7 +224,7 @@ export const ReportsPage: React.FC = () => {
                 <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Rata-rata Transaksi (AOV)
                 </CardTitle>
-                <Receipt className="h-4 w-4 text-amber-500" />
+                <Receipt className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 <p className="text-2xl font-extrabold text-foreground">
@@ -234,7 +250,9 @@ export const ReportsPage: React.FC = () => {
             <CardContent className="p-4">
               {analytics.dailyTrends.length === 0 ? (
                 <div className="p-8 text-center border border-dashed rounded-xl bg-muted/20">
-                  <p className="text-xs text-muted-foreground">Tidak ada transaksi pada periode ini.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tidak ada transaksi pada periode ini.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -399,9 +417,13 @@ export const ReportsPage: React.FC = () => {
                 <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
                   <FileSpreadsheet className="h-5 w-5" />
                 </div>
-                <h3 className="font-bold text-sm text-foreground">Ekspor Laporan Penjualan (CSV / Excel)</h3>
+                <h3 className="font-bold text-sm text-foreground">
+                  Ekspor Laporan Penjualan (CSV / Excel)
+                </h3>
                 <p className="text-xs text-muted-foreground">
-                  Unduh seluruh rincian penjualan produk, total modal HPP, margin laba, dan transaksi dalam format CSV yang kompatibel dengan Microsoft Excel dan Google Sheets.
+                  Unduh seluruh rincian penjualan produk, total modal HPP, margin laba, dan
+                  transaksi dalam format CSV yang kompatibel dengan Microsoft Excel dan Google
+                  Sheets.
                 </p>
               </div>
               <Button
@@ -421,7 +443,8 @@ export const ReportsPage: React.FC = () => {
                 </div>
                 <h3 className="font-bold text-sm text-foreground">Cetak Rekap Penjualan Kasir</h3>
                 <p className="text-xs text-muted-foreground">
-                  Cetak ringkasan penutupan kas dan total pendapatan ke printer thermal kasir atau cetak PDF langsung dari browser.
+                  Cetak ringkasan penutupan kas dan total pendapatan ke printer thermal kasir atau
+                  cetak PDF langsung dari browser.
                 </p>
               </div>
               <Button

@@ -39,10 +39,9 @@ describe('HoldOrderDialog', () => {
   it('renders table inputs and quick suggestions', () => {
     useCartStore.getState().addItem(mockProduct, 2);
 
-    render(
-      <HoldOrderDialog open={true} onOpenChange={() => {}} onHoldSuccess={() => {}} />,
-      { wrapper: createWrapper() }
-    );
+    render(<HoldOrderDialog open={true} onOpenChange={() => {}} onHoldSuccess={() => {}} />, {
+      wrapper: createWrapper(),
+    });
 
     expect(screen.getByText(/Tunda Bayar \/ Simpan Pesanan/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Contoh: Meja 04 \/ Take Away/i)).toBeInTheDocument();
@@ -53,10 +52,9 @@ describe('HoldOrderDialog', () => {
     useCartStore.getState().addItem(mockProduct, 2);
     const handleSuccess = vi.fn();
 
-    render(
-      <HoldOrderDialog open={true} onOpenChange={() => {}} onHoldSuccess={handleSuccess} />,
-      { wrapper: createWrapper() }
-    );
+    render(<HoldOrderDialog open={true} onOpenChange={() => {}} onHoldSuccess={handleSuccess} />, {
+      wrapper: createWrapper(),
+    });
 
     const meja1Btn = screen.getByRole('button', { name: 'Meja 1' });
     fireEvent.click(meja1Btn);

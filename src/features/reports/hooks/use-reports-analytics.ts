@@ -52,9 +52,7 @@ export const useReportsAnalytics = (timeRange: TimeRangeFilter) => {
     queryKey: ['orders'],
     queryFn: async () => {
       const list = await db.orders.toArray();
-      return list
-        .filter((o) => o.deletedAt === null)
-        .sort((a, b) => b.createdAt - a.createdAt);
+      return list.filter((o) => o.deletedAt === null).sort((a, b) => b.createdAt - a.createdAt);
     },
   });
 

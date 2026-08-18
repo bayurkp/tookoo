@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Plus,
-  Search,
-  AlertTriangle,
-  TrendingUp,
-  Layers,
-} from 'lucide-react';
+import { Plus, Search, AlertTriangle, TrendingUp, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -78,9 +72,7 @@ export const StockAdjustmentPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Stok Adjustment (Penyesuaian Stok)
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">Stok Adjustment (Penyesuaian Stok)</h2>
           <p className="text-muted-foreground text-xs mt-0.5">
             Catat barang masuk (kulakan), barang rusak, kadaluarsa, dan koreksi hitung fisik toko.
           </p>
@@ -105,7 +97,9 @@ export const StockAdjustmentPage: React.FC = () => {
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <p className="text-2xl font-extrabold text-foreground">{adjustments.length}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Dokumen tercatat di perangkat</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Dokumen tercatat di perangkat
+            </p>
           </CardContent>
         </Card>
 
@@ -132,10 +126,10 @@ export const StockAdjustmentPage: React.FC = () => {
             <AlertTriangle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <p className="text-2xl font-extrabold text-destructive">
-              -{totalDamagedCount} unit
+            <p className="text-2xl font-extrabold text-destructive">-{totalDamagedCount} unit</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Kerusakan fisik atau kadaluarsa
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Kerusakan fisik atau kadaluarsa</p>
           </CardContent>
         </Card>
       </div>
@@ -154,14 +148,19 @@ export const StockAdjustmentPage: React.FC = () => {
 
         {isLoading ? (
           <div className="p-8 text-center bg-card rounded-xl border">
-            <p className="text-xs text-muted-foreground animate-pulse">Memuat riwayat penyesuaian stok...</p>
+            <p className="text-xs text-muted-foreground animate-pulse">
+              Memuat riwayat penyesuaian stok...
+            </p>
           </div>
         ) : filteredAdjustments.length === 0 ? (
           <div className="p-12 text-center border border-dashed rounded-xl bg-card">
             <Layers className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-foreground">Belum ada catatan penyesuaian stok</p>
+            <p className="text-sm font-semibold text-foreground">
+              Belum ada catatan penyesuaian stok
+            </p>
             <p className="text-xs text-muted-foreground mt-0.5 max-w-xs mx-auto">
-              Gunakan tombol "Buat Penyesuaian Stok" untuk mencatat kulakan barang baru atau barang rusak.
+              Gunakan tombol "Buat Penyesuaian Stok" untuk mencatat kulakan barang baru atau barang
+              rusak.
             </p>
           </div>
         ) : (
@@ -192,8 +191,10 @@ export const StockAdjustmentPage: React.FC = () => {
                   return (
                     <React.Fragment key={adj.id}>
                       {adj.items.map((item, itemIdx) => {
-                        const reasonInfo =
-                          REASON_LABELS[item.reason] || { label: item.reason, variant: 'outline' };
+                        const reasonInfo = REASON_LABELS[item.reason] || {
+                          label: item.reason,
+                          variant: 'outline',
+                        };
 
                         return (
                           <TableRow key={`${adj.id}-${itemIdx}`} className="hover:bg-muted/30">
@@ -242,8 +243,8 @@ export const StockAdjustmentPage: React.FC = () => {
                                   item.difference > 0
                                     ? 'text-emerald-600 dark:text-emerald-400'
                                     : item.difference < 0
-                                    ? 'text-destructive'
-                                    : 'text-muted-foreground'
+                                      ? 'text-destructive'
+                                      : 'text-muted-foreground'
                                 }`}
                               >
                                 {item.difference > 0 ? `+${item.difference}` : `${item.difference}`}
@@ -251,7 +252,9 @@ export const StockAdjustmentPage: React.FC = () => {
                             </TableCell>
 
                             <TableCell>
-                              <p className="text-xs font-medium text-foreground">{adj.adjustedBy}</p>
+                              <p className="text-xs font-medium text-foreground">
+                                {adj.adjustedBy}
+                              </p>
                               {(item.notes || adj.notes) && (
                                 <p className="text-[10px] text-muted-foreground italic truncate max-w-xs">
                                   "{item.notes || adj.notes}"
@@ -271,10 +274,7 @@ export const StockAdjustmentPage: React.FC = () => {
       </div>
 
       {/* Stock Adjustment Dialog */}
-      <StockAdjustmentDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-      />
+      <StockAdjustmentDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
     </div>
   );
 };

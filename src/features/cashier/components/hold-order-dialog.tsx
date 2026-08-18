@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldLabel } from '@/components/ui/field';
+import { useTables, useUpdateTableStatus } from '@/features/tables/hooks/use-tables';
 import { useCartStore } from '../stores/cart-store';
 import { useCashierCheckout } from '../hooks/use-cashier-checkout';
 import { formatCurrency } from '@/utils/format-currency';
@@ -23,7 +24,15 @@ interface HoldOrderDialogProps {
   onHoldSuccess: (orderNumber: string) => void;
 }
 
-const TABLE_SUGGESTIONS = ['Meja 1', 'Meja 2', 'Meja 3', 'Meja 4', 'Meja 5', 'Take Away / Bungkus', 'VIP / Lantai 2'];
+const FALLBACK_TABLE_SUGGESTIONS = [
+  'Meja 1',
+  'Meja 2',
+  'Meja 3',
+  'Meja 4',
+  'Meja 5',
+  'Take Away / Bungkus',
+  'VIP / Lantai 2',
+];
 
 export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
   open,
@@ -33,8 +42,12 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
   const { t } = useTranslation();
   const [customerName, setCustomerName] = useState('');
   const [tableNumber, setTableNumber] = useState('');
+  const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: tables = [] } = useTables();
+  const updateTableStatusMutation = useUpdateTableStatus();
 
   const items = useCartStore((state) => state.items);
   const getSubtotal = useCartStore((state) => state.getSubtotal);
@@ -47,6 +60,11 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
   const subtotal = getSubtotal();
   const discountAmount = getDiscountAmount();
   const total = getTotal();
+
+  const handleSelectTable = (tableId: string, tableName: string) => {
+    setSelectedTableId(tableId);
+    setTableNumber(tableName);
+  };
 
   const handleHoldOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +87,8 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
         subtotal: item.unitPrice * item.quantity,
       }));
 
-      const finalLabel = [tableNumber.trim(), customerName.trim()].filter(Boolean).join(' - ') || 'Pesanan Tertunda';
+      const finalLabel =
+        [tableNumber.trim(), customerName.trim()].filter(Boolean).join(' - ') || 'Pesanan Tertunda';
 
       const savedOrder = await checkoutMutation.mutateAsync({
         items: orderItems,
@@ -86,6 +105,19 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
         notes: notes.trim() || undefined,
       });
 
+      // If a layout table was selected, mark it as OCCUPIED in db
+      if (selectedTableId) {
+        await updateTableStatusMutation.mutateAsync({
+          id: selectedTableId,
+          status: 'OCCUPIED',
+          orderMeta: {
+            orderId: savedOrder.id,
+            customerName: customerName.trim() || undefined,
+            orderTotal: total,
+          },
+        });
+      }
+
       sounds.playSuccess();
       clearCart();
       setIsSubmitting(false);
@@ -95,6 +127,7 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
       // Reset form fields
       setCustomerName('');
       setTableNumber('');
+      setSelectedTableId(null);
       setNotes('');
     } catch (err) {
       console.error('Failed to hold order:', err);
@@ -102,9 +135,11 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
     }
   };
 
+  const availableTables = tables.length > 0 ? tables.slice(0, 12) : null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] h-[85vh] max-h-[600px] min-h-[460px] flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[440px] h-[85vh] max-h-[620px] min-h-[460px] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-4 px-6 border-b shrink-0 bg-card">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
@@ -139,14 +174,20 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
 
             {/* Table / Location */}
             <Field>
-              <FieldLabel htmlFor="table-number" className="text-xs font-bold flex items-center gap-1.5">
+              <FieldLabel
+                htmlFor="table-number"
+                className="text-xs font-bold flex items-center gap-1.5"
+              >
                 <UtensilsCrossed className="h-3.5 w-3.5 text-primary" />
                 <span>Nomor Meja / Area / Antrean *</span>
               </FieldLabel>
               <Input
                 id="table-number"
                 value={tableNumber}
-                onChange={(e) => setTableNumber(e.target.value)}
+                onChange={(e) => {
+                  setTableNumber(e.target.value);
+                  setSelectedTableId(null);
+                }}
                 placeholder="Contoh: Meja 04 / Take Away / Antrean 12"
                 className="h-9 text-sm"
                 required
@@ -154,24 +195,57 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
               />
             </Field>
 
-            {/* Quick Table Presets */}
-            <div className="flex flex-wrap items-center gap-1">
-              <span className="text-[11px] text-muted-foreground mr-1">Pilihan Cepat:</span>
-              {TABLE_SUGGESTIONS.map((tSuggestion) => (
-                <button
-                  key={tSuggestion}
-                  type="button"
-                  onClick={() => setTableNumber(tSuggestion)}
-                  className="px-2 py-0.5 rounded-md text-[11px] bg-muted hover:bg-muted/80 text-foreground border border-border/60 transition-colors cursor-pointer"
-                >
-                  {tSuggestion}
-                </button>
-              ))}
+            {/* Quick Table Presets / Live Tables */}
+            <div className="space-y-1.5">
+              <span className="text-[11px] text-muted-foreground">
+                {availableTables ? 'Pilih Meja Tersedia:' : 'Pilihan Cepat:'}
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {availableTables
+                  ? availableTables.map((tbl) => {
+                      const isOccupied = tbl.status === 'OCCUPIED';
+                      const isSelected = tableNumber === tbl.name;
+                      return (
+                        <button
+                          key={tbl.id}
+                          type="button"
+                          onClick={() => handleSelectTable(tbl.id, tbl.name)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer flex items-center gap-1 ${
+                            isSelected
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : isOccupied
+                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                                : 'bg-card text-foreground border-border hover:bg-muted/80'
+                          }`}
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full ${
+                              isOccupied ? 'bg-amber-500' : 'bg-emerald-500'
+                            }`}
+                          />
+                          <span>{tbl.name}</span>
+                        </button>
+                      );
+                    })
+                  : FALLBACK_TABLE_SUGGESTIONS.map((tSuggestion) => (
+                      <button
+                        key={tSuggestion}
+                        type="button"
+                        onClick={() => setTableNumber(tSuggestion)}
+                        className="px-2 py-0.5 rounded-md text-[11px] bg-muted hover:bg-muted/80 text-foreground border border-border/60 transition-colors cursor-pointer"
+                      >
+                        {tSuggestion}
+                      </button>
+                    ))}
+              </div>
             </div>
 
             {/* Customer Name */}
             <Field>
-              <FieldLabel htmlFor="customer-name" className="text-xs font-bold flex items-center gap-1.5">
+              <FieldLabel
+                htmlFor="customer-name"
+                className="text-xs font-bold flex items-center gap-1.5"
+              >
                 <User className="h-3.5 w-3.5 text-primary" />
                 <span>Nama Pelanggan (Opsional)</span>
               </FieldLabel>
@@ -186,7 +260,10 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
 
             {/* Notes */}
             <Field>
-              <FieldLabel htmlFor="hold-notes" className="text-xs font-bold flex items-center gap-1.5">
+              <FieldLabel
+                htmlFor="hold-notes"
+                className="text-xs font-bold flex items-center gap-1.5"
+              >
                 <FileText className="h-3.5 w-3.5 text-primary" />
                 <span>Catatan Tambahan (Opsional)</span>
               </FieldLabel>
@@ -206,13 +283,14 @@ export const HoldOrderDialog: React.FC<HoldOrderDialogProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
+              className="text-xs"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting || !tableNumber.trim()}
-              className="gap-1.5 font-bold bg-amber-600 hover:bg-amber-700 text-white"
+              className="gap-1.5 font-bold text-xs"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>{isSubmitting ? 'Menyimpan...' : 'Simpan & Buka Antrean Baru'}</span>

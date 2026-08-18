@@ -98,5 +98,12 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
     await db.orders.put(newOrder);
   });
 
+  // 4. Asynchronous non-blocking auto-backup check
+  setTimeout(() => {
+    import('@/features/sync/api/cloud-backup-api')
+      .then((m) => m.checkAndTriggerAutoBackup())
+      .catch(() => {});
+  }, 1000);
+
   return newOrder;
 };
