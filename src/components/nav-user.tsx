@@ -40,7 +40,7 @@ export function NavUser({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { currentRole, setRole } = useAuthStore();
-  const { mode, setMode } = useAppMode();
+  const { appMode, setAppMode } = useAppMode();
 
   const { data: settings } = useQuery<StoreSettings | null>({
     queryKey: ['settings'],
@@ -144,25 +144,25 @@ export function NavUser({
                   {t('auth.viewMode', 'Mode Tampilan')}
                 </DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() => setMode('simple')}
+                  onClick={() => setAppMode('SIMPLE')}
                   className="text-xs flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <Sliders className="size-3.5" />
                     <span>{t('auth.simpleMode', 'Mode Sederhana (Lite)')}</span>
                   </div>
-                  {mode === 'simple' && <Check className="size-3.5 text-primary" />}
+                  {appMode === 'SIMPLE' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                  onClick={() => setMode('advanced')}
+                  onClick={() => setAppMode('ADVANCED')}
                   className="text-xs flex items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <Sliders className="size-3.5" />
                     <span>{t('auth.advancedMode', 'Mode Lengkap (Pro)')}</span>
                   </div>
-                  {mode === 'advanced' && <Check className="size-3.5 text-primary" />}
+                  {appMode === 'ADVANCED' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

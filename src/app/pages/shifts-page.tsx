@@ -30,11 +30,11 @@ export const ShiftsPage: React.FC = () => {
 
   const totalCashSalesToday = todayOrders
     .filter((o) => o.paymentMethod === 'CASH')
-    .reduce((sum, o) => sum + (o.total || 0), 0);
+    .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
   const totalNonCashSalesToday = todayOrders
     .filter((o) => o.paymentMethod !== 'CASH')
-    .reduce((sum, o) => sum + (o.total || 0), 0);
+    .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
   const [initialCash] = useState(200000);
 
