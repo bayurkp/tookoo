@@ -87,6 +87,16 @@ export const generatePassphrase = (wordCount = 12): string => {
 };
 
 /**
+ * Generates a store secret key for P2P security
+ */
+export const generateStoreSecretKey = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `sk_${crypto.randomUUID().replace(/-/g, '')}`;
+  }
+  return `sk_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
+};
+
+/**
  * Sanitizes and normalizes passphrase input from user
  */
 export const normalizePassphrase = (input: string): string => {
