@@ -18,6 +18,9 @@ const CustomersPage = lazy(() => import('@/app/pages/customers-page'));
 const SuppliersPage = lazy(() => import('@/app/pages/suppliers-page'));
 const DiscountsPage = lazy(() => import('@/app/pages/discounts-page'));
 const ShiftsPage = lazy(() => import('@/app/pages/shifts-page'));
+const StoreProfilePage = lazy(() => import('@/app/pages/store-profile-page'));
+const TaxesPage = lazy(() => import('@/app/pages/taxes-page'));
+const ReceiptPage = lazy(() => import('@/app/pages/receipt-page'));
 
 const PageLoader: React.FC = () => (
   <div className="flex h-full min-h-[320px] w-full items-center justify-center">
@@ -86,6 +89,18 @@ export const router = createBrowserRouter([
       {
         path: 'discounts',
         element: withSuspense(DiscountsPage),
+      },
+      {
+        path: 'store-profile',
+        element: withSuspense(StoreProfilePage),
+      },
+      {
+        path: 'taxes',
+        element: withSuspense(TaxesPage),
+      },
+      {
+        path: 'receipt-settings',
+        element: withSuspense(ReceiptPage),
       },
       {
         path: 'orders',

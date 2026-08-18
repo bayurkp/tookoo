@@ -60,13 +60,14 @@ export const AppSidebar: React.FC = () => {
 
   const [isStoreDataOpen, setIsStoreDataOpen] = useState(
     () =>
+      location.pathname.startsWith('/store-profile') ||
+      location.pathname.startsWith('/taxes') ||
+      location.pathname.startsWith('/receipt-settings') ||
       location.pathname.startsWith('/products') ||
       location.pathname.startsWith('/discounts') ||
       location.pathname.startsWith('/customers') ||
       location.pathname.startsWith('/suppliers') ||
-      location.pathname.startsWith('/tables') ||
-      (location.pathname.startsWith('/settings') &&
-        (currentTab === 'general' || currentTab === 'taxes' || currentTab === 'receipt'))
+      location.pathname.startsWith('/tables')
   );
 
   const [isProductSubOpen, setIsProductSubOpen] = useState(() =>
@@ -82,10 +83,7 @@ export const AppSidebar: React.FC = () => {
   );
 
   const [isSystemOpen, setIsSystemOpen] = useState(
-    () =>
-      location.pathname.startsWith('/sync') ||
-      (location.pathname.startsWith('/settings') &&
-        (currentTab === 'appearance' || currentTab === 'security' || currentTab === 'data'))
+    () => location.pathname.startsWith('/sync') || location.pathname.startsWith('/settings')
   );
 
   // Auto-expand active group on route changes
@@ -99,13 +97,14 @@ export const AppSidebar: React.FC = () => {
     }
 
     if (
+      location.pathname.startsWith('/store-profile') ||
+      location.pathname.startsWith('/taxes') ||
+      location.pathname.startsWith('/receipt-settings') ||
       location.pathname.startsWith('/products') ||
       location.pathname.startsWith('/discounts') ||
       location.pathname.startsWith('/customers') ||
       location.pathname.startsWith('/suppliers') ||
-      location.pathname.startsWith('/tables') ||
-      (location.pathname.startsWith('/settings') &&
-        (currentTab === 'general' || currentTab === 'taxes' || currentTab === 'receipt'))
+      location.pathname.startsWith('/tables')
     ) {
       setIsStoreDataOpen(true);
     }
@@ -339,11 +338,8 @@ export const AppSidebar: React.FC = () => {
                   <nav className="ml-2 pl-2 border-l border-border/60 space-y-0.5 mt-0.5 animate-in fade-in-50 duration-150">
                     {/* 1. Profil Toko */}
                     <NavLink
-                      to="/settings?tab=general"
-                      className={subNavItemClass(
-                        location.pathname === '/settings' &&
-                          (!currentTab || currentTab === 'general')
-                      )}
+                      to="/store-profile"
+                      className={({ isActive }) => navItemClass(isActive)}
                     >
                       <Store className="h-3.5 w-3.5 shrink-0" />
                       <span>Profil Toko</span>
@@ -441,12 +437,7 @@ export const AppSidebar: React.FC = () => {
                     </NavLink>
 
                     {/* 4. Pajak & Biaya Layanan */}
-                    <NavLink
-                      to="/settings?tab=taxes"
-                      className={subNavItemClass(
-                        location.pathname === '/settings' && currentTab === 'taxes'
-                      )}
-                    >
+                    <NavLink to="/taxes" className={({ isActive }) => navItemClass(isActive)}>
                       <Receipt className="h-3.5 w-3.5 shrink-0" />
                       <span>Pajak & Biaya Layanan</span>
                     </NavLink>
@@ -476,10 +467,8 @@ export const AppSidebar: React.FC = () => {
 
                     {/* 8. Format Struk & Nota */}
                     <NavLink
-                      to="/settings?tab=receipt"
-                      className={subNavItemClass(
-                        location.pathname === '/settings' && currentTab === 'receipt'
-                      )}
+                      to="/receipt-settings"
+                      className={({ isActive }) => navItemClass(isActive)}
                     >
                       <Printer className="h-3.5 w-3.5 shrink-0" />
                       <span>Desain Nota & Struk</span>
