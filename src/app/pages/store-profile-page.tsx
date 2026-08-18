@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/select';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { WelcomeOnboardingDialog } from '@/features/onboarding/components/welcome-onboarding-dialog';
-import { AppModeSwitcher } from '@/components/app-mode-switcher';
 import { SUPPORTED_CURRENCIES, DEFAULT_CURRENCY } from '@/utils/currency-config';
 import type { CurrencyCode } from '@/types/currency.types';
 
@@ -56,23 +55,21 @@ export const StoreProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 p-4 md:p-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Store className="h-6 w-6 text-primary" />
-            <h1 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
-              Profil Bisnis & Toko
-            </h1>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Identitas resmi toko, mata uang transaksi, alamat usaha, dan profil terminal kasir.
+          <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+            <span>Profil Toko</span>
+          </h2>
+          <p className="text-muted-foreground text-xs mt-0.5">
+            Identitas resmi usaha, mata uang transaksi, alamat toko, dan profil terminal kasir ini.
           </p>
         </div>
 
         <Button
           variant="outline"
+          size="sm"
           onClick={() => setIsSetupWizardOpen(true)}
           className="gap-2 text-xs font-semibold shrink-0"
         >
@@ -87,29 +84,6 @@ export const StoreProfilePage: React.FC = () => {
           <span>Profil Toko & Terminal Berhasil Disimpan!</span>
         </div>
       )}
-
-      {/* Mode Operasional Aplikasi (Simple vs Advanced) */}
-      <Card className="border bg-card rounded-xl shadow-none">
-        <CardHeader className="p-5 pb-3 border-b">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Store className="h-4 w-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <CardTitle className="text-sm font-bold text-foreground">
-                Mode Operasional Toko
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Pilih tampilan sederhana untuk kasir cepat, atau mode lengkap untuk fitur
-                multi-varian & denah meja.
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <AppModeSwitcher variant="card" />
-        </CardContent>
-      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Identitas Bisnis */}

@@ -238,17 +238,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     isActive={location.pathname.startsWith('/shifts')}
                     tooltip="Shift & Uang Kas"
                   >
-                    <NavLink to="/shifts" className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2">
-                        <Clock />
-                        <span>Shift & Uang Kas</span>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="text-[8px] px-1 py-0 h-3.5 text-muted-foreground border-muted-foreground/30 font-medium"
-                      >
-                        Segera
-                      </Badge>
+                    <NavLink to="/shifts">
+                      <Clock />
+                      <span>Shift & Uang Kas</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

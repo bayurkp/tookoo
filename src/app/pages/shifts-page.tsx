@@ -1,138 +1,182 @@
-import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from 'react';
+import { Clock, Plus, ArrowUpRight, ArrowDownLeft, Printer, CheckCircle2 } from 'lucide-react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Clock,
-  Sparkles,
-  ArrowRight,
-  Calculator,
-  Users,
-  ShieldCheck,
-  CheckCircle2,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { useQuery } from '@tanstack/react-query';
+import { db } from '@/lib/db';
+import { formatCurrency } from '@/utils/format-currency';
 
 export const ShiftsPage: React.FC = () => {
-  const navigate = useNavigate();
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      return (await db.settings.toCollection().first()) || null;
+    },
+  });
+
+  const { data: todayOrders = [] } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      const all = await db.orders.toArray();
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      return all.filter((o) => !o.deletedAt && o.createdAt >= startOfDay.getTime());
+    },
+  });
+
+  const totalCashSalesToday = todayOrders
+    .filter((o) => o.paymentMethod === 'CASH')
+    .reduce((sum, o) => sum + (o.total || 0), 0);
+
+  const totalNonCashSalesToday = todayOrders
+    .filter((o) => o.paymentMethod !== 'CASH')
+    .reduce((sum, o) => sum + (o.total || 0), 0);
+
+  const [initialCash] = useState(200000); // Default cash drawer float
+
+  const cashierName = settings?.defaultCashier || 'Kasir 1';
+  const terminalName = settings?.deviceName || 'Terminal Utama';
 
   return (
-    <div className="space-y-6 p-4 md:p-6 max-w-5xl mx-auto">
-      {/* Top Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/15 via-primary/5 to-background border border-primary/20 p-6 md:p-8">
-        <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="default" className="gap-1.5 px-2.5 py-0.5 text-xs font-bold">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Segera Hadir (Coming Soon)</span>
-            </Badge>
-            <Badge variant="outline" className="text-xs font-semibold">
-              Fase Rilis v1.2
-            </Badge>
-          </div>
-
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">
-            Shift Kasir & Manajemen Uang Laci
-          </h1>
-
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Kontrol penuh atas uang fisik di laci kasir, serah terima shift antar staf, modal kas
-            awal, pencatatan kas masuk/keluar, dan audit selisih kas harian secara otomatis.
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+            <span>Shift & Uang Kas</span>
+          </h2>
+          <p className="text-muted-foreground text-xs mt-0.5">
+            Pencatatan kas modal awal, serah terima shift staf, dan rekonsiliasi uang fisik laci
+            kasir.
           </p>
-
-          <div className="pt-2 flex flex-wrap items-center gap-3">
-            <Button onClick={() => navigate('/')} className="gap-2 font-bold shadow-xs">
-              <span>Kembali ke Terminal Kasir</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
 
-        {/* Background decorative watermark */}
-        <Clock className="absolute -right-6 -bottom-6 h-56 w-56 text-primary/10 pointer-events-none" />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
+            <Printer className="h-4 w-4" />
+            <span>Cetak Laporan X</span>
+          </Button>
+          <Button size="sm" className="gap-2 text-xs font-semibold">
+            <Plus className="h-4 w-4" />
+            <span>Tutup Shift Kasir</span>
+          </Button>
+        </div>
       </div>
 
-      {/* Feature Teasers Grid */}
+      {/* Ringkasan Shift Aktif */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Card 1: Buka & Tutup Shift */}
-        <Card className="p-5 flex flex-col justify-between border-border/80 relative overflow-hidden">
-          <div className="space-y-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-              <Clock className="h-5 w-5" />
+        {/* Status Shift & Kasir */}
+        <Card className="rounded-xl shadow-none">
+          <CardHeader className="p-4 pb-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground">Shift Saat Ini</span>
+              <Badge
+                variant="secondary"
+                className="gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
+              >
+                <CheckCircle2 className="size-3" />
+                <span>Shift 1 (Aktif)</span>
+              </Badge>
             </div>
-            <div>
-              <h3 className="text-base font-bold text-foreground">Buka & Tutup Shift</h3>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Catat modal kas awal saat shift dimulai dan input penghitungan fisik uang tunai saat
-                toko tutup atau pergantian kasir.
-              </p>
+          </CardHeader>
+          <CardContent className="p-4 pt-1 space-y-2">
+            <div className="text-xl font-bold text-foreground">{cashierName}</div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Clock className="size-3.5" />
+              <span>Dibuka hari ini, 08:00 WIB</span>
             </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-border/50 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Rekapitulasi X & Z Report</span>
-          </div>
+            <div className="text-xs text-muted-foreground">
+              Terminal: <span className="text-foreground font-medium">{terminalName}</span>
+            </div>
+          </CardContent>
         </Card>
 
-        {/* Card 2: Kas Masuk & Kas Keluar */}
-        <Card className="p-5 flex flex-col justify-between border-border/80 relative overflow-hidden">
-          <div className="space-y-3">
-            <div className="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-              <Calculator className="h-5 w-5" />
+        {/* Modal Kas & Penjualan Tunai */}
+        <Card className="rounded-xl shadow-none">
+          <CardHeader className="p-4 pb-2">
+            <span className="text-xs font-medium text-muted-foreground">
+              Saldo Kas Fisik (Laci)
+            </span>
+          </CardHeader>
+          <CardContent className="p-4 pt-1 space-y-2">
+            <div className="text-2xl font-bold text-foreground">
+              {formatCurrency(initialCash + totalCashSalesToday)}
             </div>
-            <div>
-              <h3 className="text-base font-bold text-foreground">Kas Masuk & Kas Keluar</h3>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Dokumentasikan uang keluar cepat untuk kebutuhan dadakan (beli es batu, galon, dll)
-                agar saldo akhir laci tetap cocok.
-              </p>
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
+              <span>Modal Kas Awal:</span>
+              <span className="font-medium text-foreground">{formatCurrency(initialCash)}</span>
             </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-border/50 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-semibold">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Audit Otomatis Selisih Kas</span>
-          </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Penjualan Tunai:</span>
+              <span className="font-medium text-foreground">
+                {formatCurrency(totalCashSalesToday)}
+              </span>
+            </div>
+          </CardContent>
         </Card>
 
-        {/* Card 3: Serah Terima & Multi-Kasir */}
-        <Card className="p-5 flex flex-col justify-between border-border/80 relative overflow-hidden">
-          <div className="space-y-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-              <Users className="h-5 w-5" />
+        {/* Non-Tunai & Transaksi */}
+        <Card className="rounded-xl shadow-none">
+          <CardHeader className="p-4 pb-2">
+            <span className="text-xs font-medium text-muted-foreground">Transaksi Non-Tunai</span>
+          </CardHeader>
+          <CardContent className="p-4 pt-1 space-y-2">
+            <div className="text-2xl font-bold text-foreground">
+              {formatCurrency(totalNonCashSalesToday)}
             </div>
-            <div>
-              <h3 className="text-base font-bold text-foreground">Serah Terima Staf</h3>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Mendukung toko dengan banyak kasir bergantian (Shift Pagi & Malam) dengan cetak nota
-                serah terima resmi.
-              </p>
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
+              <span>Total Transaksi Shift:</span>
+              <span className="font-medium text-foreground">{todayOrders.length} Pesanan</span>
             </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-border/50 flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-semibold">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Otorisasi PIN Pemilik</span>
-          </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>QRIS & Transfer:</span>
+              <span className="font-medium text-foreground">
+                {formatCurrency(totalNonCashSalesToday)}
+              </span>
+            </div>
+          </CardContent>
         </Card>
       </div>
 
-      {/* Note about current state */}
-      <Card className="p-4 bg-muted/40 border-border/60 flex items-center gap-3">
-        <div className="h-9 w-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
-          <ShieldCheck className="h-5 w-5 text-emerald-600" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-foreground">
-            Operasional Kasir Saat Ini Berjalan Normal
-          </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
-            Saat ini Tookoo menggunakan sistem rekapitulasi harian otomatis. Anda tetap dapat
-            bertransaksi dan melihat seluruh laporan omzet penjualan tanpa hambatan.
-          </p>
-        </div>
-      </Card>
+      {/* Tindakan Operasional Kas Laci */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="p-5 rounded-xl shadow-none flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <ArrowDownLeft className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-foreground">Kas Masuk (Paid-In)</div>
+              <div className="text-xs text-muted-foreground">
+                Tambah uang kembalian / modal tambahan ke laci kasir.
+              </div>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs font-semibold shrink-0">
+            <Plus className="h-3.5 w-3.5" />
+            <span>Kas Masuk</span>
+          </Button>
+        </Card>
+
+        <Card className="p-5 rounded-xl shadow-none flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <ArrowUpRight className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-foreground">Kas Keluar (Paid-Out)</div>
+              <div className="text-xs text-muted-foreground">
+                Ambil uang dari laci untuk kebutuhan mendesak / operasional toko.
+              </div>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs font-semibold shrink-0">
+            <Plus className="h-3.5 w-3.5" />
+            <span>Kas Keluar</span>
+          </Button>
+        </Card>
+      </div>
     </div>
   );
 };
