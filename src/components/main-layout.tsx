@@ -1,13 +1,16 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { ShoppingCart, Package, Receipt, RefreshCw, Settings } from 'lucide-react';
+import { ShoppingCart, Package, Receipt, RefreshCw, Settings, LayoutGrid, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeaderStatusBadge } from '@/components/header-status-badge';
+import { AppModeSwitcher } from '@/components/app-mode-switcher';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppSidebar } from '@/components/app-sidebar';
+import { useAppMode } from '@/hooks/use-app-mode';
 
 export const MainLayout: React.FC = () => {
   const { t } = useTranslation();
+  const { isAdvanced } = useAppMode();
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -26,6 +29,8 @@ export const MainLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Global App Mode Switcher (Simple vs Pro) */}
+            <AppModeSwitcher variant="header" />
             <HeaderStatusBadge isOnline={navigator.onLine} peerCount={0} />
           </div>
         </header>
@@ -67,6 +72,22 @@ export const MainLayout: React.FC = () => {
             <span>{t('nav.products', 'Produk')}</span>
           </NavLink>
 
+          {isAdvanced && (
+            <NavLink
+              to="/tables"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
+                  isActive
+                    ? 'text-primary font-bold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`
+              }
+            >
+              <LayoutGrid className="h-4.5 w-4.5" />
+              <span>{t('nav.tables', 'Meja')}</span>
+            </NavLink>
+          )}
+
           <NavLink
             to="/orders"
             className={({ isActive }) =>
@@ -80,16 +101,32 @@ export const MainLayout: React.FC = () => {
           </NavLink>
 
           <NavLink
-            to="/sync"
+            to="/expenses"
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
                 isActive ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
               }`
             }
           >
-            <RefreshCw className="h-4.5 w-4.5" />
-            <span>{t('nav.sync', 'Sinkron')}</span>
+            <Wallet className="h-4.5 w-4.5" />
+            <span>Biaya</span>
           </NavLink>
+
+          {isAdvanced && (
+            <NavLink
+              to="/sync"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 py-1 px-2 rounded-lg text-[10px] font-medium transition-colors ${
+                  isActive
+                    ? 'text-primary font-bold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`
+              }
+            >
+              <RefreshCw className="h-4.5 w-4.5" />
+              <span>{t('nav.sync', 'Sinkron')}</span>
+            </NavLink>
+          )}
 
           <NavLink
             to="/settings"

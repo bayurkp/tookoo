@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,35 +13,62 @@ import {
   ShieldCheck,
   Laptop,
   ChevronDown,
-  ChevronRight,
   Folder,
   Layers,
   Sparkles,
+  Scale,
   DollarSign,
   CreditCard,
   Download,
+  Store,
+  Printer,
+  Palette,
+  Shield,
+  LayoutGrid,
+  Tag,
+  Database,
+  Wallet,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { db } from '@/lib/db';
 import { useAuthStore } from '@/stores/auth-store';
+import { useAppMode } from '@/hooks/use-app-mode';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { AppModeSwitcher } from '@/components/app-mode-switcher';
+import { cn } from '@/lib/cn';
 
 export const AppSidebar: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const currentRole = useAuthStore((state) => state.role);
+  const currentRole = useAuthStore((state) => state.currentRole);
+  const { isSimple } = useAppMode();
 
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab');
 
-  // Accordion open states for sub-items
-  const [isProductsOpen, setIsProductsOpen] = useState(true);
-  const [isReportsOpen, setIsReportsOpen] = useState(true);
+  // Smart accordion states: expanded if on the matching path
+  const [isProductsOpen, setIsProductsOpen] = useState(
+    () => location.pathname.startsWith('/products')
+  );
+  const [isReportsOpen, setIsReportsOpen] = useState(
+    () => location.pathname.startsWith('/reports')
+  );
+  const [isSettingsOpen, setIsSettingsOpen] = useState(
+    () => location.pathname.startsWith('/settings')
+  );
 
-  const isProductsActive = location.pathname.startsWith('/products');
-  const isReportsActive = location.pathname.startsWith('/reports');
+  // Auto-expand active route group when navigating
+  useEffect(() => {
+    if (location.pathname.startsWith('/products')) {
+      setIsProductsOpen(true);
+    } else if (location.pathname.startsWith('/reports')) {
+      setIsReportsOpen(true);
+    } else if (location.pathname.startsWith('/settings')) {
+      setIsSettingsOpen(true);
+    }
+  }, [location.pathname]);
 
   // Fetch current store settings for name & device
   const { data: settings } = useQuery({
@@ -55,26 +82,41 @@ export const AppSidebar: React.FC = () => {
   const deviceName = settings?.deviceName || 'Terminal Kasir';
 
   const roleLabel =
-    currentRole === 'OWNER'
-      ? 'Pemilik Toko'
-      : currentRole === 'MANAGER'
-      ? 'Manajer Toko'
-      : 'Kasir';
+    currentRole === 'OWNER' ? 'Pemilik Toko' : currentRole === 'MANAGER' ? 'Manajer Toko' : 'Kasir';
+
+  const navItemClass = (isActive: boolean) =>
+    cn(
+      'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-150 relative group',
+      isActive
+        ? 'bg-primary text-primary-foreground font-bold shadow-xs'
+        : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground'
+    );
+
+  const subNavItemClass = (isActive: boolean) =>
+    cn(
+      'flex items-center gap-2 rounded-md px-2 py-1.5 text-[11px] transition-all duration-150',
+      isActive
+        ? 'bg-primary/10 text-primary font-bold'
+        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+    );
 
   return (
-    <aside className="w-64 border-r bg-card/60 backdrop-blur-md p-4 flex flex-col justify-between hidden md:flex shrink-0 select-none overflow-hidden h-screen">
+    <aside className="w-64 border-r bg-card/70 backdrop-blur-md p-3 flex flex-col justify-between hidden md:flex shrink-0 select-none overflow-hidden h-full z-10">
       {/* Sidebar Header: Store Identity */}
-      <div className="space-y-4 shrink-0">
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-muted/40 border border-border/60">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-lg shrink-0 shadow-xs">
+      <div className="space-y-2.5 shrink-0">
+        <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/40 border border-border/60">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground font-black text-base shrink-0 shadow-xs">
             {storeName.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold tracking-tight text-foreground truncate" title={storeName}>
+            <h2
+              className="text-xs font-bold tracking-tight text-foreground truncate"
+              title={storeName}
+            >
               {storeName}
             </h2>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-medium">
+            <div className="flex items-center gap-1 mt-0.5">
+              <Badge variant="secondary" className="text-[9px] px-1.5 py-0 font-semibold h-4">
                 {roleLabel}
               </Badge>
             </div>
@@ -82,307 +124,466 @@ export const AppSidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Groupings in ScrollArea */}
-      <ScrollArea className="flex-1 -mx-2 px-2 my-3">
-        <div className="space-y-4 pr-1">
-          {/* Group 1: Operasional Kasir */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Operasional Kasir
-            </p>
-            <nav className="space-y-1">
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`
-                }
-              >
-                <LayoutDashboard className="h-4 w-4 shrink-0" />
-                <span>Dashboard Toko</span>
-              </NavLink>
+      {/* Navigation Groups inside ScrollArea */}
+      <ScrollArea className="flex-1 min-h-0 -mx-1.5 px-1.5 my-2">
+        <div className="space-y-3.5 pr-1 py-1">
+          {/* ========================================================================= */}
+          {/* 1. SIMPLE MODE NAVIGATION (Focused Core Business Menus) */}
+          {/* ========================================================================= */}
+          {isSimple ? (
+            <div className="space-y-1">
+              <p className="px-2.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                Menu Utama Toko
+              </p>
+              <nav className="space-y-0.5">
+                <NavLink to="/" className={({ isActive }) => navItemClass(isActive)}>
+                  <ShoppingCart className="h-4 w-4 shrink-0" />
+                  <span>{t('nav.cashier', 'Kasir Jualan')}</span>
+                </NavLink>
 
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`
-                }
-              >
-                <ShoppingCart className="h-4 w-4 shrink-0" />
-                <span>{t('nav.cashier', 'Terminal Kasir')}</span>
-              </NavLink>
+                <NavLink to="/products" className={({ isActive }) => navItemClass(isActive)}>
+                  <Package className="h-4 w-4 shrink-0" />
+                  <span>{t('nav.products', 'Katalog Produk')}</span>
+                </NavLink>
 
-              <NavLink
-                to="/orders"
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`
-                }
-              >
-                <Receipt className="h-4 w-4 shrink-0" />
-                <span>{t('nav.orders', 'Riwayat & Struk')}</span>
-              </NavLink>
-            </nav>
-          </div>
+                <NavLink to="/orders" className={({ isActive }) => navItemClass(isActive)}>
+                  <Receipt className="h-4 w-4 shrink-0" />
+                  <span>{t('nav.orders', 'Riwayat & Omzet')}</span>
+                </NavLink>
 
-          {/* Group 2: Katalog & Stok (With Sub-Items) */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Katalog & Stok
-            </p>
-            <nav className="space-y-1">
-              {/* Parent Product Catalog with Subitems */}
-              <div>
-                <div
-                  onClick={() => {
-                    if (location.pathname !== '/products') {
-                      navigate('/products');
-                    }
-                    setIsProductsOpen(!isProductsOpen);
-                  }}
-                  className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer transition-colors ${
-                    location.pathname === '/products'
-                      ? 'bg-muted text-foreground font-bold'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Package className="h-4 w-4 shrink-0 text-primary" />
-                    <span>{t('nav.products', 'Katalog Produk')}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsProductsOpen(!isProductsOpen);
-                    }}
-                    className="p-0.5 hover:bg-muted/80 rounded"
-                  >
-                    {isProductsOpen ? (
-                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                    )}
-                  </button>
+                <NavLink to="/expenses" className={({ isActive }) => navItemClass(isActive)}>
+                  <Wallet className="h-4 w-4 shrink-0" />
+                  <span>Pengeluaran & Biaya</span>
+                </NavLink>
+
+                <NavLink to="/settings" className={({ isActive }) => navItemClass(isActive)}>
+                  <Settings className="h-4 w-4 shrink-0" />
+                  <span>{t('nav.settings', 'Pengaturan Toko')}</span>
+                </NavLink>
+              </nav>
+            </div>
+          ) : (
+            /* ========================================================================= */
+            /* 2. ADVANCED / PRO MODE: 6 DISCRETE BUSINESS MODULES */
+            /* ========================================================================= */
+            <>
+              {/* MODUL 1: PENJUALAN & KASIR */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Penjualan & Kasir
+                  </p>
                 </div>
+                <nav className="space-y-0.5">
+                  <NavLink
+                    to="/dashboard"
+                    className={({ isActive }) => navItemClass(isActive)}
+                  >
+                    <LayoutDashboard className="h-4 w-4 shrink-0" />
+                    <span>Dashboard Toko</span>
+                  </NavLink>
 
-                {/* Sub-items for Products */}
-                {isProductsOpen && (
-                  <div className="ml-4 pl-3 border-l border-border/60 mt-1 space-y-1">
-                    <NavLink
-                      to="/products?tab=products"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/products' && (!currentTab || currentTab === 'products')
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <Package className="h-3 w-3 shrink-0" />
-                      <span>Semua Produk</span>
-                    </NavLink>
+                  <NavLink
+                    to="/"
+                    className={({ isActive }) => navItemClass(isActive)}
+                  >
+                    <ShoppingCart className="h-4 w-4 shrink-0" />
+                    <span>{t('nav.cashier', 'Terminal Kasir')}</span>
+                  </NavLink>
 
-                    <NavLink
-                      to="/products?tab=categories"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/products' && currentTab === 'categories'
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <Folder className="h-3 w-3 shrink-0" />
-                      <span>Kategori Produk</span>
-                    </NavLink>
+                  <NavLink
+                    to="/orders"
+                    className={({ isActive }) => navItemClass(isActive)}
+                  >
+                    <Receipt className="h-4 w-4 shrink-0" />
+                    <span>{t('nav.orders', 'Riwayat & Struk')}</span>
+                  </NavLink>
 
-                    <NavLink
-                      to="/products?tab=variants"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/products' && currentTab === 'variants'
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <Sparkles className="h-3 w-3 shrink-0" />
-                      <span>Daftar Varian</span>
-                    </NavLink>
-
-                    <NavLink
-                      to="/products?tab=modifiers"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/products' && currentTab === 'modifiers'
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <Layers className="h-3 w-3 shrink-0" />
-                      <span>Modifier & Topping</span>
-                    </NavLink>
-                  </div>
-                )}
+                  <NavLink
+                    to="/tables"
+                    className={({ isActive }) =>
+                      navItemClass(isActive || location.pathname.startsWith('/layout'))
+                    }
+                  >
+                    <LayoutGrid className="h-4 w-4 shrink-0" />
+                    <span>Denah & Meja</span>
+                  </NavLink>
+                </nav>
               </div>
 
-              {/* Stok Adjustment */}
-              <NavLink
-                to="/inventory/adjustments"
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`
-                }
-              >
-                <SlidersHorizontal className="h-4 w-4 shrink-0" />
-                <span>{t('nav.stockAdjustment', 'Stok Adjustment')}</span>
-              </NavLink>
-            </nav>
-          </div>
-
-          {/* Group 3: Laporan & Analitik (With Sub-Items) */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Laporan & Finansial
-            </p>
-            <nav className="space-y-1">
-              <div>
-                <div
-                  onClick={() => {
-                    if (location.pathname !== '/reports') {
-                      navigate('/reports');
-                    }
-                    setIsReportsOpen(!isReportsOpen);
-                  }}
-                  className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer transition-colors ${
-                    location.pathname === '/reports'
-                      ? 'bg-muted text-foreground font-bold'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <TrendingUp className="h-4 w-4 shrink-0 text-emerald-600" />
-                    <span>Laporan & Analitik</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsReportsOpen(!isReportsOpen);
-                    }}
-                    className="p-0.5 hover:bg-muted/80 rounded"
-                  >
-                    {isReportsOpen ? (
-                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                    )}
-                  </button>
+              {/* MODUL 2: PRODUK & MENU (MASTER DATA) */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Produk & Menu
+                  </p>
                 </div>
-
-                {/* Sub-items for Reports */}
-                {isReportsOpen && (
-                  <div className="ml-4 pl-3 border-l border-border/60 mt-1 space-y-1">
-                    <NavLink
-                      to="/reports?tab=pnl"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/reports' && (!currentTab || currentTab === 'pnl')
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
+                <nav className="space-y-0.5">
+                  {/* Collapsible Katalog Produk */}
+                  <div>
+                    <div
+                      onClick={() => {
+                        if (location.pathname !== '/products') {
+                          navigate('/products');
+                        }
+                        setIsProductsOpen((prev) => !prev);
+                      }}
+                      className={cn(
+                        'flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold cursor-pointer transition-all duration-150',
+                        location.pathname === '/products'
+                          ? 'bg-muted/80 text-foreground font-bold'
+                          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                      )}
                     >
-                      <DollarSign className="h-3 w-3 shrink-0" />
-                      <span>Laba Rugi & Penjualan</span>
-                    </NavLink>
+                      <div className="flex items-center gap-2.5">
+                        <Package className="h-4 w-4 shrink-0 text-foreground/80" />
+                        <span>{t('nav.products', 'Katalog Produk')}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsProductsOpen((prev) => !prev);
+                        }}
+                        className="p-0.5 hover:bg-muted rounded text-muted-foreground"
+                      >
+                        <ChevronDown
+                          className={cn(
+                            'h-3.5 w-3.5 transition-transform duration-200',
+                            !isProductsOpen && '-rotate-90'
+                          )}
+                        />
+                      </button>
+                    </div>
 
-                    <NavLink
-                      to="/reports?tab=products"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/reports' && currentTab === 'products'
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <Package className="h-3 w-3 shrink-0" />
-                      <span>Performa Produk</span>
-                    </NavLink>
+                    {/* Sub-items for Products */}
+                    {isProductsOpen && (
+                      <div className="ml-3.5 pl-2.5 border-l border-border/60 mt-1 space-y-0.5 animate-in fade-in-50 duration-150">
+                        <NavLink
+                          to="/products?tab=products"
+                          className={subNavItemClass(
+                            location.pathname === '/products' &&
+                              (!currentTab || currentTab === 'products')
+                          )}
+                        >
+                          <Package className="h-3 w-3 shrink-0" />
+                          <span>Semua Produk</span>
+                        </NavLink>
 
-                    <NavLink
-                      to="/reports?tab=payments"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/reports' && currentTab === 'payments'
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <CreditCard className="h-3 w-3 shrink-0" />
-                      <span>Kas & Pembayaran</span>
-                    </NavLink>
+                        <NavLink
+                          to="/products?tab=categories"
+                          className={subNavItemClass(
+                            location.pathname === '/products' && currentTab === 'categories'
+                          )}
+                        >
+                          <Folder className="h-3 w-3 shrink-0" />
+                          <span>Kategori Produk</span>
+                        </NavLink>
 
-                    <NavLink
-                      to="/reports?tab=export"
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                        location.pathname === '/reports' && currentTab === 'export'
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      <Download className="h-3 w-3 shrink-0" />
-                      <span>Ekspor & Cetak</span>
-                    </NavLink>
+                        <NavLink
+                          to="/products?tab=uom"
+                          className={subNavItemClass(
+                            location.pathname === '/products' && currentTab === 'uom'
+                          )}
+                        >
+                          <Scale className="h-3 w-3 shrink-0" />
+                          <span>Satuan (UOM)</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/products?tab=variants"
+                          className={subNavItemClass(
+                            location.pathname === '/products' && currentTab === 'variants'
+                          )}
+                        >
+                          <Sparkles className="h-3 w-3 shrink-0" />
+                          <span>Master Varian</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/products?tab=modifiers"
+                          className={subNavItemClass(
+                            location.pathname === '/products' && currentTab === 'modifiers'
+                          )}
+                        >
+                          <Layers className="h-3 w-3 shrink-0" />
+                          <span>Master Modifier</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/products?tab=discounts"
+                          className={subNavItemClass(
+                            location.pathname === '/products' && currentTab === 'discounts'
+                          )}
+                        >
+                          <Tag className="h-3 w-3 shrink-0" />
+                          <span>Master Diskon</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/products?tab=taxes"
+                          className={subNavItemClass(
+                            location.pathname === '/products' && currentTab === 'taxes'
+                          )}
+                        >
+                          <Receipt className="h-3 w-3 shrink-0" />
+                          <span>Pajak & Biaya</span>
+                        </NavLink>
+                      </div>
+                    )}
                   </div>
-                )}
+                </nav>
               </div>
-            </nav>
-          </div>
 
-          {/* Group 4: Pengaturan & Jaringan */}
-          <div>
-            <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Manajemen & Jaringan
-            </p>
-            <nav className="space-y-1">
-              <NavLink
-                to="/sync"
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`
-                }
-              >
-                <RefreshCw className="h-4 w-4 shrink-0" />
-                <span>{t('nav.sync', 'Sinkronisasi Perangkat')}</span>
-              </NavLink>
+              {/* MODUL 3: INVENTORI & STOK */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Inventori & Stok
+                  </p>
+                </div>
+                <nav className="space-y-0.5">
+                  <NavLink
+                    to="/inventory/adjustments"
+                    className={({ isActive }) => navItemClass(isActive)}
+                  >
+                    <SlidersHorizontal className="h-4 w-4 shrink-0" />
+                    <span>Penyesuaian Stok (Opname)</span>
+                  </NavLink>
+                </nav>
+              </div>
 
-              <NavLink
-                to="/settings"
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`
-                }
-              >
-                <Settings className="h-4 w-4 shrink-0" />
-                <span>{t('nav.settings', 'Pengaturan Toko')}</span>
-              </NavLink>
-            </nav>
-          </div>
+              {/* MODUL 4: KEUANGAN & BIAYA */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Keuangan & Biaya
+                  </p>
+                </div>
+                <nav className="space-y-0.5">
+                  <NavLink
+                    to="/expenses"
+                    className={({ isActive }) => navItemClass(isActive)}
+                  >
+                    <Wallet className="h-4 w-4 shrink-0" />
+                    <span>Pengeluaran & Kulakan</span>
+                  </NavLink>
+                </nav>
+              </div>
+
+              {/* MODUL 5: LAPORAN & ANALITIK */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Laporan & Analitik
+                  </p>
+                </div>
+                <nav className="space-y-0.5">
+                  <div>
+                    <div
+                      onClick={() => {
+                        if (location.pathname !== '/reports') {
+                          navigate('/reports');
+                        }
+                        setIsReportsOpen((prev) => !prev);
+                      }}
+                      className={cn(
+                        'flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold cursor-pointer transition-all duration-150',
+                        location.pathname === '/reports'
+                          ? 'bg-muted/80 text-foreground font-bold'
+                          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <TrendingUp className="h-4 w-4 shrink-0 text-foreground/80" />
+                        <span>Laporan Bisnis</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsReportsOpen((prev) => !prev);
+                        }}
+                        className="p-0.5 hover:bg-muted rounded text-muted-foreground"
+                      >
+                        <ChevronDown
+                          className={cn(
+                            'h-3.5 w-3.5 transition-transform duration-200',
+                            !isReportsOpen && '-rotate-90'
+                          )}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Sub-items for Reports */}
+                    {isReportsOpen && (
+                      <div className="ml-3.5 pl-2.5 border-l border-border/60 mt-1 space-y-0.5 animate-in fade-in-50 duration-150">
+                        <NavLink
+                          to="/reports?tab=pnl"
+                          className={subNavItemClass(
+                            location.pathname === '/reports' &&
+                              (!currentTab || currentTab === 'pnl')
+                          )}
+                        >
+                          <DollarSign className="h-3 w-3 shrink-0" />
+                          <span>Laba Rugi & Omzet</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/reports?tab=products"
+                          className={subNavItemClass(
+                            location.pathname === '/reports' && currentTab === 'products'
+                          )}
+                        >
+                          <Package className="h-3 w-3 shrink-0" />
+                          <span>Performa Produk</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/reports?tab=payments"
+                          className={subNavItemClass(
+                            location.pathname === '/reports' && currentTab === 'payments'
+                          )}
+                        >
+                          <CreditCard className="h-3 w-3 shrink-0" />
+                          <span>Kas & Pembayaran</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/reports?tab=export"
+                          className={subNavItemClass(
+                            location.pathname === '/reports' && currentTab === 'export'
+                          )}
+                        >
+                          <Download className="h-3 w-3 shrink-0" />
+                          <span>Ekspor & Tutup Buku</span>
+                        </NavLink>
+                      </div>
+                    )}
+                  </div>
+                </nav>
+              </div>
+
+              {/* MODUL 6: SISTEM & PENGATURAN */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Sistem & Pengaturan
+                  </p>
+                </div>
+                <nav className="space-y-0.5">
+                  <NavLink
+                    to="/sync"
+                    className={({ isActive }) => navItemClass(isActive)}
+                  >
+                    <RefreshCw className="h-4 w-4 shrink-0" />
+                    <span>{t('nav.sync', 'Sinkronisasi P2P')}</span>
+                  </NavLink>
+
+                  {/* Collapsible Pengaturan */}
+                  <div>
+                    <div
+                      onClick={() => {
+                        if (location.pathname !== '/settings') {
+                          navigate('/settings');
+                        }
+                        setIsSettingsOpen((prev) => !prev);
+                      }}
+                      className={cn(
+                        'flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold cursor-pointer transition-all duration-150',
+                        location.pathname === '/settings'
+                          ? 'bg-muted/80 text-foreground font-bold'
+                          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Settings className="h-4 w-4 shrink-0 text-foreground/80" />
+                        <span>{t('nav.settings', 'Pengaturan Toko')}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsSettingsOpen((prev) => !prev);
+                        }}
+                        className="p-0.5 hover:bg-muted rounded text-muted-foreground"
+                      >
+                        <ChevronDown
+                          className={cn(
+                            'h-3.5 w-3.5 transition-transform duration-200',
+                            !isSettingsOpen && '-rotate-90'
+                          )}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Sub-items for Settings */}
+                    {isSettingsOpen && (
+                      <div className="ml-3.5 pl-2.5 border-l border-border/60 mt-1 space-y-0.5 animate-in fade-in-50 duration-150">
+                        <NavLink
+                          to="/settings?tab=general"
+                          className={subNavItemClass(
+                            location.pathname === '/settings' &&
+                              (!currentTab || currentTab === 'general')
+                          )}
+                        >
+                          <Store className="h-3 w-3 shrink-0" />
+                          <span>Profil & Terminal</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/settings?tab=receipt"
+                          className={subNavItemClass(
+                            location.pathname === '/settings' && currentTab === 'receipt'
+                          )}
+                        >
+                          <Printer className="h-3 w-3 shrink-0" />
+                          <span>Format Nota & Struk</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/settings?tab=appearance"
+                          className={subNavItemClass(
+                            location.pathname === '/settings' && currentTab === 'appearance'
+                          )}
+                        >
+                          <Palette className="h-3 w-3 shrink-0" />
+                          <span>Tampilan & Suara</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/settings?tab=security"
+                          className={subNavItemClass(
+                            location.pathname === '/settings' && currentTab === 'security'
+                          )}
+                        >
+                          <Shield className="h-3 w-3 shrink-0" />
+                          <span>Keamanan & PIN</span>
+                        </NavLink>
+
+                        <NavLink
+                          to="/settings?tab=data"
+                          className={subNavItemClass(
+                            location.pathname === '/settings' && currentTab === 'data'
+                          )}
+                        >
+                          <Database className="h-3 w-3 shrink-0" />
+                          <span>Manajemen Data</span>
+                        </NavLink>
+                      </div>
+                    )}
+                  </div>
+                </nav>
+              </div>
+            </>
+          )}
         </div>
       </ScrollArea>
 
-      {/* Sidebar Footer */}
-      <div className="pt-3 border-t border-border/80 space-y-2 shrink-0">
+      {/* Sidebar Footer: Mode Switcher & Device Info */}
+      <div className="pt-2.5 border-t border-border/80 space-y-2 shrink-0">
+        <AppModeSwitcher variant="sidebar" />
+
         <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30 text-xs">
           <div className="flex items-center gap-2 min-w-0">
             <Laptop className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
