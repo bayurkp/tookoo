@@ -28,6 +28,7 @@ export const modifierGroupSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Nama grup modifier wajib diisi'),
   required: z.boolean().default(false),
+  minSelect: z.coerce.number().int().min(0).default(0).optional(),
   maxSelect: z.coerce.number().int().min(1).default(1),
   options: z.array(modifierOptionSchema).default([]),
 });
@@ -53,4 +54,3 @@ export const productFormSchema = z.object({
 });
 
 export type ProductFormInput = z.infer<typeof productFormSchema>;
-

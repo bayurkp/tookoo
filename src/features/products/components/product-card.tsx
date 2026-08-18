@@ -22,7 +22,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
   const isInactive = product.isActive === false;
 
   return (
-    <Card className={`group overflow-hidden border bg-card hover:border-foreground/30 transition-colors flex flex-col justify-between rounded-xl shadow-none ${isInactive ? 'opacity-70 bg-muted/20' : ''}`}>
+    <Card
+      className={`group overflow-hidden border bg-card hover:border-foreground/30 transition-colors flex flex-col justify-between rounded-xl shadow-none ${isInactive ? 'opacity-70 bg-muted/20' : ''}`}
+    >
       <div>
         {/* Product Image / Placeholder */}
         <div className="h-36 w-full bg-muted/40 relative flex items-center justify-center overflow-hidden border-b border-border">
@@ -48,11 +50,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
           {/* Status & Stock Badges */}
           <div className="absolute top-2.5 right-2.5 flex flex-col items-end gap-1">
             {isInactive ? (
-              <Badge variant="outline" className="bg-background/90 text-muted-foreground text-[10px] font-bold border-muted-foreground/40 backdrop-blur-xs">
+              <Badge
+                variant="outline"
+                className="bg-background/90 text-muted-foreground text-[10px] font-bold border-muted-foreground/40 backdrop-blur-xs"
+              >
                 Non-aktif
               </Badge>
             ) : isService ? (
-              <Badge variant="outline" className="text-primary border-primary/30 bg-background/90 backdrop-blur-xs text-[10px] font-semibold">
+              <Badge
+                variant="outline"
+                className="text-primary border-primary/30 bg-background/90 backdrop-blur-xs text-[10px] font-semibold"
+              >
                 Jasa
               </Badge>
             ) : isOutOfStock ? (
@@ -60,7 +68,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
                 Stok Habis
               </Badge>
             ) : isLowStock ? (
-              <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 backdrop-blur-xs text-[10px] font-semibold">
+              <Badge
+                variant="outline"
+                className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 backdrop-blur-xs text-[10px] font-semibold"
+              >
                 Sisa {product.stock} {product.unit || 'pcs'}
               </Badge>
             ) : (
@@ -84,10 +95,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDel
               </Badge>
             )}
             {product.subType && (
-              <Badge
-                variant="outline"
-                className="text-[10px] bg-card/90 backdrop-blur-xs"
-              >
+              <Badge variant="outline" className="text-[10px] bg-card/90 backdrop-blur-xs">
                 {product.subType}
               </Badge>
             )}

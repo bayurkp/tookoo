@@ -13,6 +13,9 @@ import {
   Folder,
   Layers,
   Sparkles,
+  Scale,
+  Tag,
+  Receipt,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -40,24 +43,32 @@ import {
 import { useProducts, useDeleteProduct } from '@/features/products/hooks/use-products';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useAuthStore } from '@/stores/auth-store';
+import { useAppMode } from '@/hooks/use-app-mode';
 import { ProductCard } from '@/features/products/components/product-card';
 import { ProductTableView } from '@/features/products/components/product-table-view';
 import { CategoryManagerTab } from '@/features/products/components/category-manager-tab';
-import { VariantTableTab } from '@/features/products/components/variant-table-tab';
+import { UomManagerTab } from '@/features/products/components/uom-manager-tab';
+import { VariantAttributeManagerTab } from '@/features/products/components/variant-attribute-manager-tab';
 import { ModifierManagerTab } from '@/features/products/components/modifier-manager-tab';
+import { DiscountManagerTab } from '@/features/products/components/discount-manager-tab';
+import { TaxManagerTab } from '@/features/products/components/tax-manager-tab';
 import { ProductFormDialog } from '@/features/products/components/product-form-dialog';
 import { PinModal } from '@/components/pin-modal';
 import type { Product } from '@/types/product.types';
 
 export const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
+  const { isSimple } = useAppMode();
   const { data: products = [], isLoading } = useProducts();
   const { settings } = useP2pSync();
   const { hasPermission } = useAuthStore();
   const deleteMutation = useDeleteProduct();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = (searchParams.get('tab') as 'products' | 'categories' | 'variants' | 'modifiers') || 'products';
+  const activeTab =
+    (searchParams.get('tab') as
+      'products' | 'categories' | 'uom' | 'variants' | 'modifiers' | 'discounts' | 'taxes') ||
+    'products';
   const setActiveTab = (tab: string) => setSearchParams({ tab });
 
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
@@ -163,6 +174,167 @@ export const ProductsPage: React.FC = () => {
     }
   };
 
+  // Shared Product Catalog Content Component
+  const renderProductCatalogContent = () => (
+    <div className="space-y-4">
+      {/* Filters & Search & View Mode */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t(
+              'products.searchPlaceholder',
+              'Cari nama produk, kategori, SKU, barcode...'
+            )}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 bg-card"
+          />
+        </div>
+
+        {/* Stock Filter Dropdown Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 px-3.5 gap-2 text-xs font-semibold shrink-0 cursor-pointer"
+            >
+              <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+              <span>
+                {stockFilter === 'ALL'
+                  ? 'Semua Stok'
+                  : stockFilter === 'LOW'
+                    ? 'Stok Menipis'
+                    : 'Stok Habis (0)'}
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="text-xs">Filter Status Stok</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setStockFilter('ALL')}
+              className="gap-2 text-xs cursor-pointer"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              <span>Semua Stok</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setStockFilter('LOW')}
+              className="gap-2 text-xs cursor-pointer"
+            >
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+              <span>Stok Menipis (&le; Batas)</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setStockFilter('OUT')}
+              className="gap-2 text-xs cursor-pointer"
+            >
+              <PackageOpen className="h-3.5 w-3.5 text-destructive" />
+              <span>Stok Habis (0)</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* View Mode Toggle (Grid vs Table) */}
+        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border/60 shrink-0">
+          <Button
+            variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('grid')}
+            className="h-8 w-8 p-0 cursor-pointer"
+            title="Tampilan Grid"
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('table')}
+            className="h-8 w-8 p-0 cursor-pointer"
+            title="Tampilan Tabel"
+          >
+            <List className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Category Pills */}
+      {categories.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <Badge
+            variant={selectedCategory === 'ALL' ? 'default' : 'outline'}
+            className="cursor-pointer px-3 py-1 text-xs"
+            onClick={() => setSelectedCategory('ALL')}
+          >
+            {t('cashier.allCategories', 'Semua')} ({products.length})
+          </Badge>
+          {categories.map((cat) => (
+            <Badge
+              key={cat}
+              variant={selectedCategory === cat ? 'default' : 'outline'}
+              className="cursor-pointer px-3 py-1 text-xs"
+              onClick={() => setSelectedCategory(cat)}
+            >
+              {cat}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Products Display */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-64 rounded-xl bg-muted/40 animate-pulse" />
+          ))}
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed rounded-xl border-border bg-card">
+          <PackageOpen className="h-12 w-12 text-muted-foreground/60 mb-4" />
+          <h3 className="font-semibold text-lg">
+            {t('products.empty', 'Belum ada produk terdaftar.')}
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-sm mt-1 mb-4">
+            {searchQuery || selectedCategory !== 'ALL' || stockFilter !== 'ALL'
+              ? t('products.emptyFilter', 'Tidak ada produk yang cocok dengan filter pencarian.')
+              : t(
+                  'products.emptyHint',
+                  'Tambahkan produk pertama tokomu untuk mulai melayani penjualan kasir.'
+                )}
+          </p>
+          <Button
+            onClick={() => handleOpenCreate()}
+            variant="outline"
+            size="sm"
+            className="gap-2 cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{t('products.addProduct', 'Tambah Produk')}</span>
+          </Button>
+        </div>
+      ) : viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onEdit={handleOpenEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      ) : (
+        <ProductTableView
+          products={filteredProducts}
+          onEdit={handleOpenEdit}
+          onDelete={handleDelete}
+        />
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -172,7 +344,12 @@ export const ProductsPage: React.FC = () => {
             {t('products.title', 'Katalog Produk & Stok')}
           </h2>
           <p className="text-muted-foreground text-xs mt-0.5">
-            {t('products.subtitle', 'Kelola daftar barang, varian rasa/ukuran, kategori, dan modifier tokomu.')}
+            {isSimple
+              ? t('products.simpleSubtitle', 'Kelola daftar barang dan harga jualan kasir tokomu.')
+              : t(
+                  'products.subtitle',
+                  'Kelola daftar barang, varian rasa/ukuran, kategori, dan modifier tokomu.'
+                )}
           </p>
         </div>
         <Button
@@ -184,221 +361,96 @@ export const ProductsPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Main Tabs Hub */}
-      <Tabs
-        value={activeTab}
-        defaultValue="products"
-        onValueChange={(val) => setActiveTab(val as any)}
-        className="space-y-4"
-      >
-        <div className="border-b pb-1 flex items-center justify-between overflow-x-auto scrollbar-none">
-          <TabsList className="h-10 p-1 bg-muted/60">
-            <TabsTrigger value="products" className="gap-2 text-xs font-bold px-3 py-1.5">
-              <Package className="h-3.5 w-3.5" />
-              <span>Semua Produk ({products.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="categories" className="gap-2 text-xs font-bold px-3 py-1.5">
-              <Folder className="h-3.5 w-3.5" />
-              <span>Kategori ({categories.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="variants" className="gap-2 text-xs font-bold px-3 py-1.5">
-              <Layers className="h-3.5 w-3.5" />
-              <span>Daftar Varian</span>
-            </TabsTrigger>
-            <TabsTrigger value="modifiers" className="gap-2 text-xs font-bold px-3 py-1.5">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Modifier & Topping</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* View Mode Toggle for Products Tab */}
-          {activeTab === 'products' && (
-            <div className="flex items-center gap-1 bg-muted/50 p-0.5 rounded-lg border border-border/60">
-              <Button
-                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="h-7 w-7 p-0 cursor-pointer"
-                title="Tampilan Grid"
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                variant={viewMode === 'table' ? 'secondary' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('table')}
-                className="h-7 w-7 p-0 cursor-pointer"
-                title="Tampilan Tabel"
-              >
-                <List className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* TAB 1: SEMUA PRODUK */}
-        <TabsContent value="products" className="space-y-4 m-0">
-          {/* Filters & Search */}
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder={t('products.searchPlaceholder', 'Cari produk, kategori, SKU, barcode...')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-card"
-              />
-            </div>
-
-            {/* Stock Filter Dropdown Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-10 px-3.5 gap-2 text-xs font-semibold shrink-0 cursor-pointer"
-                >
-                  <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span>
-                    {stockFilter === 'ALL'
-                      ? 'Semua Stok'
-                      : stockFilter === 'LOW'
-                        ? 'Stok Menipis'
-                        : 'Stok Habis (0)'}
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel className="text-xs">Filter Status Stok</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setStockFilter('ALL')}
-                  className="gap-2 text-xs cursor-pointer"
-                >
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>Semua Stok</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setStockFilter('LOW')}
-                  className="gap-2 text-xs cursor-pointer"
-                >
-                  <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
-                  <span>Stok Menipis (&le; Batas)</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setStockFilter('OUT')}
-                  className="gap-2 text-xs cursor-pointer"
-                >
-                  <PackageOpen className="h-3.5 w-3.5 text-destructive" />
-                  <span>Stok Habis (0)</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+      {/* Main Content: Mode Sederhana vs Mode Lanjutan */}
+      {isSimple ? (
+        renderProductCatalogContent()
+      ) : (
+        <Tabs
+          value={activeTab}
+          defaultValue="products"
+          onValueChange={(val) => setActiveTab(val as any)}
+          className="space-y-4"
+        >
+          <div className="border-b pb-1 flex items-center justify-between overflow-x-auto scrollbar-none">
+            <TabsList className="h-10 p-1 bg-muted/60">
+              <TabsTrigger value="products" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Package className="h-3.5 w-3.5" />
+                <span>Semua Produk ({products.length})</span>
+              </TabsTrigger>
+              <TabsTrigger value="categories" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Folder className="h-3.5 w-3.5" />
+                <span>Kategori & Sub</span>
+              </TabsTrigger>
+              <TabsTrigger value="uom" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Scale className="h-3.5 w-3.5" />
+                <span>Satuan (UOM)</span>
+              </TabsTrigger>
+              <TabsTrigger value="variants" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Master Varian</span>
+              </TabsTrigger>
+              <TabsTrigger value="modifiers" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Layers className="h-3.5 w-3.5" />
+                <span>Master Modifier</span>
+              </TabsTrigger>
+              <TabsTrigger value="discounts" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Tag className="h-3.5 w-3.5" />
+                <span>Master Diskon</span>
+              </TabsTrigger>
+              <TabsTrigger value="taxes" className="gap-2 text-xs font-bold px-3 py-1.5">
+                <Receipt className="h-3.5 w-3.5" />
+                <span>Pajak & Biaya</span>
+              </TabsTrigger>
+            </TabsList>
           </div>
 
-          {/* Category Pills */}
-          {categories.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <Badge
-                variant={selectedCategory === 'ALL' ? 'default' : 'outline'}
-                className="cursor-pointer px-3 py-1 text-xs"
-                onClick={() => setSelectedCategory('ALL')}
-              >
-                {t('cashier.allCategories', 'Semua')} ({products.length})
-              </Badge>
-              {categories.map((cat) => (
-                <Badge
-                  key={cat}
-                  variant={selectedCategory === cat ? 'default' : 'outline'}
-                  className="cursor-pointer px-3 py-1 text-xs"
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </Badge>
-              ))}
-            </div>
-          )}
+          {/* TAB 1: SEMUA PRODUK */}
+          <TabsContent value="products" className="space-y-4 m-0">
+            {renderProductCatalogContent()}
+          </TabsContent>
 
-          {/* Products Display (Grid vs Table) */}
-          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-64 rounded-xl bg-muted/40 animate-pulse" />
-              ))}
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed rounded-xl border-border bg-card">
-              <PackageOpen className="h-12 w-12 text-muted-foreground/60 mb-4" />
-              <h3 className="font-semibold text-lg">
-                {t('products.empty', 'Belum ada produk terdaftar.')}
-              </h3>
-              <p className="text-sm text-muted-foreground max-w-sm mt-1 mb-4">
-                {searchQuery || selectedCategory !== 'ALL' || stockFilter !== 'ALL'
-                  ? t('products.emptyFilter', 'Tidak ada produk yang cocok dengan filter pencarian.')
-                  : t(
-                      'products.emptyHint',
-                      'Tambahkan produk pertama tokomu untuk mulai melayani penjualan kasir.'
-                    )}
-              </p>
-              <Button
-                onClick={() => handleOpenCreate()}
-                variant="outline"
-                size="sm"
-                className="gap-2 cursor-pointer"
-              >
-                <Plus className="h-4 w-4" />
-                <span>{t('products.addProduct', 'Tambah Produk')}</span>
-              </Button>
-            </div>
-          ) : viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onEdit={handleOpenEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          ) : (
-            <ProductTableView
-              products={filteredProducts}
-              onEdit={handleOpenEdit}
-              onDelete={handleDelete}
+          {/* TAB 2: KATEGORI & SUB-KATEGORI */}
+          <TabsContent value="categories" className="space-y-4 m-0">
+            <CategoryManagerTab
+              products={products}
+              onSelectCategoryFilter={(catName) => {
+                setSelectedCategory(catName);
+                setActiveTab('products');
+              }}
+              onOpenCreateProduct={(prefilledCategory) => handleOpenCreate(prefilledCategory)}
             />
-          )}
-        </TabsContent>
+          </TabsContent>
 
-        {/* TAB 2: KATEGORI */}
-        <TabsContent value="categories" className="space-y-4 m-0">
-          <CategoryManagerTab
-            products={products}
-            onSelectCategoryFilter={(catName) => {
-              setSelectedCategory(catName);
-              setActiveTab('products');
-            }}
-            onOpenCreateProduct={(prefilledCategory) => handleOpenCreate(prefilledCategory)}
-          />
-        </TabsContent>
+          {/* TAB 3: MASTER SATUAN (UOM) */}
+          <TabsContent value="uom" className="space-y-4 m-0">
+            <UomManagerTab products={products} />
+          </TabsContent>
 
-        {/* TAB 3: DAFTAR VARIAN */}
-        <TabsContent value="variants" className="space-y-4 m-0">
-          <VariantTableTab
-            products={products}
-            onEditProduct={handleOpenEdit}
-          />
-        </TabsContent>
+          {/* TAB 4: MASTER VARIAN */}
+          <TabsContent value="variants" className="space-y-4 m-0">
+            <VariantAttributeManagerTab products={products} onEditProduct={handleOpenEdit} />
+          </TabsContent>
 
-        {/* TAB 4: MODIFIER & TOPPING */}
-        <TabsContent value="modifiers" className="space-y-4 m-0">
-          <ModifierManagerTab
-            products={products}
-            onOpenEditProduct={handleOpenEdit}
-            onOpenCreateProduct={() => handleOpenCreate()}
-          />
-        </TabsContent>
-      </Tabs>
+          {/* TAB 5: MASTER MODIFIER */}
+          <TabsContent value="modifiers" className="space-y-4 m-0">
+            <ModifierManagerTab
+              products={products}
+              onOpenEditProduct={handleOpenEdit}
+              onOpenCreateProduct={() => handleOpenCreate()}
+            />
+          </TabsContent>
+
+          {/* TAB 6: MASTER DISKON */}
+          <TabsContent value="discounts" className="space-y-4 m-0">
+            <DiscountManagerTab />
+          </TabsContent>
+
+          {/* TAB 7: MASTER PAJAK & BIAYA */}
+          <TabsContent value="taxes" className="space-y-4 m-0">
+            <TaxManagerTab />
+          </TabsContent>
+        </Tabs>
+      )}
 
       {/* Product Form Dialog */}
       <ProductFormDialog
@@ -423,7 +475,8 @@ export const ProductsPage: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus Produk Ini?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tindakan ini tidak dapat dibatalkan. Produk akan dihapus dari katalog penjualan dan transaksi kasir.
+              Tindakan ini tidak dapat dibatalkan. Produk akan dihapus dari katalog penjualan dan
+              transaksi kasir.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

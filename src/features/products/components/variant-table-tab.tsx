@@ -34,10 +34,7 @@ interface VariantTableTabProps {
   onEditProduct: (product: Product) => void;
 }
 
-export const VariantTableTab: React.FC<VariantTableTabProps> = ({
-  products,
-  onEditProduct,
-}) => {
+export const VariantTableTab: React.FC<VariantTableTabProps> = ({ products, onEditProduct }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Flatten all products and their variants into a single table
@@ -147,7 +144,10 @@ export const VariantTableTab: React.FC<VariantTableTabProps> = ({
                 const isLowStock = !isService && item.stock > 0 && item.stock <= item.minStock;
 
                 return (
-                  <TableRow key={`${item.productId}-${item.variantId}`} className="hover:bg-muted/30">
+                  <TableRow
+                    key={`${item.productId}-${item.variantId}`}
+                    className="hover:bg-muted/30"
+                  >
                     <TableCell className="text-center text-xs text-muted-foreground font-mono">
                       {index + 1}
                     </TableCell>
@@ -170,8 +170,8 @@ export const VariantTableTab: React.FC<VariantTableTabProps> = ({
                         {item.productType === 'SERVICE'
                           ? 'Jasa'
                           : item.productType === 'FNB'
-                          ? 'Olahan F&B'
-                          : 'Retail'}
+                            ? 'Olahan F&B'
+                            : 'Retail'}
                       </span>
                     </TableCell>
 
@@ -199,7 +199,10 @@ export const VariantTableTab: React.FC<VariantTableTabProps> = ({
 
                     <TableCell className="text-center">
                       {isService ? (
-                        <Badge variant="outline" className="text-[10px] text-primary border-primary/30">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] text-primary border-primary/30"
+                        >
                           Jasa
                         </Badge>
                       ) : isOutOfStock ? (

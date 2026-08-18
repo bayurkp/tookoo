@@ -86,8 +86,8 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                           {product.productType === 'SERVICE'
                             ? 'Jasa'
                             : product.productType === 'FNB'
-                            ? 'Olahan F&B'
-                            : 'Retail'}
+                              ? 'Olahan F&B'
+                              : 'Retail'}
                         </span>
                         {product.costPrice && product.costPrice > 0 && (
                           <span className="text-[10px] text-muted-foreground">
@@ -120,9 +120,7 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                       {product.category || '-'}
                     </span>
                     {product.subType && (
-                      <span className="text-[10px] text-muted-foreground">
-                        {product.subType}
-                      </span>
+                      <span className="text-[10px] text-muted-foreground">{product.subType}</span>
                     )}
                   </div>
                 </TableCell>
