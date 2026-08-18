@@ -53,7 +53,7 @@ const PageLoader: React.FC = () => (
   </div>
 );
 
-const withSuspense = (Component: React.LazyExoticComponent<React.ComponentType<unknown>>) => (
+const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<PageLoader />}>
     <Component />
   </Suspense>
