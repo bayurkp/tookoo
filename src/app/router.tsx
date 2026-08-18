@@ -17,6 +17,7 @@ const ExpensesPage = lazy(() => import('@/app/pages/expenses-page'));
 const CustomersPage = lazy(() => import('@/app/pages/customers-page'));
 const SuppliersPage = lazy(() => import('@/app/pages/suppliers-page'));
 const DiscountsPage = lazy(() => import('@/app/pages/discounts-page'));
+const ShiftsPage = lazy(() => import('@/app/pages/shifts-page'));
 
 const PageLoader: React.FC = () => (
   <div className="flex h-full min-h-[320px] w-full items-center justify-center">
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: withSuspense(DashboardPage),
+      },
+      {
+        path: 'shifts',
+        element: withSuspense(ShiftsPage),
       },
       {
         path: 'products',

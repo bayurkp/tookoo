@@ -26,6 +26,7 @@ import {
   Wallet,
   Users,
   Building2,
+  Clock,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { db } from '@/lib/db';
@@ -194,6 +195,17 @@ export const AppSidebar: React.FC = () => {
                   >
                     <LayoutGrid className="h-4 w-4 shrink-0" />
                     <span>Denah & Meja</span>
+                  </NavLink>
+
+                  <NavLink to="/shifts" className={({ isActive }) => navItemClass(isActive)}>
+                    <Clock className="h-4 w-4 shrink-0" />
+                    <span className="flex-1">Shift & Uang Laci</span>
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] px-1 py-0 h-4 text-muted-foreground border-muted-foreground/30 font-medium"
+                    >
+                      Segera
+                    </Badge>
                   </NavLink>
                 </nav>
               </div>
