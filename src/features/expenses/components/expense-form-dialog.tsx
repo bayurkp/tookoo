@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Loader2,
-  Receipt,
-  ShoppingBag,
-  Plus,
-  Trash2,
-  Camera,
-  X,
-} from 'lucide-react';
+import { Loader2, Receipt, ShoppingBag, Plus, Trash2, Camera, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Dialog,
@@ -30,6 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { db } from '@/lib/db';
+import { useSuppliers } from '@/features/suppliers/hooks/use-suppliers';
 import { ExpenseCategoryIcon } from './expense-category-icon';
 import {
   EXPENSE_CATEGORY_META,
@@ -50,6 +43,7 @@ interface ExpenseFormDialogProps {
       amount: number;
       description: string;
       category: ExpenseCategory;
+      supplierId?: string;
     }
   ) => Promise<void>;
 }
@@ -61,11 +55,13 @@ export const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
   initialType = 'EXPENSE',
   onSave,
 }) => {
+  const { data: suppliers = [] } = useSuppliers();
   const [type, setType] = useState<ExpenseType>(initialType);
   const [category, setCategory] = useState<ExpenseCategory>('OPERASIONAL');
   const [amount, setAmount] = useState<number | ''>('');
   const [description, setDescription] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<ExpensePaymentMethod>('CASH');
+  const [supplierId, setSupplierId] = useState<string | undefined>(undefined);
   const [paidTo, setPaidTo] = useState('');
   const [dateStr, setDateStr] = useState('');
   const [receiptImage, setReceiptImage] = useState<string | undefined>(undefined);
@@ -189,6 +185,7 @@ export const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
         description: description.trim(),
         paymentMethod,
         paidTo: paidTo.trim() || undefined,
+        supplierId: supplierId || undefined,
         date: chosenDate,
         receiptImage,
         purchaseItems: type === 'PURCHASE_STOCK' ? purchaseItems : undefined,
@@ -217,7 +214,8 @@ export const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
             </span>
           </DialogTitle>
           <DialogDescription className="text-xs">
-            Dokumentasikan pengeluaran kas toko secara rapi untuk pelaporan laba bersih dan arus kas.
+            Dokumentasikan pengeluaran kas toko secara rapi untuk pelaporan laba bersih dan arus
+            kas.
           </DialogDescription>
         </DialogHeader>
 
@@ -264,7 +262,10 @@ export const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
                       {(Object.keys(EXPENSE_CATEGORY_META) as ExpenseCategory[]).map((cat) => (
                         <SelectItem key={cat} value={cat}>
                           <span className="flex items-center gap-2">
-                            <ExpenseCategoryIcon category={cat} className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <ExpenseCategoryIcon
+                              category={cat}
+                              className="h-3.5 w-3.5 text-primary shrink-0"
+                            />
                             <span>{EXPENSE_CATEGORY_META[cat].label}</span>
                           </span>
                         </SelectItem>
@@ -450,13 +451,61 @@ export const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">Penerima / Supplier</FieldLabel>
-                <Input
-                  placeholder="Contoh: Toko Berkah"
-                  value={paidTo}
-                  onChange={(e) => setPaidTo(e.target.value)}
-                  className="h-9 text-xs"
-                />
+                <FieldLabel className="text-xs font-bold flex items-center justify-between">
+                  <span>Penerima / Pemasok</span>
+                  {suppliers.length > 0 && (
+                    <span className="text-[10px] text-muted-foreground font-normal">
+                      ({suppliers.length} terdaftar)
+                    </span>
+                  )}
+                </FieldLabel>
+                {suppliers.length > 0 ? (
+                  <div className="space-y-1.5">
+                    <Select
+                      value={supplierId || 'MANUAL'}
+                      onValueChange={(val) => {
+                        if (val === 'MANUAL') {
+                          setSupplierId(undefined);
+                        } else {
+                          const sup = suppliers.find((s) => s.id === val);
+                          if (sup) {
+                            setSupplierId(sup.id);
+                            setPaidTo(sup.name);
+                          }
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-full h-9 text-xs">
+                        <SelectValue placeholder="Pilih Pemasok Terdaftar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="MANUAL">-- Input Manual --</SelectItem>
+                          {suppliers.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name} {s.contactPerson ? `(${s.contactPerson})` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    {(!supplierId || supplierId === 'MANUAL') && (
+                      <Input
+                        placeholder="Ketik nama penerima/toko manual..."
+                        value={paidTo}
+                        onChange={(e) => setPaidTo(e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <Input
+                    placeholder="Contoh: Toko Berkah / PT Sumber Kopi"
+                    value={paidTo}
+                    onChange={(e) => setPaidTo(e.target.value)}
+                    className="h-9 text-xs"
+                  />
+                )}
               </Field>
             </div>
 
@@ -522,9 +571,7 @@ export const ExpenseFormDialog: React.FC<ExpenseFormDialogProps> = ({
                   <span>Menyimpan...</span>
                 </>
               ) : (
-                <span>
-                  {expenseToEdit ? 'Simpan Perubahan' : 'Simpan Catatan Pengeluaran'}
-                </span>
+                <span>{expenseToEdit ? 'Simpan Perubahan' : 'Simpan Catatan Pengeluaran'}</span>
               )}
             </Button>
           </DialogFooter>

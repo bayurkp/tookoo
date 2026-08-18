@@ -30,6 +30,7 @@ export interface Expense {
   description: string; // Catatan / Keterangan (e.g. "Beli Biji Kopi 5kg dari Supplier A")
   paymentMethod: ExpensePaymentMethod; // Metode Pembayaran
   paidTo?: string; // Penerima / Vendor / Supplier / Nama Toko
+  supplierId?: string; // UUID Supplier jika terdaftar di modul Pemasok
   date: number; // Tanggal transaksi (Timestamp ms)
   receiptImage?: string; // Foto struk / bukti transfer (Base64 data URL)
   tags?: string[];
@@ -39,10 +40,7 @@ export interface Expense {
   deletedAt: number | null;
 }
 
-export const EXPENSE_CATEGORY_META: Record<
-  ExpenseCategory,
-  { label: string; color: string }
-> = {
+export const EXPENSE_CATEGORY_META: Record<ExpenseCategory, { label: string; color: string }> = {
   BAHAN_BAKU: {
     label: 'Bahan Baku & Kulakan',
     color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
