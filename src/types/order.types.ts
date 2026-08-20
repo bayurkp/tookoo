@@ -30,6 +30,9 @@ export interface Order {
   amountPaid: number;
   changeDue: number;
   cashierName: string;
+  staffId?: string; // UUID Staff who processed this order
+  outletId?: string; // UUID Outlet where this order was created
+  outletName?: string; // Snapshot of outlet name at transaction time
   createdAt: number; // Timestamp ms
   updatedAt: number; // Timestamp ms
   deletedAt: number | null; // null if active, timestamp if soft deleted

@@ -24,7 +24,7 @@ export interface DashboardStats {
   recentOrders: Order[];
 }
 
-export const useDashboardStats = () => {
+export const useDashboardStats = (selectedOutletId?: string) => {
   const { data: orders = [], isLoading: isLoadingOrders } = useQuery<Order[]>({
     queryKey: ['orders'],
     queryFn: async () => {
@@ -52,8 +52,13 @@ export const useDashboardStats = () => {
       productCostMap.set(p.id, p.costPrice || 0);
     });
 
-    // 1. Filter today's completed orders
-    const completedOrders = orders.filter((o) => o.status !== 'PENDING');
+    // 1. Filter today's completed orders (and filter by outlet if selected)
+    const completedOrders = orders.filter((o) => {
+      const isNotPending = o.status !== 'PENDING';
+      const matchOutlet =
+        !selectedOutletId || selectedOutletId === 'ALL' || o.outletId === selectedOutletId;
+      return isNotPending && matchOutlet;
+    });
     const todayOrders = completedOrders.filter((o) => o.createdAt >= todayStart);
     const todayOrderCount = todayOrders.length;
     const todayRevenue = todayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
@@ -124,7 +129,7 @@ export const useDashboardStats = () => {
       lowStockProducts,
       recentOrders,
     };
-  }, [orders, products]);
+  }, [orders, products, selectedOutletId]);
 
   return {
     stats,

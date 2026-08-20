@@ -35,6 +35,9 @@ export interface Expense {
   receiptImage?: string; // Foto struk / bukti transfer (Base64 data URL)
   tags?: string[];
   purchaseItems?: PurchaseItem[]; // Jika pembelian stok barang
+  outletId?: string; // UUID Outlet where this expense was recorded
+  outletName?: string; // Snapshot of outlet name
+  staffId?: string; // UUID Staff who recorded this expense
   createdAt: number;
   updatedAt: number;
   deletedAt: number | null;

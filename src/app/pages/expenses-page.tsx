@@ -47,6 +47,8 @@ import {
   useUpsertExpense,
   useDeleteExpense,
 } from '@/features/expenses/hooks/use-expenses';
+import { useOutlets } from '@/features/outlets/hooks/use-outlets';
+import { Building2 } from 'lucide-react';
 import { db } from '@/lib/db';
 import { sounds } from '@/utils/audio';
 import { formatCurrency } from '@/utils/format-currency';
@@ -63,6 +65,8 @@ export const ExpensesPage: React.FC = () => {
   const typeParam = searchParams.get('type') as ExpenseType | null;
 
   const { data: expenses = [], isLoading } = useExpenses();
+  const { data: outlets = [] } = useOutlets();
+  const [selectedOutletId, setSelectedOutletId] = useState<string>('ALL');
   const upsertMutation = useUpsertExpense();
   const deleteMutation = useDeleteExpense();
 
@@ -123,6 +127,7 @@ export const ExpensesPage: React.FC = () => {
       const matchDate = e.date >= filterDateTimestamp;
       const matchType = selectedType === 'ALL' || e.type === selectedType;
       const matchCategory = selectedCategory === 'ALL' || e.category === selectedCategory;
+      const matchOutlet = selectedOutletId === 'ALL' || e.outletId === selectedOutletId;
       const matchSearch =
         !searchQuery.trim() ||
         e.description.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
@@ -130,16 +135,27 @@ export const ExpensesPage: React.FC = () => {
         (e.customCategory &&
           e.customCategory.toLowerCase().includes(searchQuery.toLowerCase().trim()));
 
-      return matchDate && matchType && matchCategory && matchSearch;
+      return matchDate && matchType && matchCategory && matchOutlet && matchSearch;
     });
-  }, [expenses, filterDateTimestamp, selectedType, selectedCategory, searchQuery]);
+  }, [
+    expenses,
+    filterDateTimestamp,
+    selectedType,
+    selectedCategory,
+    selectedOutletId,
+    searchQuery,
+  ]);
 
   // Filtered Revenue in the same period
   const totalRevenue = useMemo(() => {
     return orders
-      .filter((o) => o.createdAt >= filterDateTimestamp)
+      .filter((o) => {
+        const matchDate = o.createdAt >= filterDateTimestamp;
+        const matchOutlet = selectedOutletId === 'ALL' || o.outletId === selectedOutletId;
+        return matchDate && matchOutlet;
+      })
       .reduce((acc, o) => acc + (o.totalAmount || 0), 0);
-  }, [orders, filterDateTimestamp]);
+  }, [orders, filterDateTimestamp, selectedOutletId]);
 
   // Expense Totals
   const { totalExpenses, totalPurchases } = useMemo(() => {
@@ -215,46 +231,69 @@ export const ExpensesPage: React.FC = () => {
         title={pageTitle}
         description={pageDescription}
         actions={
-          isPurchasesMode ? (
-            <Button
-              onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
-              size="sm"
-              className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>{t('purchases.create', 'Tambah Pembelian Stok')}</span>
-            </Button>
-          ) : isExpensesMode ? (
-            <Button
-              onClick={() => handleOpenCreateExpense('EXPENSE')}
-              size="sm"
-              className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>{t('expenses.create', 'Catat Pengeluaran Kas')}</span>
-            </Button>
-          ) : (
-            <>
+          <div className="flex flex-wrap items-center gap-2">
+            {outlets.length > 1 && (
+              <div className="w-48">
+                <Select value={selectedOutletId} onValueChange={setSelectedOutletId}>
+                  <SelectTrigger className="h-8 text-xs bg-background font-semibold">
+                    <Building2 className="h-3.5 w-3.5 text-primary mr-1.5 shrink-0" />
+                    <SelectValue placeholder="Pilih Cabang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="ALL">Semua Cabang (Konsolidasi)</SelectItem>
+                      {outlets.map((outlet) => (
+                        <SelectItem key={outlet.id} value={outlet.id}>
+                          {outlet.name} {outlet.isHQ ? '(HQ)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {isPurchasesMode ? (
               <Button
                 onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
-                variant="outline"
                 size="sm"
-                className="gap-1.5 font-bold cursor-pointer text-xs"
+                className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
               >
-                <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
-                <span>{t('expenses.purchaseStock', '+ Beli Stok')}</span>
+                <Plus className="h-3.5 w-3.5" />
+                <span>{t('purchases.create', 'Tambah Pembelian Stok')}</span>
               </Button>
-
+            ) : isExpensesMode ? (
               <Button
                 onClick={() => handleOpenCreateExpense('EXPENSE')}
                 size="sm"
                 className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>{t('expenses.recordExpense', 'Catat Pengeluaran')}</span>
+                <span>{t('expenses.create', 'Catat Pengeluaran Kas')}</span>
               </Button>
-            </>
-          )
+            ) : (
+              <>
+                <Button
+                  onClick={() => handleOpenCreateExpense('PURCHASE_STOCK')}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 font-bold cursor-pointer text-xs"
+                >
+                  <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
+                  <span>{t('expenses.purchaseStock', '+ Beli Stok')}</span>
+                </Button>
+
+                <Button
+                  onClick={() => handleOpenCreateExpense('EXPENSE')}
+                  size="sm"
+                  className="gap-1.5 font-bold cursor-pointer text-xs shadow-xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>{t('expenses.recordExpense', 'Catat Pengeluaran')}</span>
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
 

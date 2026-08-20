@@ -50,6 +50,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { NavUser } from '@/components/nav-user';
+import { OutletSwitcher } from '@/features/outlets/components/outlet-switcher';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
@@ -83,8 +84,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" className="border-r" {...props}>
-      {/* Sidebar Header: Store & Terminal Identity */}
-      <SidebarHeader className="p-2">
+      {/* Sidebar Header: Store & Outlet Identity */}
+      <SidebarHeader className="p-2 space-y-1.5">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -105,6 +106,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+
+        {/* Active Outlet Switcher Dropdown */}
+        <div className="px-1 group-data-[collapsible=icon]:hidden">
+          <OutletSwitcher />
+        </div>
       </SidebarHeader>
 
       {/* Sidebar Content: Navigation Groups */}

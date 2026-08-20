@@ -10,6 +10,7 @@ import {
   Layers,
   CreditCard,
   Search,
+  Building2,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,15 @@ import {
   useReportsAnalytics,
   type TimeRangeFilter,
 } from '@/features/reports/hooks/use-reports-analytics';
+import { useOutlets } from '@/features/outlets/hooks/use-outlets';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
 import { formatCurrency } from '@/utils/format-currency';
 
 export const ReportsPage: React.FC = () => {
@@ -39,8 +49,10 @@ export const ReportsPage: React.FC = () => {
   const activeTab = searchParams.get('tab') || 'pnl';
   const [timeRange, setTimeRange] = useState<TimeRangeFilter>('THIS_MONTH');
   const [productSearch, setProductSearch] = useState('');
+  const { data: outlets = [] } = useOutlets();
+  const [selectedOutletId, setSelectedOutletId] = useState<string>('ALL');
 
-  const { analytics } = useReportsAnalytics(timeRange);
+  const { analytics } = useReportsAnalytics(timeRange, selectedOutletId);
 
   const handleTabChange = (newTab: string) => {
     setSearchParams({ tab: newTab });
@@ -75,7 +87,10 @@ export const ReportsPage: React.FC = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Laporan_Penjualan_Tookoo_${timeRange}_${Date.now()}.csv`);
+    link.setAttribute(
+      'download',
+      `laporan-produk-tookoo-${new Date().toISOString().slice(0, 10)}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -97,28 +112,51 @@ export const ReportsPage: React.FC = () => {
           'Evaluasi laba kotor, performa produk terlaris, rekap kas kasir, dan pembukuan toko.'
         )}
         actions={
-          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/60">
-            {(
-              [
-                { id: 'TODAY', label: 'Hari Ini' },
-                { id: 'LAST_7_DAYS', label: '7 Hari' },
-                { id: 'THIS_MONTH', label: 'Bulan Ini' },
-                { id: 'ALL_TIME', label: 'Semua' },
-              ] as const
-            ).map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setTimeRange(item.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                  timeRange === item.id
-                    ? 'bg-background text-foreground shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-2">
+            {outlets.length > 1 && (
+              <div className="w-48">
+                <Select value={selectedOutletId} onValueChange={setSelectedOutletId}>
+                  <SelectTrigger className="h-9 text-xs bg-card font-semibold">
+                    <Building2 className="h-3.5 w-3.5 text-primary mr-1.5 shrink-0" />
+                    <SelectValue placeholder="Pilih Cabang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="ALL">Semua Cabang (Konsolidasi)</SelectItem>
+                      {outlets.map((outlet) => (
+                        <SelectItem key={outlet.id} value={outlet.id}>
+                          {outlet.name} {outlet.isHQ ? '(HQ)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/60">
+              {(
+                [
+                  { id: 'TODAY', label: 'Hari Ini' },
+                  { id: 'LAST_7_DAYS', label: '7 Hari' },
+                  { id: 'THIS_MONTH', label: 'Bulan Ini' },
+                  { id: 'ALL_TIME', label: 'Semua' },
+                ] as const
+              ).map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setTimeRange(item.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                    timeRange === item.id
+                      ? 'bg-background text-foreground shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         }
       />

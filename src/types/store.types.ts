@@ -64,6 +64,37 @@ export const DEFAULT_RECEIPT_SETTINGS: ReceiptSettings = {
   footerPolicy: 'Barang yang sudah dibeli tidak dapat ditukar.',
 };
 
+export interface Outlet {
+  id: string; // UUID v4
+  storeId: string;
+  name: string; // e.g. "Cabang Utama (HQ)", "Cabang Sudirman"
+  address?: string;
+  phone?: string;
+  isHQ: boolean;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt: number | null;
+}
+
+export interface Staff {
+  id: string; // UUID v4
+  storeId: string;
+  name: string; // e.g. "Budi Santoso"
+  role: UserRole; // 'OWNER' | 'MANAGER' | 'CASHIER'
+  pin?: string; // 4-6 digit quick PIN
+  hasAllOutlets: boolean; // true for Owner / Area Manager
+  outletIds: string[]; // Array of valid outlet UUIDs
+  phone?: string;
+  isActive: boolean;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt: number | null;
+}
+
+export function hasOutletAccess(staff: Staff, outletId: string): boolean {
+  return staff.hasAllOutlets || staff.role === 'OWNER' || staff.outletIds.includes(outletId);
+}
+
 export interface StoreSettings {
   id: string; // UUID v4 (Store ID)
   storeName: string;
@@ -74,6 +105,8 @@ export interface StoreSettings {
   defaultCashier?: string;
   ownerPin?: string; // 4-6 digit security PIN for owner operations
   activeRole?: UserRole; // Current role of this terminal ('OWNER' | 'MANAGER' | 'CASHIER')
+  activeOutletId?: string; // Currently active outlet on this terminal
+  activeStaffId?: string; // Currently logged-in active staff on this terminal
   blacklistedDeviceIds?: string[]; // List of blocked device IDs
   whitelistedDeviceIds?: string[]; // List of explicitly trusted device IDs
   whitelistOnly?: boolean; // When true, only whitelisted devices are allowed to sync

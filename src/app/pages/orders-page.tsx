@@ -1,7 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Receipt, ArrowUpDown, Eye, Lock, ShieldCheck, Clock } from 'lucide-react';
+import {
+  Search,
+  Receipt,
+  ArrowUpDown,
+  Eye,
+  Lock,
+  ShieldCheck,
+  Clock,
+  Building2,
+} from 'lucide-react';
 import { useOrders } from '@/features/orders/hooks/use-orders';
+import { useOutlets } from '@/features/outlets/hooks/use-outlets';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useAuthStore } from '@/stores/auth-store';
 import { DailySummaryCard } from '@/features/orders/components/daily-summary-card';
@@ -12,6 +22,14 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
 import {
   Table,
   TableHeader,
@@ -27,10 +45,12 @@ import type { Order } from '@/types/order.types';
 export const OrdersPage: React.FC = () => {
   const { t } = useTranslation();
   const { data: orders = [], isLoading } = useOrders();
+  const { data: outlets = [] } = useOutlets();
   const { settings } = useP2pSync();
   const { hasPermission } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedOutletId, setSelectedOutletId] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'PENDING'>('ALL');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -54,6 +74,8 @@ export const OrdersPage: React.FC = () => {
         (statusFilter === 'PENDING' && isOrderPending) ||
         (statusFilter === 'PAID' && !isOrderPending);
 
+      const matchesOutlet = selectedOutletId === 'ALL' || order.outletId === selectedOutletId;
+
       let matchesDate = true;
       if (dateRange?.from) {
         const orderTime = new Date(order.createdAt).setHours(0, 0, 0, 0);
@@ -65,9 +87,9 @@ export const OrdersPage: React.FC = () => {
         }
       }
 
-      return matchesSearch && matchesStatus && matchesDate;
+      return matchesSearch && matchesStatus && matchesOutlet && matchesDate;
     });
-  }, [orders, searchQuery, statusFilter, dateRange]);
+  }, [orders, searchQuery, statusFilter, selectedOutletId, dateRange]);
 
   return (
     <div className="space-y-6">
@@ -124,7 +146,28 @@ export const OrdersPage: React.FC = () => {
 
           {/* Filter and Search */}
           <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
-            <div className="relative min-w-[200px] sm:w-64">
+            {outlets.length > 1 && (
+              <div className="w-full sm:w-48">
+                <Select value={selectedOutletId} onValueChange={setSelectedOutletId}>
+                  <SelectTrigger className="h-8 text-xs bg-background font-semibold">
+                    <Building2 className="h-3.5 w-3.5 text-primary mr-1.5 shrink-0" />
+                    <SelectValue placeholder="Pilih Cabang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="ALL">Semua Cabang (Konsolidasi)</SelectItem>
+                      {outlets.map((outlet) => (
+                        <SelectItem key={outlet.id} value={outlet.id}>
+                          {outlet.name} {outlet.isHQ ? '(HQ)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="relative min-w-[200px] sm:w-56">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder={t('orders.searchPlaceholder', 'Cari nomor struk, meja, atau kasir...')}
@@ -194,7 +237,7 @@ export const OrdersPage: React.FC = () => {
             <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
               <Receipt className="h-12 w-12 text-muted-foreground/30 mb-3" />
               <p className="font-semibold text-sm text-foreground">
-                {searchQuery || statusFilter !== 'ALL'
+                {searchQuery || statusFilter !== 'ALL' || selectedOutletId !== 'ALL'
                   ? t('orders.emptyFilter', 'Tidak ada transaksi yang cocok dengan filter.')
                   : t('orders.empty', 'Belum ada transaksi hari ini.')}
               </p>
@@ -251,7 +294,17 @@ export const OrdersPage: React.FC = () => {
                                 minute: '2-digit',
                               })}
                             </p>
-                            <p className="text-[11px]">{order.cashierName}</p>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[11px]">{order.cashierName}</span>
+                              {order.outletName && (
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[9px] px-1 py-0 h-3.5 font-semibold bg-muted"
+                                >
+                                  {order.outletName}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="text-xs">

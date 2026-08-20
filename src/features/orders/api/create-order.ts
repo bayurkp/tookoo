@@ -11,6 +11,9 @@ export interface CreateOrderInput {
   amountPaid: number;
   changeDue: number;
   cashierName?: string;
+  staffId?: string;
+  outletId?: string;
+  outletName?: string;
   status?: Order['status'];
   customerName?: string;
   tableNumber?: string;
@@ -29,6 +32,15 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
   const orderId = generateUUID();
   const orderNumber = generateOrderNumber();
 
+  const settings = await db.settings.toCollection().first();
+  const resolvedOutletId = input.outletId || settings?.activeOutletId;
+  let resolvedOutletName = input.outletName;
+  if (!resolvedOutletName && resolvedOutletId) {
+    const outlet = await db.outlets.get(resolvedOutletId);
+    resolvedOutletName = outlet?.name;
+  }
+  const resolvedStaffId = input.staffId || settings?.activeStaffId;
+
   const newOrder: Order = {
     id: orderId,
     orderNumber,
@@ -43,7 +55,10 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
     paymentMethod: input.paymentMethod,
     amountPaid: input.amountPaid,
     changeDue: input.changeDue,
-    cashierName: input.cashierName || 'Kasir',
+    cashierName: input.cashierName || settings?.defaultCashier || 'Kasir',
+    staffId: resolvedStaffId,
+    outletId: resolvedOutletId,
+    outletName: resolvedOutletName,
     createdAt: now,
     updatedAt: now,
     deletedAt: null,

@@ -23,6 +23,9 @@ export interface StockAdjustment {
   adjustmentNumber: string; // e.g. "ADJ-20260818-1234"
   items: StockAdjustmentItem[];
   adjustedBy: string; // Cashier / Owner name
+  staffId?: string; // UUID Staff who adjusted stock
+  outletId?: string; // UUID Outlet
+  outletName?: string; // Snapshot of outlet name
   notes?: string;
   createdAt: number;
   updatedAt: number;

@@ -16,6 +16,15 @@ export async function upsertExpense(
 ): Promise<Expense> {
   const now = Date.now();
   const id = expenseData.id || generateUUID();
+  const settings = await db.settings.toCollection().first();
+
+  const resolvedOutletId = expenseData.outletId || settings?.activeOutletId;
+  let resolvedOutletName = expenseData.outletName;
+  if (!resolvedOutletName && resolvedOutletId) {
+    const outlet = await db.outlets.get(resolvedOutletId);
+    resolvedOutletName = outlet?.name;
+  }
+  const resolvedStaffId = expenseData.staffId || settings?.activeStaffId;
 
   const entity: Expense = {
     id,
@@ -30,6 +39,9 @@ export async function upsertExpense(
     receiptImage: expenseData.receiptImage,
     tags: expenseData.tags || [],
     purchaseItems: expenseData.purchaseItems || [],
+    outletId: resolvedOutletId,
+    outletName: resolvedOutletName,
+    staffId: resolvedStaffId,
     createdAt: expenseData.createdAt || now,
     updatedAt: now,
     deletedAt: null,
@@ -53,6 +65,9 @@ export async function upsertExpense(
             id: generateUUID(),
             adjustmentNumber: `ADJ-BUY-${Date.now().toString().slice(-6)}`,
             adjustedBy: 'Kasir / Pembelian Stok',
+            outletId: resolvedOutletId,
+            outletName: resolvedOutletName,
+            staffId: resolvedStaffId,
             notes: `Pembelian stok: ${entity.description} (Ref: ${entity.id.slice(0, 8)})`,
             items: [
               {

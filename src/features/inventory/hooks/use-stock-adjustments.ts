@@ -20,6 +20,9 @@ export interface CreateStockAdjustmentInput {
   items: StockAdjustmentItem[];
   adjustedBy: string;
   notes?: string;
+  outletId?: string;
+  outletName?: string;
+  staffId?: string;
 }
 
 export const useCreateStockAdjustment = () => {
@@ -32,11 +35,23 @@ export const useCreateStockAdjustment = () => {
       const randomSuffix = Math.floor(1000 + Math.random() * 9000);
       const adjustmentNumber = `ADJ-${dateStr}-${randomSuffix}`;
 
+      const settings = await db.settings.toCollection().first();
+      const resolvedOutletId = input.outletId || settings?.activeOutletId;
+      let resolvedOutletName = input.outletName;
+      if (!resolvedOutletName && resolvedOutletId) {
+        const outlet = await db.outlets.get(resolvedOutletId);
+        resolvedOutletName = outlet?.name;
+      }
+      const resolvedStaffId = input.staffId || settings?.activeStaffId;
+
       const newAdjustment: StockAdjustment = {
         id: generateUUID(),
         adjustmentNumber,
         items: input.items,
         adjustedBy: input.adjustedBy || 'Pemilik Toko',
+        outletId: resolvedOutletId,
+        outletName: resolvedOutletName,
+        staffId: resolvedStaffId,
         notes: input.notes?.trim() || undefined,
         createdAt: now,
         updatedAt: now,

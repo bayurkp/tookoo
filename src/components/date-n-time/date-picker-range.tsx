@@ -15,7 +15,10 @@ export interface DateRange {
   to?: Date;
 }
 
-export interface DatePickerWithRangeProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+export interface DatePickerWithRangeProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'onSelect'
+> {
   date?: DateRange | undefined;
   onSelect?: (date: DateRange | undefined) => void;
   placeholder?: string;

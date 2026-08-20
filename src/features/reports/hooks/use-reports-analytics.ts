@@ -47,7 +47,7 @@ export interface ReportsAnalytics {
   dailyTrends: DailyTrendItem[];
 }
 
-export const useReportsAnalytics = (timeRange: TimeRangeFilter) => {
+export const useReportsAnalytics = (timeRange: TimeRangeFilter, selectedOutletId?: string) => {
   const { data: orders = [], isLoading: isLoadingOrders } = useQuery<Order[]>({
     queryKey: ['orders'],
     queryFn: async () => {
@@ -77,8 +77,13 @@ export const useReportsAnalytics = (timeRange: TimeRangeFilter) => {
       startTime = today.getTime() - 29 * 24 * 60 * 60 * 1000;
     }
 
-    // Filter completed orders by time range
-    const completedOrders = orders.filter((o) => o.status !== 'PENDING');
+    // Filter completed orders by time range and optional outlet
+    const completedOrders = orders.filter((o) => {
+      const isNotPending = o.status !== 'PENDING';
+      const matchOutlet =
+        !selectedOutletId || selectedOutletId === 'ALL' || o.outletId === selectedOutletId;
+      return isNotPending && matchOutlet;
+    });
     const filteredOrders = completedOrders.filter((o) => o.createdAt >= startTime);
 
     // Map products for fast HPP / costPrice lookup
@@ -215,7 +220,7 @@ export const useReportsAnalytics = (timeRange: TimeRangeFilter) => {
       paymentBreakdown,
       dailyTrends,
     };
-  }, [orders, products, timeRange]);
+  }, [orders, products, timeRange, selectedOutletId]);
 
   return {
     analytics,

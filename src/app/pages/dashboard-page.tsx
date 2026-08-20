@@ -22,12 +22,25 @@ import { PageHeader } from '@/components/page-header';
 import { StatCard } from '@/components/stat-card';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStats } from '@/features/dashboard/hooks/use-dashboard-stats';
+import { useOutlets } from '@/features/outlets/hooks/use-outlets';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
+import { Building2 } from 'lucide-react';
 import { formatCurrency } from '@/utils/format-currency';
 
 export const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { stats, isLoading } = useDashboardStats();
+  const { data: outlets = [] } = useOutlets();
+  const [selectedOutletId, setSelectedOutletId] = React.useState<string>('ALL');
+
+  const { stats, isLoading } = useDashboardStats(selectedOutletId);
 
   const todayDateStr = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -51,13 +64,36 @@ export const DashboardPage: React.FC = () => {
           </Badge>
         }
         actions={
-          <Button
-            onClick={() => navigate('/')}
-            className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            <span>{t('dashboard.openCashier', 'Buka Kasir')}</span>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {outlets.length > 1 && (
+              <div className="w-48">
+                <Select value={selectedOutletId} onValueChange={setSelectedOutletId}>
+                  <SelectTrigger className="h-9 text-xs bg-card font-semibold">
+                    <Building2 className="h-3.5 w-3.5 text-primary mr-1.5 shrink-0" />
+                    <SelectValue placeholder="Pilih Cabang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="ALL">Semua Cabang (Konsolidasi)</SelectItem>
+                      {outlets.map((outlet) => (
+                        <SelectItem key={outlet.id} value={outlet.id}>
+                          {outlet.name} {outlet.isHQ ? '(HQ)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <Button
+              onClick={() => navigate('/')}
+              className="w-full sm:w-auto gap-2 font-bold cursor-pointer"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              <span>{t('dashboard.openCashier', 'Buka Kasir')}</span>
+            </Button>
+          </div>
         }
       />
 
