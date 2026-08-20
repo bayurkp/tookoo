@@ -33,6 +33,7 @@ export function NavUser({
     name: string;
     role: string;
     deviceName: string;
+    storeName?: string;
   };
 }) {
   const { t } = useTranslation();
@@ -99,17 +100,18 @@ export function NavUser({
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
               >
                 <Avatar className="h-8 w-8 rounded-lg bg-primary/10 text-primary font-bold">
                   <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold text-xs">
                     {user.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-xs leading-tight">
+                <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
                   <span className="truncate font-bold text-foreground">{user.name}</span>
                   <span className="truncate text-[10px] text-muted-foreground">
-                    {user.role} • {user.deviceName}
+                    {user.storeName ? `${user.storeName} • ` : ''}
+                    {user.role}
                   </span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
@@ -128,10 +130,11 @@ export function NavUser({
                       {user.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-left text-xs leading-tight">
+                  <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
                     <span className="truncate font-bold text-foreground">{user.name}</span>
                     <span className="truncate text-[10px] text-muted-foreground">
-                      {user.role} • {user.deviceName}
+                      {user.storeName ? `${user.storeName} • ` : ''}
+                      {user.role}
                     </span>
                   </div>
                 </div>

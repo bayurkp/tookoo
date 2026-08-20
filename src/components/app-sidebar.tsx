@@ -647,6 +647,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             name: activeStaff?.name || settings?.defaultCashier || 'Kasir Utama',
             role: roleLabel,
             deviceName: deviceName,
+            storeName: storeName,
           }}
         />
       </SidebarFooter>
