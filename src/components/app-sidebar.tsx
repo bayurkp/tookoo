@@ -30,7 +30,6 @@ import { useQuery } from '@tanstack/react-query';
 import { db } from '@/lib/db';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAppMode } from '@/hooks/use-app-mode';
-import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Sidebar,
@@ -51,12 +50,14 @@ import {
 } from '@/components/ui/sidebar';
 import { NavUser } from '@/components/nav-user';
 import { OutletSwitcher } from '@/features/outlets/components/outlet-switcher';
+import { useActiveStaff } from '@/features/staff/hooks/use-staff';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const location = useLocation();
   const currentRole = useAuthStore((state) => state.currentRole);
   const { isSimple } = useAppMode();
+  const { activeStaff } = useActiveStaff();
 
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab');
@@ -84,24 +85,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" className="border-r" {...props}>
-      {/* Sidebar Header: Store & Outlet Identity */}
+      {/* Sidebar Header: Tookoo App Brand & Active Branch Switcher */}
       <SidebarHeader className="p-2 space-y-1.5">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm shadow-xs">
-                {storeName.charAt(0).toUpperCase()}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-black text-sm shadow-xs shrink-0">
+                <ShoppingCart className="h-4 w-4" />
               </div>
               <div className="grid flex-1 text-left text-xs leading-tight">
-                <span className="truncate font-bold text-foreground">{storeName}</span>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <Badge variant="secondary" className="text-[9px] px-1 py-0 font-semibold h-3.5">
-                    {roleLabel}
-                  </Badge>
-                </div>
+                <span className="truncate font-bold text-foreground">Tookoo POS</span>
+                <span className="truncate text-[10px] text-muted-foreground font-medium">
+                  {storeName}
+                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -641,11 +640,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
 
-      {/* Sidebar Footer: NavUser Profile Dropdown */}
+      {/* Sidebar Footer: NavUser Staff Profile Dropdown */}
       <SidebarFooter className="p-2 border-t">
         <NavUser
           user={{
-            name: storeName,
+            name: activeStaff?.name || settings?.defaultCashier || 'Kasir Utama',
             role: roleLabel,
             deviceName: deviceName,
           }}
