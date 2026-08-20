@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Scissors,
   FileText,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,7 @@ import {
   type BusinessTemplate,
   type TemplateIconName,
 } from '../data/starter-templates';
+import { loadProfessionalDemoData } from '@/features/settings/data/demo-data';
 
 const renderTemplateIcon = (iconName: TemplateIconName, className = 'h-5 w-5') => {
   switch (iconName) {
@@ -77,6 +79,20 @@ export const CreateStoreWizard: React.FC<CreateStoreWizardProps> = ({
   const handleSelectTemplate = (template: BusinessTemplate) => {
     setSelectedTemplateId(template.id);
     setAppMode(template.recommendedMode);
+  };
+
+  const handleUseDemoData = async () => {
+    setIsSubmitting(true);
+    try {
+      await loadProfessionalDemoData();
+      useAuthStore.getState().setRole('OWNER');
+      sounds.playSuccess();
+      onComplete();
+    } catch (err) {
+      console.error('Failed to load demo data:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFinishSetup = async () => {
@@ -232,6 +248,39 @@ export const CreateStoreWizard: React.FC<CreateStoreWizardProps> = ({
                 className="h-9 text-xs"
               />
             </Field>
+          </div>
+
+          {/* Quick Option: 1-Tap Load Full Indonesian Demo Store */}
+          <div className="p-3 rounded-xl border border-primary/30 bg-primary/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <div className="h-7 w-7 rounded-md bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs mt-0.5 sm:mt-0">
+                <Sparkles className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-foreground">
+                  Ingin langsung mencoba fitur toko?
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Gunakan data demo lengkap (Resto Nusantara, foto HD, denah meja, pelanggan &
+                  transaksi)
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleUseDemoData}
+              disabled={isSubmitting}
+              className="text-xs font-bold shrink-0 border-primary/40 text-primary hover:bg-primary/10 cursor-pointer self-end sm:self-auto"
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              <span>Gunakan Data Demo</span>
+            </Button>
           </div>
         </div>
       )}

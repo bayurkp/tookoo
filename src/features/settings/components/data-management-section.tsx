@@ -43,8 +43,10 @@ import {
   useResetMasterDataToDefaults,
   useResetFullDatabase,
 } from '../hooks/use-data-management';
+import { useQueryClient } from '@tanstack/react-query';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { sounds } from '@/utils/audio';
+import { loadProfessionalDemoData } from '../data/demo-data';
 
 type ClearActionType =
   | 'CLEAR_ORDERS'
@@ -52,10 +54,12 @@ type ClearActionType =
   | 'CLEAR_TABLES'
   | 'CLEAR_PROMOS'
   | 'RESET_MASTER'
-  | 'RESET_ALL';
+  | 'RESET_ALL'
+  | 'LOAD_DEMO';
 
 export const DataManagementSection: React.FC = () => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const { settings, exportBackup } = useP2pSync();
   const { data: summary, isLoading: isSummaryLoading } = useDataSummary();
 
@@ -130,6 +134,16 @@ export const DataManagementSection: React.FC = () => {
           warning:
             'SEMUA DATA AKAN HILANG PERMANEN. Sangat disarankan untuk mengunduh berkas cadangan JSON terlebih dahulu.',
         };
+      case 'LOAD_DEMO':
+        return {
+          title: 'Muat Data Demo Toko Lengkap (Market Indonesia)',
+          description:
+            'Tindakan ini akan mengisikan katalog kuliner Nusantara lengkap: produk dengan foto HD & varian, kategori, denah meja, data pelanggan, supplier vendor, pengeluaran kas, serta riwayat transaksi.',
+          requiredKeyword: 'DEMO',
+          badgeText: 'Siap Pakai',
+          warning:
+            'Data demo akan ditambahkan ke database sehingga seluruh fitur kasir, meja, dan analitik laporan dapat langsung diuji coba.',
+        };
       default:
         return {
           title: '',
@@ -184,6 +198,10 @@ export const DataManagementSection: React.FC = () => {
           reseedMasterDefaults: true,
         });
         setSuccessMessage('Toko berhasil direset ke kondisi awal.');
+      } else if (activeAction === 'LOAD_DEMO') {
+        await loadProfessionalDemoData();
+        await queryClient.invalidateQueries();
+        setSuccessMessage('Berhasil memuat data demo toko lengkap (Kopi & Resto Nusantara).');
       }
 
       sounds.playSuccess();
@@ -290,6 +308,47 @@ export const DataManagementSection: React.FC = () => {
           </Button>
         </div>
       )}
+
+      {/* Demo Data Quick Load Card */}
+      <Card className="border border-primary/30 bg-primary/5 rounded-xl shadow-none">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm mt-0.5 sm:mt-0">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div>
+                <CardTitle className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2">
+                  <span>Data Demo Toko Lengkap (Market Indonesia)</span>
+                  <Badge
+                    variant="default"
+                    className="text-[10px] bg-primary text-primary-foreground font-bold"
+                  >
+                    Siap Pakai
+                  </Badge>
+                </CardTitle>
+                <CardDescription className="text-[11px] text-muted-foreground pt-0.5">
+                  Isi toko secara otomatis dengan menu kuliner Nusantara (kopi & resto), foto HD,
+                  denah meja, pelanggan, vendor, pengeluaran kas, dan riwayat transaksi.
+                </CardDescription>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              onClick={() => handleStartAction('LOAD_DEMO')}
+              disabled={isProcessing}
+              className="gap-2 shrink-0 font-bold self-end sm:self-auto cursor-pointer"
+            >
+              {isProcessing && activeAction === 'LOAD_DEMO' ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              <span>Muat Data Demo</span>
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* Section 1: Granular Clear Options */}
       <div className="space-y-3">

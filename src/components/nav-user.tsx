@@ -1,6 +1,16 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BadgeCheck, ChevronsUpDown, Shield, Sliders, Database, Store, Check } from 'lucide-react';
+import {
+  BadgeCheck,
+  ChevronsUpDown,
+  Shield,
+  Sliders,
+  Database,
+  Store,
+  Check,
+  Sparkles,
+  Loader2,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -14,6 +24,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -24,6 +43,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { db } from '@/lib/db';
 import { useAppMode } from '@/hooks/use-app-mode';
 import { PinModal } from '@/components/pin-modal';
+import { loadProfessionalDemoData } from '@/features/settings/data/demo-data';
+import { sounds } from '@/utils/audio';
 import type { UserRole, StoreSettings } from '@/types/store.types';
 
 export function NavUser({
@@ -62,6 +83,22 @@ export function NavUser({
 
   const [pinModalOpen, setPinModalOpen] = React.useState(false);
   const [pendingRole, setPendingRole] = React.useState<UserRole | null>(null);
+  const [demoConfirmOpen, setDemoConfirmOpen] = React.useState(false);
+  const [isLoadingDemo, setIsLoadingDemo] = React.useState(false);
+
+  const handleLoadDemoData = async () => {
+    setIsLoadingDemo(true);
+    try {
+      await loadProfessionalDemoData();
+      sounds.playSuccess();
+      await queryClient.invalidateQueries();
+      setDemoConfirmOpen(false);
+    } catch (err) {
+      console.error('Failed to load demo data:', err);
+    } finally {
+      setIsLoadingDemo(false);
+    }
+  };
 
   const isRolePromotion = (targetRole: UserRole) => {
     const roleRank: Record<UserRole, number> = {
@@ -234,6 +271,17 @@ export function NavUser({
                   <Database className="size-3.5" />
                   <span>{t('nav.items.dataBackup', 'Cadangkan Data')}</span>
                 </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                {/* Load Demo Data Shortcut */}
+                <DropdownMenuItem
+                  onClick={() => setDemoConfirmOpen(true)}
+                  className="text-xs gap-2 cursor-pointer text-primary focus:text-primary font-medium"
+                >
+                  <Sparkles className="size-3.5" />
+                  <span>Muat Data Demo Toko</span>
+                </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -254,6 +302,42 @@ export function NavUser({
         })}
         onSuccess={handlePinSuccess}
       />
+
+      {/* Load Demo Data Confirmation Dialog */}
+      <Dialog open={demoConfirmOpen} onOpenChange={setDemoConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Sparkles className="size-5 text-primary" />
+              <span>Muat Data Demo Toko Lengkap?</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground pt-1">
+              Sistem akan memuat data profesional pasar Indonesia: produk kuliner Nusantara lengkap
+              dengan varian & gambar, denah meja, pelanggan, vendor supplier, serta riwayat
+              transaksi untuk demonstrasi.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDemoConfirmOpen(false)}
+              disabled={isLoadingDemo}
+            >
+              Batal
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleLoadDemoData}
+              disabled={isLoadingDemo}
+              className="gap-2"
+            >
+              {isLoadingDemo && <Loader2 className="size-3.5 animate-spin" />}
+              <span>{isLoadingDemo ? 'Memuat Data...' : 'Muat Data Demo'}</span>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
