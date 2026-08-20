@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Building2, ChevronsUpDown, Plus, Store } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import {
   Combobox,
   ComboboxContent,
@@ -9,7 +8,6 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxTrigger,
-  ComboboxValue,
   ComboboxSeparator,
 } from '@/components/ui/combobox';
 import {
@@ -54,26 +52,18 @@ export const OutletSwitcher: React.FC = () => {
         onValueChange={handleSelectOutlet}
         itemToStringLabel={(item: Outlet) => item?.name || ''}
       >
-        <ComboboxTrigger
-          render={
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full h-8 px-2.5 justify-between text-xs font-semibold bg-sidebar-accent/40 border-sidebar-border hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sidebar-foreground shadow-none"
-            >
-              <div className="flex items-center gap-2 truncate text-left min-w-0">
-                <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                <ComboboxValue>{activeOutlet?.name || 'Pilih Cabang...'}</ComboboxValue>
-                {activeOutlet?.isHQ && (
-                  <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded shrink-0">
-                    HQ
-                  </span>
-                )}
-              </div>
-              <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
-            </Button>
-          }
-        />
+        <ComboboxTrigger className="flex h-8 w-full items-center justify-between rounded-md border border-sidebar-border bg-sidebar-accent/40 px-2.5 text-xs font-semibold text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer outline-none">
+          <div className="flex items-center gap-2 truncate text-left min-w-0">
+            <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+            <span className="truncate">{activeOutlet?.name || 'Pilih Cabang...'}</span>
+            {activeOutlet?.isHQ && (
+              <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded shrink-0">
+                HQ
+              </span>
+            )}
+          </div>
+          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+        </ComboboxTrigger>
 
         <ComboboxContent className="w-56 text-xs" align="start">
           <ComboboxInput showTrigger={false} placeholder="Cari cabang outlet..." />
