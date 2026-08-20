@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Building2, Check, ChevronDown, Plus, Store } from 'lucide-react';
+import { Building2, Plus, Store } from 'lucide-react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   useOutlets,
   useActiveOutlet,
@@ -25,9 +25,9 @@ export const OutletSwitcher: React.FC = () => {
   const upsertMutation = useUpsertOutlet();
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const handleSelectOutlet = (outletId: string) => {
-    if (outletId !== activeOutlet?.id) {
-      setActiveMutation.mutate(outletId);
+  const handleSelectOutlet = (value: string) => {
+    if (value && value !== activeOutlet?.id) {
+      setActiveMutation.mutate(value);
       sounds.playSuccess();
     }
   };
@@ -39,70 +39,55 @@ export const OutletSwitcher: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="h-6 w-24 bg-muted/60 animate-pulse rounded-md" />;
+    return <div className="h-8 w-full bg-muted/60 animate-pulse rounded-lg" />;
   }
+
+  const currentValue = activeOutlet?.id || outlets[0]?.id || '';
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors cursor-pointer text-left max-w-[200px] group"
-          >
+      <Select value={currentValue} onValueChange={handleSelectOutlet}>
+        <SelectTrigger className="w-full h-8 text-xs font-semibold bg-sidebar-accent/50 border-sidebar-border hover:bg-sidebar-accent text-sidebar-foreground transition-colors">
+          <div className="flex items-center gap-2 truncate text-left">
             <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
-            <span className="text-xs font-bold text-foreground truncate">
-              {activeOutlet?.name || 'Pilih Cabang'}
-            </span>
-            {activeOutlet?.isHQ && (
-              <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3.5 font-bold shrink-0">
-                HQ
-              </Badge>
-            )}
-            <ChevronDown className="h-3 w-3 text-muted-foreground group-hover:text-foreground shrink-0 transition-transform" />
-          </button>
-        </DropdownMenuTrigger>
+            <SelectValue placeholder="Pilih Cabang">
+              <span className="truncate">{activeOutlet?.name || 'Pilih Cabang'}</span>
+            </SelectValue>
+          </div>
+        </SelectTrigger>
 
-        <DropdownMenuContent align="start" className="w-56 p-1 text-xs">
-          <DropdownMenuLabel className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-2 py-1">
-            Cabang / Outlet Toko
-          </DropdownMenuLabel>
-
-          {outlets.map((outlet) => {
-            const isActive = outlet.id === activeOutlet?.id;
-            return (
-              <DropdownMenuItem
-                key={outlet.id}
-                onClick={() => handleSelectOutlet(outlet.id)}
-                className={`flex items-center justify-between px-2 py-1.5 cursor-pointer rounded-md text-xs font-semibold ${
-                  isActive ? 'bg-primary/10 text-primary font-bold' : ''
-                }`}
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Store className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+        <SelectContent align="start" className="w-56 text-xs">
+          <SelectGroup>
+            <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold px-2 py-1">
+              Cabang / Outlet
+            </SelectLabel>
+            {outlets.map((outlet) => (
+              <SelectItem key={outlet.id} value={outlet.id} className="text-xs cursor-pointer">
+                <div className="flex items-center gap-1.5 truncate">
+                  <Store className="h-3 w-3 text-muted-foreground shrink-0" />
                   <span className="truncate">{outlet.name}</span>
                   {outlet.isHQ && (
-                    <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">
-                      Pusat
-                    </Badge>
+                    <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded ml-1">
+                      HQ
+                    </span>
                   )}
                 </div>
-                {isActive && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
-              </DropdownMenuItem>
-            );
-          })}
+              </SelectItem>
+            ))}
+          </SelectGroup>
 
-          <DropdownMenuSeparator className="my-1" />
-
-          <DropdownMenuItem
-            onClick={() => setIsAddOpen(true)}
-            className="flex items-center gap-2 text-primary font-bold cursor-pointer text-xs px-2 py-1.5"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Tambah Cabang Baru</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <div className="p-1 border-t mt-1">
+            <button
+              type="button"
+              onClick={() => setIsAddOpen(true)}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-primary font-bold hover:bg-primary/10 rounded-md transition-colors cursor-pointer text-left"
+            >
+              <Plus className="h-3.5 w-3.5 shrink-0" />
+              <span>Tambah Cabang Baru</span>
+            </button>
+          </div>
+        </SelectContent>
+      </Select>
 
       <OutletFormDialog
         open={isAddOpen}
