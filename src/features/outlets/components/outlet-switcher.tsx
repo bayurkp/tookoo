@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Building2, Check, ChevronsUpDown, Plus, Store } from 'lucide-react';
-import { cn } from '@/lib/cn';
+import { Building2, ChevronsUpDown, Plus, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+  ComboboxValue,
+  ComboboxSeparator,
+} from '@/components/ui/combobox';
 import {
   useOutlets,
   useActiveOutlet,
@@ -20,22 +20,20 @@ import {
 } from '@/features/outlets/hooks/use-outlets';
 import { OutletFormDialog } from '@/features/outlets/components/outlet-form-dialog';
 import { sounds } from '@/utils/audio';
+import type { Outlet } from '@/types/store.types';
 
 export const OutletSwitcher: React.FC = () => {
   const { data: outlets = [], isLoading } = useOutlets();
   const { activeOutlet } = useActiveOutlet();
   const setActiveMutation = useSetActiveOutlet();
   const upsertMutation = useUpsertOutlet();
-
-  const [open, setOpen] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const handleSelectOutlet = (outletId: string) => {
-    if (outletId !== activeOutlet?.id) {
-      setActiveMutation.mutate(outletId);
+  const handleSelectOutlet = (selected: Outlet | null) => {
+    if (selected && selected.id !== activeOutlet?.id) {
+      setActiveMutation.mutate(selected.id);
       sounds.playSuccess();
     }
-    setOpen(false);
   };
 
   const handleSaveOutlet = async (data: Parameters<typeof upsertMutation.mutateAsync>[0]) => {
@@ -50,80 +48,64 @@ export const OutletSwitcher: React.FC = () => {
 
   return (
     <>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full h-8 px-2.5 justify-between text-xs font-semibold bg-sidebar-accent/40 border-sidebar-border hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sidebar-foreground shadow-none"
-          >
-            <div className="flex items-center gap-2 truncate text-left min-w-0">
-              <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
-              <span className="truncate">{activeOutlet?.name || 'Pilih Cabang...'}</span>
-              {activeOutlet?.isHQ && (
-                <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded shrink-0">
-                  HQ
-                </span>
-              )}
-            </div>
-            <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
+      <Combobox
+        items={outlets}
+        value={activeOutlet || outlets[0] || null}
+        onValueChange={handleSelectOutlet}
+        itemToStringLabel={(item: Outlet) => item?.name || ''}
+      >
+        <ComboboxTrigger
+          render={
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full h-8 px-2.5 justify-between text-xs font-semibold bg-sidebar-accent/40 border-sidebar-border hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sidebar-foreground shadow-none"
+            >
+              <div className="flex items-center gap-2 truncate text-left min-w-0">
+                <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                <ComboboxValue>{activeOutlet?.name || 'Pilih Cabang...'}</ComboboxValue>
+                {activeOutlet?.isHQ && (
+                  <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded shrink-0">
+                    HQ
+                  </span>
+                )}
+              </div>
+              <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+            </Button>
+          }
+        />
 
-        <PopoverContent className="w-56 p-0 text-xs" align="start">
-          <Command>
-            <CommandInput placeholder="Cari cabang outlet..." className="h-8 text-xs" />
-            <CommandList>
-              <CommandEmpty>Cabang tidak ditemukan.</CommandEmpty>
-              <CommandGroup heading="Daftar Cabang">
-                {outlets.map((outlet) => {
-                  const isSelected = activeOutlet?.id === outlet.id;
-                  return (
-                    <CommandItem
-                      key={outlet.id}
-                      value={`${outlet.name} ${outlet.address || ''}`}
-                      onSelect={() => handleSelectOutlet(outlet.id)}
-                      className="text-xs cursor-pointer flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Store className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        <span className="truncate">{outlet.name}</span>
-                        {outlet.isHQ && (
-                          <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded">
-                            HQ
-                          </span>
-                        )}
-                      </div>
-                      <Check
-                        className={cn(
-                          'h-3.5 w-3.5 text-primary shrink-0',
-                          isSelected ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
+        <ComboboxContent className="w-56 text-xs" align="start">
+          <ComboboxInput showTrigger={false} placeholder="Cari cabang outlet..." />
+          <ComboboxEmpty>Cabang tidak ditemukan.</ComboboxEmpty>
+          <ComboboxList>
+            {(item: Outlet) => (
+              <ComboboxItem key={item.id} value={item}>
+                <Store className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="truncate">{item.name}</span>
+                {item.isHQ && (
+                  <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded">
+                    HQ
+                  </span>
+                )}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
 
-              <CommandSeparator />
+          <ComboboxSeparator className="my-1" />
 
-              <CommandGroup>
-                <CommandItem
-                  onSelect={() => {
-                    setOpen(false);
-                    setIsAddOpen(true);
-                  }}
-                  className="text-xs text-primary font-bold cursor-pointer gap-2"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Tambah Cabang Baru</span>
-                </CommandItem>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+          <div className="p-1">
+            <button
+              type="button"
+              onClick={() => setIsAddOpen(true)}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-primary font-bold hover:bg-primary/10 rounded-md transition-colors cursor-pointer text-left"
+            >
+              <Plus className="h-3.5 w-3.5 shrink-0" />
+              <span>Tambah Cabang Baru</span>
+            </button>
+          </div>
+        </ComboboxContent>
+      </Combobox>
 
       <OutletFormDialog
         open={isAddOpen}
