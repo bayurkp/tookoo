@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, ChevronsUpDown, Plus, Store } from 'lucide-react';
+import { Building2, Plus, Store } from 'lucide-react';
 import {
   Combobox,
   ComboboxContent,
@@ -62,7 +62,6 @@ export const OutletSwitcher: React.FC = () => {
               </span>
             )}
           </div>
-          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
         </ComboboxTrigger>
 
         <ComboboxContent className="w-56 text-xs" align="start">
