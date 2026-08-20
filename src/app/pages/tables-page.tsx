@@ -56,10 +56,8 @@ export const TablesPage: React.FC = () => {
     },
   });
 
-  // Local active tables state for instant 0ms canvas dragging before syncing to DB
   const [localTables, setLocalTables] = useState<StoreTable[]>([]);
   const [hasUnsavedLayout, setHasUnsavedLayout] = useState(false);
-  const [selectedZone, setSelectedZone] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTable, setSelectedTable] = useState<StoreTable | null>(null);
 
@@ -86,6 +84,15 @@ export const TablesPage: React.FC = () => {
     const combined = Array.from(new Set([...fromSettings, ...fromTables]));
     return combined.length > 0 ? combined : DEFAULT_STORE_ZONES.slice(0, 3);
   }, [settings?.customZones, localTables]);
+
+  const [selectedZone, setSelectedZone] = useState<string>('');
+
+  // Automatically select first available zone
+  useEffect(() => {
+    if (distinctZones.length > 0 && (!selectedZone || !distinctZones.includes(selectedZone))) {
+      setSelectedZone(distinctZones[0]);
+    }
+  }, [distinctZones, selectedZone]);
 
   // Persist custom zones to Dexie Settings
   const saveCustomZonesMutation = useMutation({
@@ -153,7 +160,8 @@ export const TablesPage: React.FC = () => {
     await saveCustomZonesMutation.mutateAsync(updatedZones);
 
     if (selectedZone === zoneToDelete) {
-      setSelectedZone('ALL');
+      const remaining = distinctZones.filter((z) => z !== zoneToDelete);
+      setSelectedZone(remaining[0] || '');
     }
     showToast(`Area "${zoneToDelete}" dihapus.`);
   };
@@ -163,22 +171,19 @@ export const TablesPage: React.FC = () => {
     setTimeout(() => setFeedbackMessage(null), 3000);
   };
 
-  // Filtered tables by selected zone & search
+  // Filtered tables strictly by selected single zone & search
   const filteredTables = useMemo(() => {
     return localTables.filter((t) => {
-      const matchZone = selectedZone === 'ALL' || t.zone === selectedZone;
+      const matchZone = t.zone === selectedZone;
       const matchQuery =
-        !searchQuery.trim() ||
-        t.name.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-        t.zone.toLowerCase().includes(searchQuery.toLowerCase().trim());
+        !searchQuery.trim() || t.name.toLowerCase().includes(searchQuery.toLowerCase().trim());
       return matchZone && matchQuery;
     });
   }, [localTables, selectedZone, searchQuery]);
 
-  // Statistics
+  // Statistics for active single zone
   const stats = useMemo(() => {
-    const targetTables =
-      selectedZone === 'ALL' ? localTables : localTables.filter((t) => t.zone === selectedZone);
+    const targetTables = localTables.filter((t) => t.zone === selectedZone);
     const total = targetTables.length;
     const available = targetTables.filter((t) => t.status === 'AVAILABLE').length;
     const occupied = targetTables.filter((t) => t.status === 'OCCUPIED').length;
@@ -327,7 +332,7 @@ export const TablesPage: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {/* Total Meja */}
         <StatCard
-          title={`Total Meja ${selectedZone !== 'ALL' ? `(${selectedZone})` : ''}`}
+          title={`Total Meja (${selectedZone || 'Area'})`}
           value={stats.total}
           icon={Square}
           variant="info"
@@ -366,18 +371,6 @@ export const TablesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         {/* Zone Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 scrollbar-none">
-          <button
-            type="button"
-            onClick={() => setSelectedZone('ALL')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shrink-0 ${
-              selectedZone === 'ALL'
-                ? 'bg-primary text-primary-foreground shadow-xs'
-                : 'bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60'
-            }`}
-          >
-            Semua Area ({localTables.length})
-          </button>
-
           {distinctZones.map((z) => {
             const count = localTables.filter((t) => t.zone === z).length;
             return (
