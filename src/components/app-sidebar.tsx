@@ -176,11 +176,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     asChild
                     isActive={location.pathname.startsWith('/expenses')}
-                    tooltip={t('nav.items.expenses', 'Biaya Operasional')}
+                    tooltip={t('nav.items.expenses', 'Pengeluaran Kas')}
                   >
                     <NavLink to="/expenses">
                       <Wallet />
-                      <span>{t('nav.items.expenses', 'Biaya Operasional')}</span>
+                      <span>{t('nav.items.expenses', 'Pengeluaran Kas')}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -340,7 +340,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             isActive={location.pathname === '/products' && currentTab === 'uom'}
                           >
                             <NavLink to="/products?tab=uom">
-                              <span>{t('nav.items.uom', 'Satuan (UOM)')}</span>
+                              <span>{t('nav.items.uom', 'Satuan Produk')}</span>
                             </NavLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -366,7 +366,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             }
                           >
                             <NavLink to="/products?tab=modifiers">
-                              <span>{t('nav.items.modifiers', 'Opsi Tambahan (Modifier)')}</span>
+                              <span>{t('nav.items.modifiers', 'Opsi Tambahan')}</span>
                             </NavLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -474,11 +474,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     asChild
                     isActive={location.pathname === '/expenses' && currentType !== 'PURCHASE_STOCK'}
-                    tooltip={t('nav.items.expenses', 'Pengeluaran Kas (Expenses)')}
+                    tooltip={t('nav.items.expenses', 'Pengeluaran Kas')}
                   >
                     <NavLink to="/expenses?type=EXPENSE">
                       <Wallet />
-                      <span>{t('nav.items.expenses', 'Pengeluaran Kas (Expenses)')}</span>
+                      <span>{t('nav.items.expenses', 'Pengeluaran Kas')}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -490,11 +490,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       location.pathname === '/purchases' ||
                       (location.pathname === '/expenses' && currentType === 'PURCHASE_STOCK')
                     }
-                    tooltip={t('nav.items.purchaseStock', 'Pembelian Stok (PO)')}
+                    tooltip={t('nav.items.purchaseStock', 'Pembelian Stok')}
                   >
                     <NavLink to="/expenses?type=PURCHASE_STOCK">
                       <ShoppingBag />
-                      <span>{t('nav.items.purchaseStock', 'Pembelian Stok (PO)')}</span>
+                      <span>{t('nav.items.purchaseStock', 'Pembelian Stok')}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -503,13 +503,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     asChild
                     isActive={location.pathname.startsWith('/inventory/adjustments')}
-                    tooltip={t('nav.items.inventoryAdjustments', 'Penyesuaian Stok (Opname)')}
+                    tooltip={t('nav.items.inventoryAdjustments', 'Penyesuaian Stok')}
                   >
                     <NavLink to="/inventory/adjustments">
                       <SlidersHorizontal />
-                      <span>
-                        {t('nav.items.inventoryAdjustments', 'Penyesuaian Stok (Opname)')}
-                      </span>
+                      <span>{t('nav.items.inventoryAdjustments', 'Penyesuaian Stok')}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -526,11 +524,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     isActive={
                       location.pathname === '/reports' && (!currentTab || currentTab === 'pnl')
                     }
-                    tooltip={t('nav.items.pnlReport', 'Laba & Rugi (P&L)')}
+                    tooltip={t('nav.items.pnlReport', 'Laba & Rugi')}
                   >
                     <NavLink to="/reports?tab=pnl">
                       <DollarSign />
-                      <span>{t('nav.items.pnlReport', 'Laba & Rugi (P&L)')}</span>
+                      <span>{t('nav.items.pnlReport', 'Laba & Rugi')}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -584,11 +582,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     asChild
                     isActive={location.pathname.startsWith('/sync')}
-                    tooltip={t('nav.items.p2pSync', 'Sinkronisasi Perangkat (P2P)')}
+                    tooltip={t('nav.items.p2pSync', 'Sinkronisasi Perangkat')}
                   >
                     <NavLink to="/sync">
                       <RefreshCw />
-                      <span>{t('nav.items.p2pSync', 'Sinkronisasi Perangkat (P2P)')}</span>
+                      <span>{t('nav.items.p2pSync', 'Sinkronisasi Perangkat')}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
