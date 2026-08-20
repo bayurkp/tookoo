@@ -9,12 +9,23 @@ export async function getStaffList(): Promise<Staff[]> {
   const allStaff = await db.staff.toArray();
   const activeStaff = allStaff.filter((s) => s.deletedAt === null);
 
+  // Clean up any legacy 'Owner / Kasir Utama' seed names
+  for (const staff of activeStaff) {
+    if (staff.name === 'Owner / Kasir Utama') {
+      staff.name = 'Pemilik Toko';
+      await db.staff.update(staff.id, { name: 'Pemilik Toko', updatedAt: Date.now() });
+    }
+  }
+
   if (activeStaff.length === 0) {
     const settings = await db.settings.toCollection().first();
     const defaultOwner: Staff = {
       id: crypto.randomUUID(),
       storeId: settings?.id || crypto.randomUUID(),
-      name: settings?.defaultCashier || 'Owner / Kasir Utama',
+      name:
+        settings?.defaultCashier && settings.defaultCashier !== 'Owner / Kasir Utama'
+          ? settings.defaultCashier
+          : 'Pemilik Toko',
       role: 'OWNER',
       pin: settings?.ownerPin || '',
       hasAllOutlets: true,

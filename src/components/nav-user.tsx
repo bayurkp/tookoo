@@ -92,6 +92,11 @@ export function NavUser({
     }
   };
 
+  const isNameSameAsRole = user.name.toLowerCase().trim() === user.role.toLowerCase().trim();
+  const subtitle = isNameSameAsRole
+    ? `${user.storeName || 'Tookoo POS'} • ${user.deviceName || 'Terminal Kasir'}`
+    : `${user.storeName ? `${user.storeName} • ` : ''}${user.role}`;
+
   return (
     <>
       <SidebarMenu>
@@ -109,10 +114,7 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
                   <span className="truncate font-bold text-foreground">{user.name}</span>
-                  <span className="truncate text-[10px] text-muted-foreground">
-                    {user.storeName ? `${user.storeName} • ` : ''}
-                    {user.role}
-                  </span>
+                  <span className="truncate text-[10px] text-muted-foreground">{subtitle}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -132,10 +134,7 @@ export function NavUser({
                   </Avatar>
                   <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
                     <span className="truncate font-bold text-foreground">{user.name}</span>
-                    <span className="truncate text-[10px] text-muted-foreground">
-                      {user.storeName ? `${user.storeName} • ` : ''}
-                      {user.role}
-                    </span>
+                    <span className="truncate text-[10px] text-muted-foreground">{subtitle}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>

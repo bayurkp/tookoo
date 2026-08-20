@@ -644,7 +644,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="p-2 border-t">
         <NavUser
           user={{
-            name: activeStaff?.name || settings?.defaultCashier || 'Kasir Utama',
+            name:
+              activeStaff?.name && activeStaff.name !== 'Owner / Kasir Utama'
+                ? activeStaff.name
+                : settings?.defaultCashier && settings.defaultCashier !== 'Owner / Kasir Utama'
+                  ? settings.defaultCashier
+                  : roleLabel,
             role: roleLabel,
             deviceName: deviceName,
             storeName: storeName,
