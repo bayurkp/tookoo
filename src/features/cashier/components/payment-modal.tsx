@@ -157,7 +157,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] h-[85vh] max-h-[600px] min-h-[480px] flex flex-col p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[425px] h-[85vh] max-h-[600px] min-h-[480px] flex flex-col p-0 gap-0 overflow-x-hidden overflow-y-hidden">
         <DialogHeader className="p-4 px-6 border-b shrink-0 bg-card">
           <DialogTitle>{t('cashier.payment.title', 'Pembayaran')}</DialogTitle>
           <DialogDescription>
@@ -168,18 +168,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 p-6 space-y-4">
           {/* Total Highlight */}
-          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground font-medium">
+          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-3 overflow-hidden">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted-foreground font-medium truncate">
                 {t('cashier.payment.totalBill', 'Total Tagihan')}
               </p>
-              <p className="text-2xl font-black text-primary tracking-tight">
+              <p className="text-xl sm:text-2xl font-black text-primary tracking-tight truncate font-mono" title={formatCurrency(total, settings?.currency)}>
                 {formatCurrency(total, settings?.currency)}
               </p>
             </div>
-            <Badge variant="outline" className="bg-background text-xs">
+            <Badge variant="outline" className="bg-background text-xs shrink-0 whitespace-nowrap">
               {t('cashier.payment.itemTypes', { count: itemCount })}
             </Badge>
           </div>
@@ -229,7 +229,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </Field>
 
               {/* Quick Cash Buttons */}
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
                 {quickCashOptions.map((opt) => (
                   <Button
                     key={opt.label}
@@ -237,7 +237,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setCashTendered(opt.value)}
-                    className="text-xs h-7 px-2"
+                    className="text-xs h-7 px-2 font-mono truncate max-w-[180px]"
                   >
                     {opt.label === 'Uang Pas'
                       ? t('cashier.payment.exactAmount', 'Uang Pas')
@@ -247,12 +247,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
 
               {/* Change Due Box */}
-              <div className="p-3 rounded-lg bg-muted/50 border flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground">
+              <div className="p-3 rounded-lg bg-muted/50 border flex items-center justify-between gap-2 overflow-hidden">
+                <span className="text-xs font-medium text-muted-foreground shrink-0">
                   {t('cashier.payment.changeDueLabel', 'Uang Kembalian:')}
                 </span>
                 <span
-                  className={`text-lg font-bold ${
+                  className={`text-base sm:text-lg font-bold font-mono truncate text-right max-w-[200px] ${
                     isCashInsufficient
                       ? 'text-destructive'
                       : 'text-emerald-600 dark:text-emerald-400'
