@@ -113,11 +113,11 @@ export const CashierProductCard: React.FC<CashierProductCardProps> = ({
               </span>
             )}
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-primary font-bold text-base tracking-tight">
+          <div className="flex items-center justify-between gap-1.5 pt-0.5">
+            <span className="text-primary font-bold text-sm sm:text-base tracking-tight truncate min-w-0">
               {formatCurrency(product.price)}
             </span>
-            <div className="h-6 w-6 rounded-md bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+            <div className="h-6 w-6 rounded-md bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
               <Plus className="h-3.5 w-3.5" />
             </div>
           </div>

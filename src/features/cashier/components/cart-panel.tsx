@@ -243,10 +243,10 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                     key={item.id}
                     className="flex flex-col gap-1.5 p-2.5 rounded-lg border bg-card/60 text-xs hover:border-primary/30 transition-colors"
                   >
-                    {/* Row 1: Item Name & Variant + Delete Icon */}
+                    {/* Line 1: Item Name & Variant (Left) + Line Total Price (Right) */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-foreground truncate leading-tight">
+                        <p className="font-semibold text-foreground truncate leading-tight" title={item.product.name}>
                           {item.product.name}
                         </p>
                         {item.selectedVariant && (
@@ -261,71 +261,72 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                         )}
                       </div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer shrink-0"
-                        onClick={() => removeItem(item.id)}
-                        title="Hapus item"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      <span className="font-bold text-foreground font-mono text-xs shrink-0 max-w-[120px] truncate text-right">
+                        {formatCurrency(item.unitPrice * item.quantity, settings?.currency)}
+                      </span>
                     </div>
 
-                    {/* Row 2: Unit Price Breakdown & Editable Stepper */}
+                    {/* Line 2: Unit Price Breakdown (Left) + Stepper & Trash (Right) */}
                     <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/40">
-                      <div className="min-w-0 flex items-baseline gap-1 truncate">
-                        <span className="text-[11px] text-muted-foreground font-mono truncate">
-                          @ {formatCurrency(item.unitPrice, settings?.currency)}
-                        </span>
-                        <span className="font-bold text-foreground font-mono text-xs shrink-0">
-                          = {formatCurrency(item.unitPrice * item.quantity, settings?.currency)}
-                        </span>
-                      </div>
+                      <span className="text-[11px] text-muted-foreground font-mono truncate max-w-[105px]">
+                        @ {formatCurrency(item.unitPrice, settings?.currency)}
+                      </span>
 
-                      {/* Stepper with editable numeric input */}
-                      <div className="flex items-center border rounded-md bg-background shrink-0 shadow-2xs">
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Stepper with editable numeric input */}
+                        <div className="flex items-center border rounded-md bg-background shadow-2xs">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Kurangi kuantitas"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="h-6 w-6 p-0 hover:bg-muted cursor-pointer shrink-0"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+
+                          <input
+                            type="number"
+                            min="1"
+                            max={maxStock}
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val)) {
+                                updateQuantity(item.id, val);
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (isNaN(val) || val < 1) {
+                                updateQuantity(item.id, 1);
+                              }
+                            }}
+                            className="w-9 h-6 text-center font-mono font-bold text-xs bg-transparent border-x focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Tambah kuantitas"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            disabled={item.quantity >= maxStock}
+                            className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40 shrink-0"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+
                         <Button
-                          type="button"
                           variant="ghost"
                           size="sm"
-                          aria-label="Kurangi kuantitas"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer shrink-0"
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer shrink-0 ml-0.5"
+                          onClick={() => removeItem(item.id)}
+                          title="Hapus item"
                         >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-
-                        <input
-                          type="number"
-                          min="1"
-                          max={maxStock}
-                          value={item.quantity}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value, 10);
-                            if (!isNaN(val)) {
-                              updateQuantity(item.id, val);
-                            }
-                          }}
-                          onBlur={(e) => {
-                            const val = parseInt(e.target.value, 10);
-                            if (isNaN(val) || val < 1) {
-                              updateQuantity(item.id, 1);
-                            }
-                          }}
-                          className="w-9 h-6 text-center font-mono font-bold text-xs bg-transparent border-x focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          aria-label="Tambah kuantitas"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          disabled={item.quantity >= maxStock}
-                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40 shrink-0"
-                        >
-                          <Plus className="h-3 w-3" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
@@ -546,24 +547,24 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
         )}
 
         {/* Calculation Lines */}
-        <div className="w-full space-y-1 text-xs pt-1 border-t">
-          <div className="flex justify-between text-muted-foreground">
-            <span>{t('cashier.cart.subtotal', 'Subtotal')}</span>
-            <span className="font-mono">{formatCurrency(subtotal, settings?.currency)}</span>
+        <div className="w-full space-y-1.5 text-xs pt-1 border-t">
+          <div className="flex items-center justify-between gap-2 text-muted-foreground">
+            <span className="shrink-0">{t('cashier.cart.subtotal', 'Subtotal')}</span>
+            <span className="font-mono truncate text-right max-w-[170px]">{formatCurrency(subtotal, settings?.currency)}</span>
           </div>
 
           {discountAmount > 0 && (
-            <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
-              <span>{t('cashier.cart.discount', 'Potongan Diskon')}</span>
-              <span className="font-mono">
+            <div className="flex items-center justify-between gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
+              <span className="shrink-0">{t('cashier.cart.discount', 'Potongan Diskon')}</span>
+              <span className="font-mono truncate text-right max-w-[170px]">
                 -{formatCurrency(discountAmount, settings?.currency)}
               </span>
             </div>
           )}
 
-          <div className="flex justify-between text-base font-bold pt-1.5 border-t text-foreground">
-            <span>{t('cashier.cart.total', 'Total Bayar')}</span>
-            <span className="text-primary font-mono text-lg">
+          <div className="flex items-baseline justify-between gap-2 pt-1.5 border-t text-foreground">
+            <span className="text-sm font-bold shrink-0">{t('cashier.cart.total', 'Total Bayar')}</span>
+            <span className="text-primary font-mono text-base sm:text-lg font-black truncate text-right max-w-[180px]">
               {formatCurrency(total, settings?.currency)}
             </span>
           </div>
