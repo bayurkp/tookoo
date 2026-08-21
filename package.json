@@ -13,7 +13,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=tookoo",
+    "deploy:login": "wrangler login"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -73,6 +75,7 @@
     "typescript": "~6.0.2",
     "vite": "^8.2.0",
     "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.125.0"
   }
 }
