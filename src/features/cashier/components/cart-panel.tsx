@@ -163,14 +163,14 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   return (
     <Card className="flex flex-col h-full border-border/80 shadow-none">
       {/* Header */}
-      <CardHeader className="p-4 pb-3 border-b flex flex-row items-center justify-between space-y-0">
-        <div className="flex items-center gap-2">
-          <ShoppingCart className="h-5 w-5 text-primary" />
-          <CardTitle className="text-base font-bold">
+      <CardHeader className="p-3.5 pb-2.5 border-b flex flex-row items-center justify-between gap-2 space-y-0">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <ShoppingCart className="h-4 w-4 text-primary shrink-0" />
+          <CardTitle className="text-sm font-bold truncate whitespace-nowrap shrink-0">
             {t('cashier.cart.title', 'Keranjang Belanja')}
           </CardTitle>
           {itemCount > 0 && (
-            <Badge variant="secondary" className="text-xs px-2 py-0 font-bold font-mono">
+            <Badge variant="secondary" className="text-[11px] px-1.5 py-0 font-bold font-mono shrink-0 whitespace-nowrap">
               {t('cashier.cart.itemCount', { count: itemCount })}
             </Badge>
           )}
@@ -182,7 +182,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive cursor-pointer"
+                className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive shrink-0 whitespace-nowrap cursor-pointer"
               >
                 <Trash2 className="h-3.5 w-3.5 mr-1" />
                 {t('cashier.cart.clear', 'Kosongkan')}

@@ -92,7 +92,7 @@
       "discount": "Diskon",
       "total": "Total Bayar",
       "itemCount": "{{count}} item",
-      "clear": "Kosongkan Keranjang",
+      "clear": "Kosongkan",
       "addDiscount": "Tambah Diskon"
     },
     "payment": {
