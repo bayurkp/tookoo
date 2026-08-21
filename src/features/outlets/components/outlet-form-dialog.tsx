@@ -82,10 +82,11 @@ export const OutletFormDialog: React.FC<OutletFormDialogProps> = ({
           <FieldGroup className="space-y-3.5">
             {/* Nama Cabang */}
             <Field>
-              <FieldLabel className="text-xs font-bold">
+              <FieldLabel htmlFor="outlet-name" className="text-xs font-bold">
                 Nama Cabang / Outlet <span className="text-destructive">*</span>
               </FieldLabel>
               <Input
+                id="outlet-name"
                 placeholder="Contoh: Cabang Sudirman, Outlet Bali"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -97,11 +98,12 @@ export const OutletFormDialog: React.FC<OutletFormDialogProps> = ({
 
             {/* Alamat Cabang */}
             <Field>
-              <FieldLabel className="text-xs font-bold flex items-center gap-1">
+              <FieldLabel htmlFor="outlet-address" className="text-xs font-bold flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Alamat Cabang</span>
               </FieldLabel>
               <Input
+                id="outlet-address"
                 placeholder="Jl. Jendral Sudirman No. 12, Jakarta"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -111,11 +113,12 @@ export const OutletFormDialog: React.FC<OutletFormDialogProps> = ({
 
             {/* Nomor Telepon / WhatsApp */}
             <Field>
-              <FieldLabel className="text-xs font-bold flex items-center gap-1">
+              <FieldLabel htmlFor="outlet-phone" className="text-xs font-bold flex items-center gap-1">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>No. Telepon / WhatsApp</span>
               </FieldLabel>
               <Input
+                id="outlet-phone"
                 placeholder="0812-3456-7890"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}

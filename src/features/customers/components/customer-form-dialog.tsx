@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -136,57 +136,59 @@ export const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
           {/* Nama & No HP */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field data-invalid={Boolean(errors.name)}>
+              <FieldLabel htmlFor="customer-name" className="text-xs font-semibold flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Nama Lengkap *</span>
-              </Label>
+              </FieldLabel>
               <Input
+                id="customer-name"
                 placeholder="misal: Budi Santoso"
                 {...register('name')}
+                aria-invalid={Boolean(errors.name)}
                 className={errors.name ? 'border-destructive' : ''}
               />
-              {errors.name && <p className="text-[11px] text-destructive">{errors.name.message}</p>}
-            </div>
+              <FieldError errors={[{ message: errors.name?.message }]} />
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field data-invalid={Boolean(errors.phone)}>
+              <FieldLabel htmlFor="customer-phone" className="text-xs font-semibold flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>No. WhatsApp / HP *</span>
-              </Label>
+              </FieldLabel>
               <Input
+                id="customer-phone"
                 placeholder="misal: 081234567890"
                 {...register('phone')}
+                aria-invalid={Boolean(errors.phone)}
                 className={errors.phone ? 'border-destructive' : ''}
               />
-              {errors.phone && (
-                <p className="text-[11px] text-destructive">{errors.phone.message}</p>
-              )}
-            </div>
+              <FieldError errors={[{ message: errors.phone?.message }]} />
+            </Field>
           </div>
 
           {/* Email */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold flex items-center gap-1.5">
+          <Field data-invalid={Boolean(errors.email)}>
+            <FieldLabel htmlFor="customer-email" className="text-xs font-semibold flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5 text-muted-foreground" />
               <span>Email (Opsional)</span>
-            </Label>
-            <Input type="email" placeholder="misal: budi@gmail.com" {...register('email')} />
-            {errors.email && <p className="text-[11px] text-destructive">{errors.email.message}</p>}
-          </div>
+            </FieldLabel>
+            <Input id="customer-email" type="email" placeholder="misal: budi@gmail.com" {...register('email')} />
+            <FieldError errors={[{ message: errors.email?.message }]} />
+          </Field>
 
           {/* Kategori Member & Diskon */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-muted/40 rounded-xl border border-border/60">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field>
+              <FieldLabel htmlFor="customer-tier" className="text-xs font-semibold flex items-center gap-1.5">
                 <Tag className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Tipe / Tier Member</span>
-              </Label>
+              </FieldLabel>
               <Select
                 value={selectedTier}
                 onValueChange={(val: CustomerTier) => setValue('tier', val)}
               >
-                <SelectTrigger>
+                <SelectTrigger id="customer-tier" className="h-9 text-xs">
                   <SelectValue placeholder="Pilih Tier Member" />
                 </SelectTrigger>
                 <SelectContent>
@@ -195,56 +197,62 @@ export const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
                   <SelectItem value="MEMBER_DISCOUNT">Member Diskon Khusus</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field>
+              <FieldLabel htmlFor="customer-discount" className="text-xs font-semibold flex items-center gap-1.5">
                 <Percent className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Diskon Otomatis (%)</span>
-              </Label>
+              </FieldLabel>
               <Input
+                id="customer-discount"
                 type="number"
                 min={0}
                 max={100}
                 placeholder="misal: 10"
                 {...register('discountPercentage', { valueAsNumber: true })}
+                className="h-9 text-xs"
               />
-            </div>
+            </Field>
           </div>
 
           {/* Poin Loyalitas Awal */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold flex items-center gap-1.5">
+          <Field>
+            <FieldLabel htmlFor="customer-points" className="text-xs font-semibold flex items-center gap-1.5">
               <Award className="h-3.5 w-3.5 text-amber-500" />
               <span>Poin Loyalitas Belanja</span>
-            </Label>
+            </FieldLabel>
             <Input
+              id="customer-points"
               type="number"
               min={0}
               placeholder="0"
               {...register('points', { valueAsNumber: true })}
+              className="h-9 text-xs"
             />
-          </div>
+          </Field>
 
           {/* Alamat & Catatan */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold flex items-center gap-1.5">
+          <Field>
+            <FieldLabel htmlFor="customer-address" className="text-xs font-semibold flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
               <span>Alamat Rumah / Kantor (Opsional)</span>
-            </Label>
-            <Input placeholder="misal: Jl. Mawar No. 12, Kebayoran Baru" {...register('address')} />
-          </div>
+            </FieldLabel>
+            <Input id="customer-address" placeholder="misal: Jl. Mawar No. 12, Kebayoran Baru" {...register('address')} className="h-9 text-xs" />
+          </Field>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold flex items-center gap-1.5">
+          <Field>
+            <FieldLabel htmlFor="customer-notes" className="text-xs font-semibold flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5 text-muted-foreground" />
               <span>Catatan Khusus (Preferensi / Alergi / dll)</span>
-            </Label>
+            </FieldLabel>
             <Input
+              id="customer-notes"
               placeholder="misal: Suka kopi less sweet, alergi susu sapi"
               {...register('notes')}
+              className="h-9 text-xs"
             />
-          </div>
+          </Field>
 
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

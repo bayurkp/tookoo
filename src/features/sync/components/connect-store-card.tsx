@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link2, ScanLine, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { validatePassphrase } from '@/lib/passphrase';
 import type { StorePairingPayload } from '@/types/sync.types';
 
@@ -86,11 +87,11 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
 
         <form onSubmit={handleConnect} className="space-y-3">
           {/* Direct typing / pasting 12 words textarea */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center text-xs">
-              <label htmlFor="connect-passphrase" className="font-semibold text-foreground">
+          <Field>
+            <div className="flex justify-between items-center">
+              <FieldLabel htmlFor="connect-passphrase" className="font-semibold text-foreground text-xs">
                 Ketik / Tempel 12 Kata Kunci Toko
-              </label>
+              </FieldLabel>
               <span
                 className={`text-[11px] font-mono font-medium ${
                   isComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'
@@ -111,7 +112,7 @@ export const ConnectStoreCard: React.FC<ConnectStoreCardProps> = ({
               placeholder="Contoh: apple banana cherry diamond eagle flame galaxy harbor island jungle knight lemon"
               className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-xs font-mono shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none leading-relaxed"
             />
-          </div>
+          </Field>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
             <Button

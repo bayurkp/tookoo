@@ -114,8 +114,11 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
             <Field>
-              <FieldLabel className="text-xs font-bold">Nama / Nomor Meja *</FieldLabel>
+              <FieldLabel htmlFor="table-edit-name" className="text-xs font-bold">
+                Nama / Nomor Meja *
+              </FieldLabel>
               <Input
+                id="table-edit-name"
                 placeholder="Contoh: Meja 01, VIP 2, Bar 04"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -126,8 +129,10 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
             </Field>
 
             <Field>
-              <div className="flex items-center justify-between mb-1.5">
-                <FieldLabel className="text-xs font-bold">Area / Ruangan Penempatan *</FieldLabel>
+              <div className="flex items-center justify-between">
+                <FieldLabel htmlFor="table-edit-zone" className="text-xs font-bold">
+                  Area / Ruangan Penempatan *
+                </FieldLabel>
                 <button
                   type="button"
                   onClick={() => setIsCustomZone(!isCustomZone)}
@@ -139,6 +144,7 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
 
               {isCustomZone ? (
                 <Input
+                  id="table-edit-zone"
                   placeholder="Ketik nama area baru (misal: Lantai 2 / VIP Rooftop)"
                   value={customZoneInput}
                   onChange={(e) => setCustomZoneInput(e.target.value)}
@@ -148,7 +154,7 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
                 />
               ) : (
                 <Select value={zone} onValueChange={(val) => setZone(val)}>
-                  <SelectTrigger className="w-full h-9 text-xs">
+                  <SelectTrigger id="table-edit-zone" className="w-full h-9 text-xs">
                     <SelectValue placeholder="Pilih Area" />
                   </SelectTrigger>
                   <SelectContent>
@@ -166,8 +172,11 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <Field>
-                <FieldLabel className="text-xs font-bold">Kapasitas Kursi</FieldLabel>
+                <FieldLabel htmlFor="table-edit-capacity" className="text-xs font-bold">
+                  Kapasitas Kursi
+                </FieldLabel>
                 <Input
+                  id="table-edit-capacity"
                   type="number"
                   min="1"
                   max="50"
@@ -178,9 +187,11 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">Bentuk Meja</FieldLabel>
+                <FieldLabel htmlFor="table-edit-shape" className="text-xs font-bold">
+                  Bentuk Meja
+                </FieldLabel>
                 <Select value={shape} onValueChange={(val) => setShape(val as TableShape)}>
-                  <SelectTrigger className="w-full h-9 text-xs">
+                  <SelectTrigger id="table-edit-shape" className="w-full h-9 text-xs">
                     <SelectValue placeholder="Bentuk" />
                   </SelectTrigger>
                   <SelectContent>
@@ -194,9 +205,11 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
             </div>
 
             <Field>
-              <FieldLabel className="text-xs font-bold">Status Meja</FieldLabel>
+              <FieldLabel htmlFor="table-edit-status" className="text-xs font-bold">
+                Status Meja
+              </FieldLabel>
               <Select value={status} onValueChange={(val) => setStatus(val as TableStatus)}>
-                <SelectTrigger className="w-full h-9 text-xs">
+                <SelectTrigger id="table-edit-status" className="w-full h-9 text-xs">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>

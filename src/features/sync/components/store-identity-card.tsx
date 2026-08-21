@@ -17,7 +17,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Field, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -186,14 +186,14 @@ export const StoreIdentityCard: React.FC<StoreIdentityCardProps> = ({
           <div className="space-y-2 pt-2 border-t">
             <div className="flex justify-between items-start">
               <div className="space-y-0.5">
-                <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <FieldLabel className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <Key className="h-3.5 w-3.5 text-primary" />
                   <span>Kunci Keamanan Toko</span>
-                </label>
-                <p className="text-[11px] text-muted-foreground">
+                </FieldLabel>
+                <FieldDescription>
                   Gunakan 12 kata kunci rahasia ini untuk menyambungkan perangkat kasir baru secara
                   manual.
-                </p>
+                </FieldDescription>
               </div>
               <div className="flex items-center gap-1 shrink-0 ml-2">
                 <Button

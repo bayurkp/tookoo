@@ -329,8 +329,9 @@ export const VariantAttributeManagerTab: React.FC<VariantAttributeManagerTabProp
           >
             <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
               <Field>
-                <FieldLabel className="text-xs font-bold">Nama Atribut Dimensi *</FieldLabel>
+                <FieldLabel htmlFor="dim-manager-name" className="text-xs font-bold">Nama Atribut Dimensi *</FieldLabel>
                 <Input
+                  id="dim-manager-name"
                   placeholder="Contoh: Ukuran, Suhu, Level Gula, Warna, Bahan"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -340,11 +341,12 @@ export const VariantAttributeManagerTab: React.FC<VariantAttributeManagerTabProp
               </Field>
 
               {/* Tag / Chip values editor */}
-              <div className="space-y-1.5">
-                <FieldLabel className="text-xs font-bold">
+              <Field>
+                <FieldLabel htmlFor="dim-manager-tag-input" className="text-xs font-bold">
                   Nilai Opsi Preset * (Ketik lalu tekan Enter)
                 </FieldLabel>
                 <Input
+                  id="dim-manager-tag-input"
                   placeholder="Ketik nama opsi lalu tekan Enter (misal: Small, Medium, Large)..."
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
@@ -375,13 +377,14 @@ export const VariantAttributeManagerTab: React.FC<VariantAttributeManagerTabProp
                     </span>
                   )}
                 </div>
-              </div>
+              </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">
+                <FieldLabel htmlFor="dim-manager-desc" className="text-xs font-bold">
                   Keterangan / Deskripsi (Opsional)
                 </FieldLabel>
                 <Input
+                  id="dim-manager-desc"
                   placeholder="Deskripsi atribut varian..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

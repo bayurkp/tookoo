@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
 import {
   Dialog,
   DialogContent,
@@ -331,8 +331,9 @@ export const CategoryManagerTab: React.FC<CategoryManagerTabProps> = ({
           >
             <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
               <Field>
-                <FieldLabel className="text-xs font-bold">Nama Kategori *</FieldLabel>
+                <FieldLabel htmlFor="cat-manager-name" className="text-xs font-bold">Nama Kategori *</FieldLabel>
                 <Input
+                  id="cat-manager-name"
                   placeholder="Contoh: Minuman Dingin, Snack Ringan, Kopi Susu"
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
@@ -342,7 +343,7 @@ export const CategoryManagerTab: React.FC<CategoryManagerTabProps> = ({
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">
+                <FieldLabel htmlFor="cat-manager-parent" className="text-xs font-bold">
                   Kategori Induk (Parent Category)
                 </FieldLabel>
                 <Select
@@ -357,7 +358,7 @@ export const CategoryManagerTab: React.FC<CategoryManagerTabProps> = ({
                     )
                   )}
                 >
-                  <SelectTrigger className="w-full h-9 text-xs font-medium">
+                  <SelectTrigger id="cat-manager-parent" className="w-full h-9 text-xs font-medium">
                     <SelectValue placeholder="Pilih Kategori Induk" />
                   </SelectTrigger>
                   <SelectContent>
@@ -373,17 +374,18 @@ export const CategoryManagerTab: React.FC<CategoryManagerTabProps> = ({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-muted-foreground mt-1">
+                <FieldDescription>
                   Pilih &ldquo;Kategori Utama&rdquo; jika ini kategori puncak, atau pilih induknya
                   jika merupakan sub-kategori.
-                </p>
+                </FieldDescription>
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">
+                <FieldLabel htmlFor="cat-manager-desc" className="text-xs font-bold">
                   Keterangan / Deskripsi (Opsional)
                 </FieldLabel>
                 <Input
+                  id="cat-manager-desc"
                   placeholder="Deskripsi singkat kategori produk..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

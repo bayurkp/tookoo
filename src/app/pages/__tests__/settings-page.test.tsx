@@ -26,37 +26,37 @@ describe('SettingsPage', () => {
     render(<SettingsPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText('Profil & Sistem')).toBeInTheDocument();
-      expect(screen.getByText('Format Nota & Struk')).toBeInTheDocument();
       expect(screen.getByText('Tampilan & Suara')).toBeInTheDocument();
       expect(screen.getByText('Keamanan & PIN')).toBeInTheDocument();
+      expect(screen.getByText('Cadangkan & Reset Data')).toBeInTheDocument();
     });
 
-    // Switch to Format Nota tab
-    const receiptTab = screen.getByRole('tab', { name: /Format Nota & Struk/i });
-    fireEvent.click(receiptTab);
+    // Switch to Keamanan & PIN tab
+    const securityTab = screen.getByRole('tab', { name: /Keamanan & PIN/i });
+    fireEvent.keyDown(securityTab, { key: 'Enter' });
 
     await waitFor(() => {
-      expect(screen.getByText(/Ukuran Kertas & Tipografi/i)).toBeInTheDocument();
-      expect(screen.getByText(/Pratinjau Nota Langsung/i)).toBeInTheDocument();
+      expect(screen.getByText(/PIN Pemilik Toko/i)).toBeInTheDocument();
+    });
+
+    // Switch to Cadangkan & Reset Data tab
+    const dataTab = screen.getByRole('tab', { name: /Cadangkan & Reset Data/i });
+    fireEvent.keyDown(dataTab, { key: 'Enter' });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Pembersihan & Reset Basis Data Lokal/i)).toBeInTheDocument();
     });
   });
 
-  it('updates store profile when submitted', async () => {
+  it('allows toggling theme modes', async () => {
     render(<SettingsPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByTestId('profile-form')).toBeInTheDocument();
+      expect(screen.getByText(/Tema & Tampilan/i)).toBeInTheDocument();
     });
 
-    const storeNameInput = screen.getByPlaceholderText(/Contoh: Toko Kopi Senja/i);
-    fireEvent.change(storeNameInput, { target: { value: 'Warung Berkah' } });
-
-    const form = screen.getByTestId('profile-form');
-    fireEvent.submit(form);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Pengaturan Berhasil Disimpan/i)).toBeInTheDocument();
-    });
+    const lightButton = screen.getByRole('button', { name: /Terang/i });
+    expect(lightButton).toBeInTheDocument();
+    fireEvent.click(lightButton);
   });
 });

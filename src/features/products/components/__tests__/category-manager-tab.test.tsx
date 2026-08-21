@@ -78,6 +78,9 @@ describe('CategoryManagerTab', () => {
       expect(screen.getByText('Minuman')).toBeInTheDocument();
     });
 
+    const searchInput = screen.getByPlaceholderText(/Cari kategori/i);
+    fireEvent.change(searchInput, { target: { value: 'Minuman' } });
+
     const viewButtons = screen.getAllByRole('button', { name: /Lihat Produk/i });
     fireEvent.click(viewButtons[0]);
 

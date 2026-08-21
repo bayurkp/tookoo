@@ -24,21 +24,22 @@ describe('TablesPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Denah & Tata Letak Meja')).toBeInTheDocument();
-      expect(screen.getByText('Total Meja')).toBeInTheDocument();
-      expect(screen.getByText('Kosong (Tersedia)')).toBeInTheDocument();
-      expect(screen.getByText('Terisi / Ada Bill')).toBeInTheDocument();
     });
+
+    expect(screen.getByText(/Total Meja/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Kosong/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/Terisi/i)[0]).toBeInTheDocument();
   });
 
   it('opens add table modal dialog', async () => {
     render(<TablesPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText('Tambah Meja')).toBeInTheDocument();
+      expect(screen.getByText('Denah & Tata Letak Meja')).toBeInTheDocument();
     });
 
-    const addBtn = screen.getByRole('button', { name: /Tambah Meja/i });
-    fireEvent.click(addBtn);
+    const addButtons = screen.getAllByRole('button', { name: /Tambah Meja/i });
+    fireEvent.click(addButtons[0]);
 
     await waitFor(() => {
       expect(screen.getByText('Tambah Meja Baru')).toBeInTheDocument();

@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
 import {
   Dialog,
   DialogContent,
@@ -249,8 +249,9 @@ export const UomManagerTab: React.FC<UomManagerTabProps> = ({ products }) => {
           >
             <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
               <Field>
-                <FieldLabel className="text-xs font-bold">Nama Satuan Lengkap *</FieldLabel>
+                <FieldLabel htmlFor="uom-manager-name" className="text-xs font-bold">Nama Satuan Lengkap *</FieldLabel>
                 <Input
+                  id="uom-manager-name"
                   placeholder="Contoh: Porsi Makanan, Gelas Minum, Kilogram, Cup"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -260,24 +261,26 @@ export const UomManagerTab: React.FC<UomManagerTabProps> = ({ products }) => {
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">Simbol / Kode Singkat *</FieldLabel>
+                <FieldLabel htmlFor="uom-manager-symbol" className="text-xs font-bold">Simbol / Kode Singkat *</FieldLabel>
                 <Input
+                  id="uom-manager-symbol"
                   placeholder="Contoh: porsi, cup, gelas, kg, pcs, pack"
                   value={symbol}
                   onChange={(e) => setSymbol(e.target.value)}
                   required
                   className="h-9 text-xs font-mono font-bold"
                 />
-                <p className="text-[11px] text-muted-foreground mt-1">
+                <FieldDescription>
                   Simbol singkat akan dicetak di samping kuantitas struk (misal: 2 porsi, 1 cup).
-                </p>
+                </FieldDescription>
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">
+                <FieldLabel htmlFor="uom-manager-desc" className="text-xs font-bold">
                   Keterangan / Deskripsi (Opsional)
                 </FieldLabel>
                 <Input
+                  id="uom-manager-desc"
                   placeholder="Keterangan peruntukan satuan..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

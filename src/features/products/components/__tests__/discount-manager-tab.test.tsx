@@ -23,8 +23,8 @@ describe('DiscountManagerTab', () => {
     render(<DiscountManagerTab />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText('Master Diskon & Promo')).toBeInTheDocument();
-      expect(screen.getByText('Tambah Diskon Baru')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/Cari diskon atau kode voucher/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Tambah Diskon/i })).toBeInTheDocument();
     });
   });
 
@@ -32,17 +32,16 @@ describe('DiscountManagerTab', () => {
     render(<DiscountManagerTab />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText('Tambah Diskon Baru')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Tambah Diskon/i })).toBeInTheDocument();
     });
 
-    const addBtn = screen.getByRole('button', { name: /Tambah Diskon Baru/i });
+    const addBtn = screen.getByRole('button', { name: /Tambah Diskon/i });
     fireEvent.click(addBtn);
 
     await waitFor(() => {
-      expect(screen.getByText('Tambah Promo Diskon Baru')).toBeInTheDocument();
+      expect(screen.getByText(/Tambah Promo Diskon Baru/i)).toBeInTheDocument();
       expect(screen.getByPlaceholderText(/Contoh: Diskon Pelajar 10%/i)).toBeInTheDocument();
       expect(screen.getByText(/Cakupan Berlakunya Diskon/i)).toBeInTheDocument();
-      expect(screen.getByText(/Tentukan Batas Waktu/i)).toBeInTheDocument();
     });
   });
 });

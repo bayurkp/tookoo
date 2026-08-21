@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Field, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
 import {
   Select,
   SelectTrigger,
@@ -111,10 +111,11 @@ export const StaffFormDialog: React.FC<StaffFormDialogProps> = ({
           <FieldGroup className="space-y-3.5">
             {/* Nama Staf */}
             <Field>
-              <FieldLabel className="text-xs font-bold">
+              <FieldLabel htmlFor="staff-name" className="text-xs font-bold">
                 Nama Staf / Kasir <span className="text-destructive">*</span>
               </FieldLabel>
               <Input
+                id="staff-name"
                 placeholder="Contoh: Budi Santoso, Siti Rahma"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -126,12 +127,12 @@ export const StaffFormDialog: React.FC<StaffFormDialogProps> = ({
 
             {/* Role / Jabatan */}
             <Field>
-              <FieldLabel className="text-xs font-bold flex items-center gap-1">
+              <FieldLabel htmlFor="staff-role" className="text-xs font-bold flex items-center gap-1">
                 <Shield className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Peran / Hak Akses</span>
               </FieldLabel>
               <Select value={role} onValueChange={(val) => setRole(val as UserRole)}>
-                <SelectTrigger className="h-9 text-xs bg-background">
+                <SelectTrigger id="staff-role" className="h-9 text-xs bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,11 +147,12 @@ export const StaffFormDialog: React.FC<StaffFormDialogProps> = ({
 
             {/* PIN Cepat Kasir */}
             <Field>
-              <FieldLabel className="text-xs font-bold flex items-center gap-1">
+              <FieldLabel htmlFor="staff-pin" className="text-xs font-bold flex items-center gap-1">
                 <KeyRound className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>PIN Cepat Kasir (4-6 Digit)</span>
               </FieldLabel>
               <Input
+                id="staff-pin"
                 type="password"
                 maxLength={6}
                 placeholder="1234 (Opsional)"
@@ -158,18 +160,19 @@ export const StaffFormDialog: React.FC<StaffFormDialogProps> = ({
                 onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
                 className="h-9 text-xs font-mono"
               />
-              <p className="text-[10px] text-muted-foreground">
+              <FieldDescription>
                 Digunakan untuk otentikasi cepat saat ganti shift atau login kasir.
-              </p>
+              </FieldDescription>
             </Field>
 
             {/* No Telepon */}
             <Field>
-              <FieldLabel className="text-xs font-bold flex items-center gap-1">
+              <FieldLabel htmlFor="staff-phone" className="text-xs font-bold flex items-center gap-1">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Nomor WhatsApp / HP</span>
               </FieldLabel>
               <Input
+                id="staff-phone"
                 placeholder="0812-3456-7890"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}

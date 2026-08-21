@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { useUpsertSupplier } from '@/features/suppliers/hooks/use-suppliers';
 import type { Supplier } from '@/types/supplier.types';
 import { Building2, User, Phone, Mail, MapPin, Package, CreditCard, FileText } from 'lucide-react';
@@ -93,7 +93,7 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
   const onSubmit = async (data: SupplierFormInput) => {
     try {
       await upsertMutation.mutateAsync({
-        id: supplierToEdit?.id,
+        id: supplierToEdit ? supplierToEdit.id : undefined,
         name: data.name.trim(),
         contactPerson: data.contactPerson?.trim() || undefined,
         phone: data.phone.trim(),
@@ -125,97 +125,104 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
           {/* Nama Vendor & PIC */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field data-invalid={Boolean(errors.name)}>
+              <FieldLabel htmlFor="supplier-name" className="text-xs font-semibold flex items-center gap-1.5">
                 <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Nama Vendor / Pemasok *</span>
-              </Label>
+              </FieldLabel>
               <Input
+                id="supplier-name"
                 placeholder="misal: PT Sumber Kopi Nusantara"
                 {...register('name')}
+                aria-invalid={Boolean(errors.name)}
                 className={errors.name ? 'border-destructive' : ''}
               />
-              {errors.name && <p className="text-[11px] text-destructive">{errors.name.message}</p>}
-            </div>
+              <FieldError errors={[{ message: errors.name?.message }]} />
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field>
+              <FieldLabel htmlFor="supplier-contact-person" className="text-xs font-semibold flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Nama Kontak / Sales (PIC)</span>
-              </Label>
-              <Input placeholder="misal: Hendra (Sales)" {...register('contactPerson')} />
-            </div>
+              </FieldLabel>
+              <Input id="supplier-contact-person" placeholder="misal: Hendra (Sales)" {...register('contactPerson')} className="h-9 text-xs" />
+            </Field>
           </div>
 
           {/* No WhatsApp & Email */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field data-invalid={Boolean(errors.phone)}>
+              <FieldLabel htmlFor="supplier-phone" className="text-xs font-semibold flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>No. WhatsApp / HP *</span>
-              </Label>
+              </FieldLabel>
               <Input
+                id="supplier-phone"
                 placeholder="misal: 081398765432"
                 {...register('phone')}
+                aria-invalid={Boolean(errors.phone)}
                 className={errors.phone ? 'border-destructive' : ''}
               />
-              {errors.phone && (
-                <p className="text-[11px] text-destructive">{errors.phone.message}</p>
-              )}
-            </div>
+              <FieldError errors={[{ message: errors.phone?.message }]} />
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field data-invalid={Boolean(errors.email)}>
+              <FieldLabel htmlFor="supplier-email" className="text-xs font-semibold flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Email Vendor (Opsional)</span>
-              </Label>
+              </FieldLabel>
               <Input
+                id="supplier-email"
                 type="email"
                 placeholder="misal: sales@sumberkopi.com"
                 {...register('email')}
+                className="h-9 text-xs"
               />
-            </div>
+              <FieldError errors={[{ message: errors.email?.message }]} />
+            </Field>
           </div>
 
           {/* Barang Suplai & Termin Pembayaran */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-muted/40 rounded-xl border border-border/60">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field>
+              <FieldLabel htmlFor="supplier-items" className="text-xs font-semibold flex items-center gap-1.5">
                 <Package className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Barang yang Disuplai</span>
-              </Label>
-              <Input placeholder="misal: Biji Kopi, Sirup, Cup" {...register('suppliedItems')} />
-            </div>
+              </FieldLabel>
+              <Input id="supplier-items" placeholder="misal: Biji Kopi, Sirup, Cup" {...register('suppliedItems')} className="h-9 text-xs" />
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold flex items-center gap-1.5">
+            <Field>
+              <FieldLabel htmlFor="supplier-terms" className="text-xs font-semibold flex items-center gap-1.5">
                 <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>Termin Pembayaran</span>
-              </Label>
-              <Input placeholder="misal: COD Tunai / Tempo 14 Hari" {...register('paymentTerms')} />
-            </div>
+              </FieldLabel>
+              <Input id="supplier-terms" placeholder="misal: COD Tunai / Tempo 14 Hari" {...register('paymentTerms')} className="h-9 text-xs" />
+            </Field>
           </div>
 
           {/* Alamat Gudang / Kantor */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold flex items-center gap-1.5">
+          <Field>
+            <FieldLabel htmlFor="supplier-address" className="text-xs font-semibold flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
               <span>Alamat Kantor / Gudang Vendor</span>
-            </Label>
+            </FieldLabel>
             <Input
+              id="supplier-address"
               placeholder="misal: Kawasan Industri Pulo Gadung Blok B4"
               {...register('address')}
+              className="h-9 text-xs"
             />
-          </div>
+          </Field>
 
           {/* Catatan */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold flex items-center gap-1.5">
+          <Field>
+            <FieldLabel htmlFor="supplier-notes" className="text-xs font-semibold flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5 text-muted-foreground" />
               <span>Catatan Khusus</span>
-            </Label>
-            <Input placeholder="misal: Minimal order 10kg bebas ongkir" {...register('notes')} />
-          </div>
+            </FieldLabel>
+            <Input id="supplier-notes" placeholder="misal: Minimal order 10kg bebas ongkir" {...register('notes')} className="h-9 text-xs" />
+          </Field>
 
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

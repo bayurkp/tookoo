@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { normalizePassphrase } from '@/lib/passphrase';
 import { sounds } from '@/utils/audio';
 import type { StorePairingPayload } from '@/types/sync.types';
@@ -293,11 +294,12 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
           {/* Manual Passphrase Tab */}
           <TabsContent value="manual" className="pt-2 space-y-3">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+            <Field>
+              <FieldLabel htmlFor="scanner-manual-passphrase" className="text-xs font-semibold text-foreground">
                 {t('sync.scanner.passphraseLabel', '12 Kata Kunci Toko *')}
-              </label>
+              </FieldLabel>
               <textarea
+                id="scanner-manual-passphrase"
                 value={manualPassphrase}
                 onChange={(e) => {
                   setManualPassphrase(e.target.value);
@@ -307,13 +309,13 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
                 placeholder="ocean forest monkey vintage crystal guitar silver river tiger winter cloud amber"
                 className="w-full rounded-md border border-input bg-background p-2.5 text-xs font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
-              <p className="text-[11px] text-muted-foreground">
+              <FieldDescription>
                 {t(
                   'sync.scanner.passphraseHelper',
                   'Salin 12 kata kunci dari menu Sinkronisasi pada terminal kasir utama.'
                 )}
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
 
             {errorMessage && (
               <div className="flex items-start gap-1.5 text-xs text-destructive bg-destructive/10 p-2.5 rounded-md font-medium">

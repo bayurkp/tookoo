@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -571,22 +572,23 @@ export const DataManagementSection: React.FC = () => {
               <p className="text-[11px]">{details.warning}</p>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
+            <Field>
+              <FieldLabel htmlFor="data-confirm-keyword" className="text-xs font-semibold text-foreground">
                 Ketik kata{' '}
-                <span className="font-mono font-bold text-destructive underline">
+                <span className="font-mono font-bold text-destructive underline mx-1">
                   {details.requiredKeyword}
                 </span>{' '}
                 untuk mengonfirmasi:
-              </label>
+              </FieldLabel>
               <Input
+                id="data-confirm-keyword"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder={`Ketik "${details.requiredKeyword}"`}
                 className="h-9 text-xs font-mono"
                 autoFocus
               />
-            </div>
+            </Field>
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">

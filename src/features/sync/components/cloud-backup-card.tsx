@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Select,
@@ -369,12 +369,12 @@ export const CloudBackupCard: React.FC = () => {
             <div className="p-4 bg-muted/20 border rounded-xl space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Frekuensi Cadangan Otomatis</FieldLabel>
+                  <FieldLabel htmlFor="cloud-auto-interval" className="text-xs font-bold">Frekuensi Cadangan Otomatis</FieldLabel>
                   <Select
                     value={autoInterval}
                     onValueChange={(val) => setAutoInterval(val as AutoBackupInterval)}
                   >
-                    <SelectTrigger className="h-9 text-xs font-medium">
+                    <SelectTrigger id="cloud-auto-interval" className="h-9 text-xs font-medium">
                       <SelectValue placeholder="Pilih Frekuensi" />
                     </SelectTrigger>
                     <SelectContent>
@@ -457,19 +457,20 @@ export const CloudBackupCard: React.FC = () => {
             <div className="p-4 bg-muted/20 border rounded-xl space-y-4">
               <div className="space-y-2">
                 <Field>
-                  <FieldLabel className="text-xs font-bold">
+                  <FieldLabel htmlFor="cloud-gdrive-token" className="text-xs font-bold">
                     Google Drive OAuth Access Token / API Key
                   </FieldLabel>
                   <Input
+                    id="cloud-gdrive-token"
                     value={gdriveToken}
                     onChange={(e) => setGdriveToken(e.target.value)}
                     placeholder="Masukkan Google OAuth 2.0 Bearer Access Token..."
                     className="h-9 text-xs font-mono"
                   />
-                  <p className="text-[11px] text-muted-foreground mt-1">
+                  <FieldDescription>
                     Dapat diperoleh dari Google Cloud Console atau integrasi Google Identity
                     Services.
-                  </p>
+                  </FieldDescription>
                 </Field>
 
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -561,29 +562,31 @@ export const CloudBackupCard: React.FC = () => {
             <div className="p-4 bg-muted/20 border rounded-xl space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Telegram Bot Token *</FieldLabel>
+                  <FieldLabel htmlFor="cloud-tg-token" className="text-xs font-bold">Telegram Bot Token *</FieldLabel>
                   <Input
+                    id="cloud-tg-token"
                     value={tgToken}
                     onChange={(e) => setTgToken(e.target.value)}
                     placeholder="Contoh: 123456789:ABCdefGhIJKlmNoPQR..."
                     className="h-9 text-xs font-mono"
                   />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                  <FieldDescription>
                     Dibuat via @BotFather di aplikasi Telegram.
-                  </p>
+                  </FieldDescription>
                 </Field>
 
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Chat ID / Channel ID *</FieldLabel>
+                  <FieldLabel htmlFor="cloud-tg-chat-id" className="text-xs font-bold">Chat ID / Channel ID *</FieldLabel>
                   <Input
+                    id="cloud-tg-chat-id"
                     value={tgChatId}
                     onChange={(e) => setTgChatId(e.target.value)}
                     placeholder="Contoh: 987654321 atau @nama_channel"
                     className="h-9 text-xs font-mono"
                   />
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                  <FieldDescription>
                     ID obrolan pribadi atau grup/channel kasir Anda.
-                  </p>
+                  </FieldDescription>
                 </Field>
               </div>
 
@@ -624,16 +627,17 @@ export const CloudBackupCard: React.FC = () => {
           <TabsContent value="discord" className="space-y-4 m-0">
             <div className="p-4 bg-muted/20 border rounded-xl space-y-3">
               <Field>
-                <FieldLabel className="text-xs font-bold">Discord Channel Webhook URL *</FieldLabel>
+                <FieldLabel htmlFor="cloud-discord-webhook" className="text-xs font-bold">Discord Channel Webhook URL *</FieldLabel>
                 <Input
+                  id="cloud-discord-webhook"
                   value={discordWebhook}
                   onChange={(e) => setDiscordWebhook(e.target.value)}
                   placeholder="Contoh: https://discord.com/api/webhooks/1234567890/abcDEF..."
                   className="h-9 text-xs font-mono"
                 />
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+                <FieldDescription>
                   Dibuat dari Server Discord → Edit Channel → Integrations → Webhooks.
-                </p>
+                </FieldDescription>
               </Field>
 
               <div className="flex flex-wrap gap-2 pt-2 border-t">

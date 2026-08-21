@@ -24,6 +24,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { PageHeader } from '@/components/page-header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PinModal } from '@/components/pin-modal';
@@ -451,11 +452,12 @@ export const SettingsPage: React.FC = () => {
                     onSubmit={handleSavePin}
                     className="p-4 bg-muted/20 border border-dashed rounded-xl space-y-3 animate-in fade-in-50"
                   >
-                    <div>
-                      <label className="text-xs font-bold block mb-1">
+                    <Field>
+                      <FieldLabel htmlFor="settings-owner-pin" className="text-xs font-bold">
                         {t('settings.security.enterPin', 'Masukkan 4-6 Digit Angka PIN')}
-                      </label>
+                      </FieldLabel>
                       <Input
+                        id="settings-owner-pin"
                         type="password"
                         maxLength={6}
                         inputMode="numeric"
@@ -466,13 +468,13 @@ export const SettingsPage: React.FC = () => {
                         className="h-10 text-center text-lg font-mono tracking-widest bg-card"
                         autoFocus
                       />
-                      <p className="text-[10px] text-muted-foreground mt-1">
+                      <FieldDescription>
                         {t(
                           'settings.security.pinTip',
                           'Gunakan angka yang mudah Anda ingat tetapi sulit ditebak staf kasir.'
                         )}
-                      </p>
-                    </div>
+                      </FieldDescription>
+                    </Field>
 
                     <div className="flex gap-2">
                       <Button
