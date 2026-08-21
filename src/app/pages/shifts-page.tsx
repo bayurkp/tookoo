@@ -80,7 +80,7 @@ export const ShiftsPage: React.FC = () => {
                 className="gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
               >
                 <CheckCircle2 className="size-3" />
-                <span>{t('shifts.shiftActive', 'Shift 1 (Aktif)')}</span>
+                <span>{t('shifts.shiftActive', 'Shift 1 Aktif')}</span>
               </Badge>
             </div>
           </CardHeader>
@@ -101,7 +101,7 @@ export const ShiftsPage: React.FC = () => {
         <Card className="rounded-xl shadow-none">
           <CardHeader className="p-4 pb-2">
             <span className="text-xs font-medium text-muted-foreground">
-              {t('shifts.cashDrawer', 'Saldo Kas Fisik (Laci)')}
+              {t('shifts.cashDrawer', 'Saldo Kas Fisik Laci')}
             </span>
           </CardHeader>
           <CardContent className="p-4 pt-1 space-y-2">
@@ -157,10 +157,10 @@ export const ShiftsPage: React.FC = () => {
             </div>
             <div>
               <div className="text-sm font-bold text-foreground">
-                {t('shifts.paidIn', 'Kas Masuk (Paid-In)')}
+                {t('shifts.paidIn', 'Kas Masuk')}
               </div>
               <div className="text-xs text-muted-foreground">
-                {t('shifts.paidInDesc', 'Tambah uang kembalian / modal tambahan ke laci kasir.')}
+                {t('shifts.paidInDesc', 'Tambah uang modal atau uang kembalian ke laci kasir.')}
               </div>
             </div>
           </div>
@@ -177,12 +177,12 @@ export const ShiftsPage: React.FC = () => {
             </div>
             <div>
               <div className="text-sm font-bold text-foreground">
-                {t('shifts.paidOut', 'Kas Keluar (Paid-Out)')}
+                {t('shifts.paidOut', 'Kas Keluar')}
               </div>
               <div className="text-xs text-muted-foreground">
                 {t(
                   'shifts.paidOutDesc',
-                  'Ambil uang dari laci untuk kebutuhan mendesak / operasional toko.'
+                  'Ambil uang dari laci untuk kebutuhan operasional toko.'
                 )}
               </div>
             </div>

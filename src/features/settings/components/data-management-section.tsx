@@ -87,7 +87,7 @@ export const DataManagementSection: React.FC = () => {
           requiredKeyword: 'HAPUS',
           badgeText: `${summary?.ordersCount ?? 0} Transaksi`,
           warning:
-            'Data transaksi yang dihapus tidak dapat dipulihkan kecuali ada file cadangan (backup).',
+            'Data transaksi yang dihapus tidak dapat dipulihkan kecuali ada berkas cadangan.',
         };
       case 'CLEAR_PRODUCTS':
         return {
@@ -127,17 +127,17 @@ export const DataManagementSection: React.FC = () => {
         };
       case 'RESET_ALL':
         return {
-          title: 'Reset Total Toko (Factory Reset)',
+          title: 'Reset Total Toko',
           description:
             'Tindakan ini akan MENGHAPUS SEMUA DATA di perangkat ini (transaksi, produk, meja, promo, pengaturan) dan mereset toko ke kondisi baru.',
           requiredKeyword: 'RESET TOTAL',
           badgeText: `${summary?.totalRecords ?? 0} Total Rekaman`,
           warning:
-            'SEMUA DATA AKAN HILANG PERMANEN. Sangat disarankan untuk mengunduh berkas cadangan JSON terlebih dahulu.',
+            'SEMUA DATA AKAN HILANG PERMANEN. Sangat disarankan untuk mengunduh berkas cadangan terlebih dahulu.',
         };
       case 'LOAD_DEMO':
         return {
-          title: 'Muat Data Demo Toko Lengkap (Market Indonesia)',
+          title: 'Muat Data Demo Toko Lengkap',
           description:
             'Tindakan ini akan mengisikan katalog kuliner Nusantara lengkap: produk dengan foto HD & varian, kategori, denah meja, data pelanggan, supplier vendor, pengeluaran kas, serta riwayat transaksi.',
           requiredKeyword: 'DEMO',
@@ -247,7 +247,7 @@ export const DataManagementSection: React.FC = () => {
               className="gap-2 text-xs font-bold shrink-0 cursor-pointer"
             >
               <Download className="h-4 w-4 text-primary" />
-              <span>Unduh File Cadangan (JSON)</span>
+              <span>Unduh Berkas Cadangan</span>
             </Button>
           </div>
         </CardHeader>
@@ -320,7 +320,7 @@ export const DataManagementSection: React.FC = () => {
               </div>
               <div>
                 <CardTitle className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2">
-                  <span>Data Demo Toko Lengkap (Market Indonesia)</span>
+                  <span>Data Demo Toko Lengkap</span>
                   <Badge
                     variant="default"
                     className="text-[10px] bg-primary text-primary-foreground font-bold"
@@ -360,7 +360,7 @@ export const DataManagementSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 1. Clear Orders */}
-          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between">
+          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -380,12 +380,12 @@ export const DataManagementSection: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Cocok dilakukan setelah masa uji coba kasir atau pergantian buku tanpa menghapus
                 katalog produk.
               </p>
             </CardContent>
-            <CardFooter className="p-4 pt-0 border-t flex justify-end">
+            <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
               <Button
                 variant="outline"
                 size="sm"
@@ -399,7 +399,7 @@ export const DataManagementSection: React.FC = () => {
           </Card>
 
           {/* 2. Clear Products & Stock */}
-          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between">
+          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -419,12 +419,12 @@ export const DataManagementSection: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Menghapus semua menu makanan/minuman dan produk retail. Riwayat transaksi tetap
                 aman.
               </p>
             </CardContent>
-            <CardFooter className="p-4 pt-0 border-t flex justify-end">
+            <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
               <Button
                 variant="outline"
                 size="sm"
@@ -438,7 +438,7 @@ export const DataManagementSection: React.FC = () => {
           </Card>
 
           {/* 3. Clear Tables */}
-          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between">
+          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -458,11 +458,11 @@ export const DataManagementSection: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Menghapus semua susunan meja restoran/kafe di denah kasir.
               </p>
             </CardContent>
-            <CardFooter className="p-4 pt-0 border-t flex justify-end">
+            <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
               <Button
                 variant="outline"
                 size="sm"
@@ -476,7 +476,7 @@ export const DataManagementSection: React.FC = () => {
           </Card>
 
           {/* 4. Reset Master Data to Defaults */}
-          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between">
+          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -496,12 +496,12 @@ export const DataManagementSection: React.FC = () => {
               </div>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[11px] text-muted-foreground">
-                Mereset kategori, satuan (UOM), varian, modifier, diskon, dan pajak ke template
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Mereset kategori, satuan produk, varian, modifier, diskon, dan pajak ke template
                 bawaan.
               </p>
             </CardContent>
-            <CardFooter className="p-4 pt-0 border-t flex justify-end">
+            <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
               <Button
                 variant="outline"
                 size="sm"
@@ -522,7 +522,7 @@ export const DataManagementSection: React.FC = () => {
           <div className="flex items-center gap-2.5 text-destructive">
             <ShieldAlert className="h-5 w-5" />
             <div>
-              <CardTitle className="text-sm font-bold">Zona Bahaya (Danger Zone)</CardTitle>
+              <CardTitle className="text-sm font-bold">Zona Bahaya</CardTitle>
               <CardDescription className="text-xs text-destructive/80 mt-0.5">
                 Tindakan tidak dapat dibatalkan. Pastikan Anda telah mengunduh berkas cadangan.
               </CardDescription>
@@ -532,7 +532,7 @@ export const DataManagementSection: React.FC = () => {
 
         <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h4 className="text-xs font-bold text-foreground">Reset Total Toko (Factory Reset)</h4>
+            <h4 className="text-xs font-bold text-foreground">Reset Total Toko</h4>
             <p className="text-[11px] text-muted-foreground">
               Menghapus seluruh data IndexedDB (transaksi, produk, meja, promo, dan profil toko) dan
               mengembalikan aplikasi ke kondisi toko baru.

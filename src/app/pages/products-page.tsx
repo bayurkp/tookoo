@@ -377,7 +377,7 @@ export const ProductsPage: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger value="uom" className="gap-2 text-xs font-bold px-3 py-1.5">
                 <Scale className="h-3.5 w-3.5" />
-                <span>Satuan (UOM)</span>
+                <span>Satuan Produk</span>
               </TabsTrigger>
               <TabsTrigger value="variants" className="gap-2 text-xs font-bold px-3 py-1.5">
                 <Sparkles className="h-3.5 w-3.5" />

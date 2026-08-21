@@ -113,7 +113,7 @@ export const MainLayout: React.FC = () => {
     if (path.startsWith('/inventory')) {
       return {
         group: t('nav.groups.accounting', 'Akuntansi & Inventaris'),
-        title: t('nav.items.inventoryAdjustments', 'Penyesuaian Stok (Opname)'),
+        title: t('nav.items.inventoryAdjustments', 'Penyesuaian Stok'),
       };
     }
     if (path.startsWith('/reports')) {

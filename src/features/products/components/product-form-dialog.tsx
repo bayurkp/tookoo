@@ -659,7 +659,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                   <Field>
                     <div className="flex items-center justify-between mb-1">
                       <FieldLabel htmlFor="simple-product-unit" className="text-xs font-bold">
-                        Satuan Unit (UOM) *
+                        Satuan Produk *
                       </FieldLabel>
                       <button
                         type="button"
@@ -1013,7 +1013,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                     <Field>
                       <div className="flex items-center justify-between mb-1">
                         <FieldLabel htmlFor="adv-product-unit" className="text-xs font-bold">
-                          Satuan Unit (UOM) *
+                          Satuan Produk *
                         </FieldLabel>
                         <button
                           type="button"

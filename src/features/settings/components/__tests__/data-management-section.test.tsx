@@ -26,9 +26,9 @@ describe('DataManagementSection', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Pembersihan & Reset Basis Data Lokal')).toBeInTheDocument();
-      expect(screen.getByText('Hapus Riwayat Transaksi & Struk')).toBeInTheDocument();
-      expect(screen.getByText('Hapus Katalog Produk & Stok')).toBeInTheDocument();
-      expect(screen.getByText('Zona Bahaya (Danger Zone)')).toBeInTheDocument();
+      expect(screen.getByText('Riwayat Transaksi & Struk')).toBeInTheDocument();
+      expect(screen.getByText('Katalog Produk & Stok')).toBeInTheDocument();
+      expect(screen.getByText('Zona Bahaya')).toBeInTheDocument();
       expect(screen.getByText('Reset Total Toko')).toBeInTheDocument();
     });
   });

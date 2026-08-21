@@ -31,7 +31,7 @@
     "dashboard": "Dasbor",
     "cashier": "Kasir",
     "products": "Produk",
-    "stockAdjustment": "Penyesuaian Stok (Opname)",
+    "stockAdjustment": "Penyesuaian Stok",
     "orders": "Riwayat Transaksi",
     "sync": "Sinkronisasi",
     "settings": "Pengaturan",
@@ -75,8 +75,8 @@
   },
   "status": {
     "p2pConnected": "Tersambung ({{count}} Kasir)",
-    "localMode": "Kasir Siap (Lokal)",
-    "offline": "Mode Offline (Data Aman di Perangkat)"
+    "localMode": "Kasir Siap",
+    "offline": "Mode Offline"
   },
   "cashier": {
     "title": "Terminal Kasir",
@@ -189,7 +189,7 @@
       "deviceLabel": "Nama Perangkat Ini",
       "saveStoreName": "Simpan Nama Toko",
       "saveDeviceName": "Simpan Nama Perangkat",
-      "passphraseLabel": "Kunci Keamanan Toko (12 Kata Mnemonic)",
+      "passphraseLabel": "Kunci Keamanan Toko (12 Kata)",
       "regenerate": "Ganti Kunci Baru",
       "copy": "Salin 12 Kata Kunci",
       "shareLink": "Salin Tautan Toko",
@@ -223,7 +223,7 @@
       "title": "Perangkat Kasir Terhubung",
       "desc": "Daftar terminal kasir yang sedang aktif tersambung di toko Anda.",
       "syncNow": "Samakan Data Sekarang",
-      "standalone": "Mode 1 Kasir (Mandiri)",
+      "standalone": "Mode Kasir Mandiri",
       "standaloneDesc": "Belum ada terminal kasir lain yang terhubung. Sambungkan HP atau tablet kasir lain dengan memindai kode QR atau memasukkan 12 kata kunci."
     },
     "backup": {
@@ -241,21 +241,21 @@
     "printXReport": "Cetak Laporan X",
     "closeShift": "Tutup Shift Kasir",
     "currentShift": "Shift Saat Ini",
-    "shiftActive": "Shift 1 (Aktif)",
+    "shiftActive": "Shift 1 Aktif",
     "openedToday": "Dibuka hari ini, 08:00 WIB",
     "terminal": "Terminal",
-    "cashDrawer": "Saldo Kas Fisik (Laci)",
+    "cashDrawer": "Saldo Kas Fisik Laci",
     "initialCash": "Modal Kas Awal",
     "cashSales": "Penjualan Tunai",
     "nonCashSales": "Transaksi Non-Tunai",
     "shiftOrders": "Total Transaksi Shift",
     "ordersCount": "{{count}} Pesanan",
     "qrisAndTransfer": "QRIS & Transfer",
-    "paidIn": "Kas Masuk (Paid-In)",
-    "paidInDesc": "Tambah uang kembalian / modal tambahan ke laci kasir.",
+    "paidIn": "Kas Masuk",
+    "paidInDesc": "Tambah uang modal atau uang kembalian ke laci kasir.",
     "paidInBtn": "Kas Masuk",
-    "paidOut": "Kas Keluar (Paid-Out)",
-    "paidOutDesc": "Ambil uang dari laci untuk kebutuhan mendesak / operasional toko.",
+    "paidOut": "Kas Keluar",
+    "paidOutDesc": "Ambil uang dari laci untuk kebutuhan operasional toko.",
     "paidOutBtn": "Kas Keluar"
   },
   "settings": {
@@ -291,8 +291,8 @@
     "language": {
       "title": "Bahasa Aplikasi",
       "desc": "Pilih bahasa tampilan untuk menu kasir, produk, dan laporan.",
-      "indonesian": "Bahasa Indonesia (ID)",
-      "english": "English (EN)"
+      "indonesian": "Bahasa Indonesia",
+      "english": "English"
     },
     "sound": {
       "title": "Suara & Operasional Kasir",
@@ -311,7 +311,7 @@
       "autoPrintDesc": "Langsung buka jendela cetak struk setelah konfirmasi bayar.",
       "deviceId": "ID Terminal Toko",
       "storageStatus": "Penyimpanan Database Lokal",
-      "storageDesc": "100% data tersimpan aman secara lokal di peramban (IndexedDB)."
+      "storageDesc": "100% data tersimpan aman di peramban lokal."
     }
   },
   "auth": {
@@ -321,8 +321,8 @@
       "cashier": "Kasir"
     },
     "viewMode": "Mode Tampilan",
-    "simpleMode": "Mode Sederhana (Lite)",
-    "advancedMode": "Mode Lengkap (Pro)",
+    "simpleMode": "Mode Sederhana",
+    "advancedMode": "Mode Lengkap",
     "switchRole": "Ganti Hak Akses",
     "pinModalTitle": "Otorisasi PIN Pemilik",
     "pinModalDesc": "Masukkan PIN Pemilik untuk mengubah peran terminal menjadi {{role}}."

@@ -188,7 +188,7 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Sliders className="size-3.5" />
-                    <span>{t('auth.simpleMode', 'Mode Sederhana (Lite)')}</span>
+                    <span>{t('auth.simpleMode', 'Mode Sederhana')}</span>
                   </div>
                   {appMode === 'SIMPLE' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>
@@ -199,7 +199,7 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Sliders className="size-3.5" />
-                    <span>{t('auth.advancedMode', 'Mode Lengkap (Pro)')}</span>
+                    <span>{t('auth.advancedMode', 'Mode Lengkap')}</span>
                   </div>
                   {appMode === 'ADVANCED' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>

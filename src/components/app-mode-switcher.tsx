@@ -82,7 +82,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 <Zap className="h-5 w-5 fill-amber-500/30" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-foreground">Mode Sederhana (Lite)</h3>
+                <h3 className="text-sm font-bold text-foreground">Mode Sederhana</h3>
                 <p className="text-xs text-muted-foreground">Cepat, praktis, dan tanpa ribet</p>
               </div>
             </div>
@@ -147,7 +147,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 <Rocket className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-foreground">Mode Lanjutan (Pro)</h3>
+                <h3 className="text-sm font-bold text-foreground">Mode Lanjutan</h3>
                 <p className="text-xs text-muted-foreground">Fitur lengkap bisnis & F&B modern</p>
               </div>
             </div>
@@ -160,15 +160,15 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
             <ul className="space-y-1.5 pt-2 text-xs text-muted-foreground">
               <li className="flex items-center gap-2 text-foreground font-medium">
                 <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>Denah Meja Kanvas Interaktif (Snap-to-Grid)</span>
+                <span>Denah Meja Kanvas Interaktif</span>
               </li>
               <li className="flex items-center gap-2 text-foreground font-medium">
                 <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>Varian Multi-Dimensi & Grup Modifier Topping</span>
+                <span>Varian, Modifier Opsi, & Multi-UOM</span>
               </li>
               <li className="flex items-center gap-2 text-foreground font-medium">
                 <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>Laporan Analitik, Mutasi Stok, P2P Mesh</span>
+                <span>Laporan Omzet, Laba Rugi, & Tutup Buku</span>
               </li>
             </ul>
           </div>
@@ -209,7 +209,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
           </div>
           <div className="min-w-0">
             <span className="text-[11px] font-bold text-foreground truncate block">
-              {isSimple ? 'Mode Sederhana' : 'Mode Lanjutan (Pro)'}
+              {isSimple ? 'Mode Sederhana' : 'Mode Lanjutan'}
             </span>
             <span className="text-[9px] text-muted-foreground block">Klik untuk ganti</span>
           </div>
@@ -232,12 +232,12 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 {selectedTargetMode === 'ADVANCED' ? (
                   <>
                     <Rocket className="h-5 w-5 text-primary" />
-                    <span>Beralih ke Mode Lanjutan (Pro)?</span>
+                    <span>Beralih ke Mode Lanjutan?</span>
                   </>
                 ) : (
                   <>
                     <Zap className="h-5 w-5 text-amber-500" />
-                    <span>Beralih ke Mode Sederhana (Lite)?</span>
+                    <span>Beralih ke Mode Sederhana?</span>
                   </>
                 )}
               </DialogTitle>
@@ -384,12 +384,12 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
               {selectedTargetMode === 'ADVANCED' ? (
                 <>
                   <Rocket className="h-5 w-5 text-primary" />
-                  <span>Beralih ke Mode Lanjutan (Pro)?</span>
+                  <span>Beralih ke Mode Lanjutan?</span>
                 </>
               ) : (
                 <>
                   <Zap className="h-5 w-5 text-amber-500" />
-                  <span>Beralih ke Mode Sederhana (Lite)?</span>
+                  <span>Beralih ke Mode Sederhana?</span>
                 </>
               )}
             </DialogTitle>

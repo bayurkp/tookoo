@@ -24,8 +24,8 @@ describe('AppModeSwitcher', () => {
     renderWithProviders(<AppModeSwitcher variant="inline" />);
 
     await waitFor(() => {
-      expect(screen.getByText('Mode Sederhana (Lite)')).toBeInTheDocument();
-      expect(screen.getByText('Mode Lanjutan (Pro)')).toBeInTheDocument();
+      expect(screen.getByText('Mode Sederhana')).toBeInTheDocument();
+      expect(screen.getByText('Mode Lanjutan')).toBeInTheDocument();
       expect(screen.getByText('Mode Sederhana Sedang Aktif')).toBeInTheDocument();
     });
   });
@@ -42,10 +42,10 @@ describe('AppModeSwitcher', () => {
     renderWithProviders(<AppModeSwitcher variant="inline" />);
 
     await waitFor(() => {
-      expect(screen.getByText('Mode Lanjutan (Pro)')).toBeInTheDocument();
+      expect(screen.getByText('Mode Lanjutan')).toBeInTheDocument();
     });
 
-    const proCard = screen.getByText('Mode Lanjutan (Pro)').closest('div');
+    const proCard = screen.getByText('Mode Lanjutan').closest('div');
     if (proCard) {
       fireEvent.click(proCard);
     }
