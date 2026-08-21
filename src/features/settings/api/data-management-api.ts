@@ -109,12 +109,11 @@ export const getDatabaseSummary = async (): Promise<DataManagementSummary> => {
 
 export const getDataSummary = getDatabaseSummary;
 
-/**
- * Clear only orders & transaction history
- */
 export const clearOrdersData = async (): Promise<{ deletedCount: number }> => {
   const count = await db.orders.count();
   await db.orders.clear();
+  await db.shifts.clear();
+  await db.cashMovements.clear();
   return { deletedCount: count };
 };
 
@@ -291,6 +290,8 @@ export const resetFullDatabase = async (options?: {
       db.suppliers,
       db.outlets,
       db.staff,
+      db.shifts,
+      db.cashMovements,
       db.settings,
     ],
     async () => {
@@ -310,6 +311,8 @@ export const resetFullDatabase = async (options?: {
       await db.suppliers.clear();
       await db.outlets.clear();
       await db.staff.clear();
+      await db.shifts.clear();
+      await db.cashMovements.clear();
       await db.settings.clear();
 
       const now = Date.now();

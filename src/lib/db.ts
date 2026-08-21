@@ -15,6 +15,7 @@ import type { StoreTable } from '@/types/table.types';
 import type { Expense } from '@/types/expense.types';
 import type { Customer } from '@/types/customer.types';
 import type { Supplier } from '@/types/supplier.types';
+import type { Shift, CashMovement } from '@/types/shift.types';
 
 export class TookooDatabase extends Dexie {
   products!: Table<Product, string>;
@@ -32,6 +33,8 @@ export class TookooDatabase extends Dexie {
   suppliers!: Table<Supplier, string>;
   outlets!: Table<Outlet, string>;
   staff!: Table<Staff, string>;
+  shifts!: Table<Shift, string>;
+  cashMovements!: Table<CashMovement, string>;
 
   get restaurantTables(): Table<StoreTable, string> {
     return this.table<StoreTable, string>('tables');
@@ -135,6 +138,33 @@ export class TookooDatabase extends Dexie {
       suppliers: 'id, name, phone, email, contactPerson, createdAt, updatedAt, deletedAt',
       outlets: 'id, storeId, name, isHQ, createdAt, updatedAt, deletedAt',
       staff: 'id, storeId, name, role, hasAllOutlets, isActive, createdAt, updatedAt, deletedAt',
+    });
+
+    this.version(9).stores({
+      products: 'id, name, category, price, stock, createdAt, updatedAt, deletedAt',
+      orders:
+        'id, orderNumber, totalAmount, paymentMethod, cashierName, customerId, outletId, staffId, createdAt, updatedAt, deletedAt',
+      settings:
+        'id, storeName, passphrase, activeOutletId, activeStaffId, createdAt, updatedAt, deletedAt',
+      stockAdjustments:
+        'id, adjustmentNumber, adjustedBy, outletId, staffId, createdAt, updatedAt, deletedAt',
+      masterCategories: 'id, name, parentId, createdAt, updatedAt, deletedAt',
+      masterUoms: 'id, name, symbol, createdAt, updatedAt, deletedAt',
+      masterVariantAttributes: 'id, name, createdAt, updatedAt, deletedAt',
+      masterModifierGroups: 'id, name, createdAt, updatedAt, deletedAt',
+      tables: 'id, name, zone, status, outletId, createdAt, updatedAt, deletedAt',
+      masterDiscounts: 'id, name, code, scope, isActive, createdAt, updatedAt, deletedAt',
+      masterTaxes: 'id, name, type, isActive, createdAt, updatedAt, deletedAt',
+      expenses:
+        'id, category, type, date, paymentMethod, supplierId, outletId, staffId, createdAt, updatedAt, deletedAt',
+      customers: 'id, name, phone, email, tier, createdAt, updatedAt, deletedAt',
+      suppliers: 'id, name, phone, email, contactPerson, createdAt, updatedAt, deletedAt',
+      outlets: 'id, storeId, name, isHQ, createdAt, updatedAt, deletedAt',
+      staff: 'id, storeId, name, role, hasAllOutlets, isActive, createdAt, updatedAt, deletedAt',
+      shifts:
+        'id, cashierName, status, outletId, staffId, openedAt, closedAt, createdAt, updatedAt, deletedAt',
+      cashMovements:
+        'id, shiftId, type, category, performedBy, outletId, createdAt, updatedAt, deletedAt',
     });
   }
 }

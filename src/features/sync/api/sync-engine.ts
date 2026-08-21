@@ -8,6 +8,7 @@ import type { StockAdjustment } from '@/types/stock-adjustment.types';
 import type { Expense } from '@/types/expense.types';
 import type { Customer } from '@/types/customer.types';
 import type { Supplier } from '@/types/supplier.types';
+import type { Shift, CashMovement } from '@/types/shift.types';
 import type {
   MasterCategory,
   MasterUom,
@@ -36,6 +37,8 @@ export interface DatabaseBackup {
   suppliers?: Supplier[];
   outlets?: Outlet[];
   staff?: Staff[];
+  shifts?: Shift[];
+  cashMovements?: CashMovement[];
 }
 
 export const applySyncMessage = async (msg: SyncMessage): Promise<boolean> => {
@@ -90,6 +93,8 @@ export const exportDatabaseToJson = async (): Promise<DatabaseBackup> => {
     suppliers,
     outlets,
     staff,
+    shifts,
+    cashMovements,
   ] = await Promise.all([
     db.products.toArray(),
     db.orders.toArray(),
@@ -107,6 +112,8 @@ export const exportDatabaseToJson = async (): Promise<DatabaseBackup> => {
     db.suppliers.toArray(),
     db.outlets.toArray(),
     db.staff.toArray(),
+    db.shifts.toArray(),
+    db.cashMovements.toArray(),
   ]);
 
   return {
@@ -128,6 +135,8 @@ export const exportDatabaseToJson = async (): Promise<DatabaseBackup> => {
     suppliers,
     outlets,
     staff,
+    shifts,
+    cashMovements,
   };
 };
 
@@ -277,6 +286,24 @@ export const importDatabaseFromJson = async (
       const local = await db.staff.get(st.id);
       if (!local || st.updatedAt > local.updatedAt) {
         await db.staff.put(st);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.shifts)) {
+    for (const sh of backup.shifts) {
+      const local = await db.shifts.get(sh.id);
+      if (!local || sh.updatedAt > local.updatedAt) {
+        await db.shifts.put(sh);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.cashMovements)) {
+    for (const cm of backup.cashMovements) {
+      const local = await db.cashMovements.get(cm.id);
+      if (!local || cm.updatedAt > local.updatedAt) {
+        await db.cashMovements.put(cm);
       }
     }
   }
