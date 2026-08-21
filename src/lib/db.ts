@@ -558,21 +558,6 @@ export async function seedMasterDefaultsIfEmpty(): Promise<void> {
       }
     }
 
-    const storeTableRepo = db.table<StoreTable, string>('tables');
-    if (storeTableRepo && typeof storeTableRepo.count === 'function') {
-      const tableCount = await storeTableRepo.count();
-      if (tableCount === 0) {
-        await storeTableRepo.bulkPut(
-          DEFAULT_STORE_TABLES.map((t) => ({
-            ...t,
-            createdAt: now,
-            updatedAt: now,
-            deletedAt: null,
-          }))
-        );
-      }
-    }
-
     if (db.masterDiscounts && typeof db.masterDiscounts.count === 'function') {
       const discountCount = await db.masterDiscounts.count();
       if (discountCount === 0) {

@@ -120,7 +120,7 @@ export const DataManagementSection: React.FC = () => {
         return {
           title: 'Reset Master Data ke Standar',
           description:
-            'Mengembalikan kategori, satuan, varian, modifier, promo diskon, pajak, dan meja ke template default.',
+            'Mengembalikan kategori, satuan, varian, modifier, promo diskon, dan pajak ke template standar.',
           requiredKeyword: 'RESET',
           badgeText: 'Template Standar',
           warning: 'Data master kustom Anda akan ditimpa dengan data standar Tookoo.',
@@ -129,7 +129,7 @@ export const DataManagementSection: React.FC = () => {
         return {
           title: 'Reset Total Toko',
           description:
-            'Tindakan ini akan MENGHAPUS SEMUA DATA di perangkat ini (transaksi, produk, meja, promo, pengaturan) dan mereset toko ke kondisi baru.',
+            'Tindakan ini akan MENGHAPUS SEMUA DATA di perangkat ini (transaksi, produk, meja, promo, biaya operasional, pelanggan/supplier, pengaturan) dan mereset toko ke kondisi baru yang bersih.',
           requiredKeyword: 'RESET TOTAL',
           badgeText: `${summary?.totalRecords ?? 0} Total Rekaman`,
           warning:

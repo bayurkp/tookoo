@@ -1,10 +1,9 @@
-import { db, seedMasterDefaultsIfEmpty } from '@/lib/db';
+import { db } from '@/lib/db';
 import type { StoreTable, TableStatus } from '@/types/table.types';
 
 const getTableRepo = () => db.restaurantTables;
 
 export async function getTables(): Promise<StoreTable[]> {
-  await seedMasterDefaultsIfEmpty();
   const all = await getTableRepo().toArray();
   return all
     .filter((t) => t.deletedAt === null)

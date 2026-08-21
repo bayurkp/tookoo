@@ -6,7 +6,6 @@ import {
   DEFAULT_MASTER_MODIFIER_GROUPS,
   DEFAULT_MASTER_DISCOUNTS,
   DEFAULT_MASTER_TAXES,
-  DEFAULT_STORE_TABLES,
 } from '@/lib/db';
 import { generatePassphrase, generateStoreSecretKey } from '@/lib/passphrase';
 import { DEFAULT_CURRENCY } from '@/utils/currency-config';
@@ -23,6 +22,11 @@ export interface DataManagementSummary {
   modifierGroupsCount: number;
   discountsCount: number;
   taxesCount: number;
+  expensesCount: number;
+  customersCount: number;
+  suppliersCount: number;
+  outletsCount: number;
+  staffCount: number;
   totalRecords: number;
 }
 
@@ -43,6 +47,11 @@ export const getDatabaseSummary = async (): Promise<DataManagementSummary> => {
     modifierGroupsCount,
     discountsCount,
     taxesCount,
+    expensesCount,
+    customersCount,
+    suppliersCount,
+    outletsCount,
+    staffCount,
   ] = await Promise.all([
     db.orders.count(),
     db.products.count(),
@@ -54,6 +63,11 @@ export const getDatabaseSummary = async (): Promise<DataManagementSummary> => {
     db.masterModifierGroups.count(),
     db.masterDiscounts.count(),
     db.masterTaxes.count(),
+    db.expenses.count(),
+    db.customers.count(),
+    db.suppliers.count(),
+    db.outlets.count(),
+    db.staff.count(),
   ]);
 
   const totalRecords =
@@ -66,7 +80,12 @@ export const getDatabaseSummary = async (): Promise<DataManagementSummary> => {
     variantAttributesCount +
     modifierGroupsCount +
     discountsCount +
-    taxesCount;
+    taxesCount +
+    expensesCount +
+    customersCount +
+    suppliersCount +
+    outletsCount +
+    staffCount;
 
   return {
     ordersCount,
@@ -79,6 +98,11 @@ export const getDatabaseSummary = async (): Promise<DataManagementSummary> => {
     modifierGroupsCount,
     discountsCount,
     taxesCount,
+    expensesCount,
+    customersCount,
+    suppliersCount,
+    outletsCount,
+    staffCount,
     totalRecords,
   };
 };
@@ -133,6 +157,31 @@ export const clearDiscountsAndTaxesData = async (): Promise<{
   await db.masterTaxes.clear();
 
   return { discountsCount, taxesCount };
+};
+
+/**
+ * Clear operational expenses
+ */
+export const clearExpensesData = async (): Promise<{ deletedCount: number }> => {
+  const count = await db.expenses.count();
+  await db.expenses.clear();
+  return { deletedCount: count };
+};
+
+/**
+ * Clear CRM customers and suppliers
+ */
+export const clearCustomersAndSuppliersData = async (): Promise<{
+  customersCount: number;
+  suppliersCount: number;
+}> => {
+  const customersCount = await db.customers.count();
+  const suppliersCount = await db.suppliers.count();
+
+  await db.customers.clear();
+  await db.suppliers.clear();
+
+  return { customersCount, suppliersCount };
 };
 
 /**
@@ -213,15 +262,6 @@ export const resetMasterDataToDefaults = async (): Promise<void> => {
           deletedAt: null,
         }))
       );
-
-      await db.restaurantTables.bulkPut(
-        DEFAULT_STORE_TABLES.map((t) => ({
-          ...t,
-          createdAt: now,
-          updatedAt: now,
-          deletedAt: null,
-        }))
-      );
     }
   );
 };
@@ -246,10 +286,15 @@ export const resetFullDatabase = async (options?: {
       db.masterModifierGroups,
       db.masterDiscounts,
       db.masterTaxes,
+      db.expenses,
+      db.customers,
+      db.suppliers,
+      db.outlets,
+      db.staff,
       db.settings,
     ],
     async () => {
-      // Clear all transactional and master tables
+      // Clear all transactional, operational, CRM, and master tables
       await db.orders.clear();
       await db.products.clear();
       await db.stockAdjustments.clear();
@@ -260,6 +305,11 @@ export const resetFullDatabase = async (options?: {
       await db.masterModifierGroups.clear();
       await db.masterDiscounts.clear();
       await db.masterTaxes.clear();
+      await db.expenses.clear();
+      await db.customers.clear();
+      await db.suppliers.clear();
+      await db.outlets.clear();
+      await db.staff.clear();
       await db.settings.clear();
 
       const now = Date.now();
@@ -291,7 +341,7 @@ export const resetFullDatabase = async (options?: {
 
       await db.settings.put(newSettings);
 
-      // Reseed master template catalog if selected
+      // Reseed master template catalog if selected (without dummy tables)
       if (options?.reseedMasterDefaults !== false) {
         await db.masterCategories.bulkPut(
           DEFAULT_MASTER_CATEGORIES.map((c) => ({
@@ -340,15 +390,6 @@ export const resetFullDatabase = async (options?: {
 
         await db.masterTaxes.bulkPut(
           DEFAULT_MASTER_TAXES.map((t) => ({
-            ...t,
-            createdAt: now,
-            updatedAt: now,
-            deletedAt: null,
-          }))
-        );
-
-        await db.restaurantTables.bulkPut(
-          DEFAULT_STORE_TABLES.map((t) => ({
             ...t,
             createdAt: now,
             updatedAt: now,

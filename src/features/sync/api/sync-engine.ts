@@ -2,9 +2,12 @@ import { db } from '@/lib/db';
 import type { SyncMessage } from '@/types/sync.types';
 import type { Product } from '@/types/product.types';
 import type { Order } from '@/types/order.types';
-import type { StoreSettings } from '@/types/store.types';
+import type { StoreSettings, Outlet, Staff } from '@/types/store.types';
 import type { StoreTable } from '@/types/table.types';
 import type { StockAdjustment } from '@/types/stock-adjustment.types';
+import type { Expense } from '@/types/expense.types';
+import type { Customer } from '@/types/customer.types';
+import type { Supplier } from '@/types/supplier.types';
 import type {
   MasterCategory,
   MasterUom,
@@ -28,6 +31,11 @@ export interface DatabaseBackup {
   masterModifierGroups?: MasterModifierGroup[];
   masterDiscounts?: MasterDiscount[];
   masterTaxes?: MasterTax[];
+  expenses?: Expense[];
+  customers?: Customer[];
+  suppliers?: Supplier[];
+  outlets?: Outlet[];
+  staff?: Staff[];
 }
 
 export const applySyncMessage = async (msg: SyncMessage): Promise<boolean> => {
@@ -77,6 +85,11 @@ export const exportDatabaseToJson = async (): Promise<DatabaseBackup> => {
     masterModifierGroups,
     masterDiscounts,
     masterTaxes,
+    expenses,
+    customers,
+    suppliers,
+    outlets,
+    staff,
   ] = await Promise.all([
     db.products.toArray(),
     db.orders.toArray(),
@@ -89,10 +102,15 @@ export const exportDatabaseToJson = async (): Promise<DatabaseBackup> => {
     db.masterModifierGroups.toArray(),
     db.masterDiscounts.toArray(),
     db.masterTaxes.toArray(),
+    db.expenses.toArray(),
+    db.customers.toArray(),
+    db.suppliers.toArray(),
+    db.outlets.toArray(),
+    db.staff.toArray(),
   ]);
 
   return {
-    version: 2,
+    version: 3,
     exportedAt: Date.now(),
     products,
     orders,
@@ -105,6 +123,11 @@ export const exportDatabaseToJson = async (): Promise<DatabaseBackup> => {
     masterModifierGroups,
     masterDiscounts,
     masterTaxes,
+    expenses,
+    customers,
+    suppliers,
+    outlets,
+    staff,
   };
 };
 
@@ -209,6 +232,51 @@ export const importDatabaseFromJson = async (
       const local = await db.masterTaxes.get(tax.id);
       if (!local || tax.updatedAt > local.updatedAt) {
         await db.masterTaxes.put(tax);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.expenses)) {
+    for (const exp of backup.expenses) {
+      const local = await db.expenses.get(exp.id);
+      if (!local || exp.updatedAt > local.updatedAt) {
+        await db.expenses.put(exp);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.customers)) {
+    for (const cust of backup.customers) {
+      const local = await db.customers.get(cust.id);
+      if (!local || cust.updatedAt > local.updatedAt) {
+        await db.customers.put(cust);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.suppliers)) {
+    for (const sup of backup.suppliers) {
+      const local = await db.suppliers.get(sup.id);
+      if (!local || sup.updatedAt > local.updatedAt) {
+        await db.suppliers.put(sup);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.outlets)) {
+    for (const out of backup.outlets) {
+      const local = await db.outlets.get(out.id);
+      if (!local || out.updatedAt > local.updatedAt) {
+        await db.outlets.put(out);
+      }
+    }
+  }
+
+  if (Array.isArray(backup.staff)) {
+    for (const st of backup.staff) {
+      const local = await db.staff.get(st.id);
+      if (!local || st.updatedAt > local.updatedAt) {
+        await db.staff.put(st);
       }
     }
   }

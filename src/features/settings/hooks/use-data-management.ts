@@ -5,6 +5,8 @@ import {
   clearProductsAndStockData,
   clearTablesData,
   clearDiscountsAndTaxesData,
+  clearExpensesData,
+  clearCustomersAndSuppliersData,
   resetMasterDataToDefaults,
   resetFullDatabase,
   type DataCountSummary,
@@ -63,6 +65,29 @@ export const useClearDiscountsAndTaxes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['master-discounts'] });
       queryClient.invalidateQueries({ queryKey: ['master-taxes'] });
+      queryClient.invalidateQueries({ queryKey: DATA_SUMMARY_QUERY_KEY });
+    },
+  });
+};
+
+export const useClearExpenses = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: clearExpensesData,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: DATA_SUMMARY_QUERY_KEY });
+    },
+  });
+};
+
+export const useClearCustomersAndSuppliers = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: clearCustomersAndSuppliersData,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
       queryClient.invalidateQueries({ queryKey: DATA_SUMMARY_QUERY_KEY });
     },
   });
