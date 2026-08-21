@@ -88,7 +88,8 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   updateQuantity: (itemId: string, quantity: number) => {
     set((state) => {
-      if (quantity <= 0) {
+      const parsed = Math.floor(Number(quantity));
+      if (isNaN(parsed) || parsed <= 0) {
         return {
           items: state.items.filter((item) => item.id !== itemId),
         };
@@ -97,10 +98,12 @@ export const useCartStore = create<CartState>((set, get) => ({
       return {
         items: state.items.map((item) => {
           if (item.id === itemId) {
-            const availableStock = item.selectedVariant
+            const rawStock = item.selectedVariant
               ? item.selectedVariant.stock
               : item.product.stock;
-            const cappedQuantity = Math.min(quantity, availableStock);
+            const availableStock =
+              typeof rawStock === 'number' && rawStock > 0 ? rawStock : 99999;
+            const cappedQuantity = Math.max(1, Math.min(parsed, availableStock, 99999));
             return { ...item, quantity: cappedQuantity };
           }
           return item;

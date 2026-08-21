@@ -163,15 +163,19 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   return (
     <Card className="flex flex-col h-full border-border/80 shadow-none">
       {/* Header */}
-      <CardHeader className="p-3.5 pb-2.5 border-b flex flex-row items-center justify-between gap-2 space-y-0">
-        <div className="flex items-center gap-1.5 min-w-0">
+      <CardHeader className="p-3.5 pb-2.5 border-b flex flex-row items-center justify-between gap-2 space-y-0 overflow-hidden">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
           <ShoppingCart className="h-4 w-4 text-primary shrink-0" />
           <CardTitle className="text-sm font-bold truncate whitespace-nowrap shrink-0">
             {t('cashier.cart.title', 'Keranjang Belanja')}
           </CardTitle>
           {itemCount > 0 && (
-            <Badge variant="secondary" className="text-[11px] px-1.5 py-0 font-bold font-mono shrink-0 whitespace-nowrap">
-              {t('cashier.cart.itemCount', { count: itemCount })}
+            <Badge
+              variant="secondary"
+              className="text-[11px] px-1.5 py-0 font-bold font-mono shrink-0 truncate max-w-[75px]"
+              title={`${itemCount} item`}
+            >
+              {itemCount > 999 ? '999+' : itemCount} item
             </Badge>
           )}
         </div>
