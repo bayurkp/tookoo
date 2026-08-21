@@ -4,10 +4,8 @@ import {
   uploadBackupToGoogleDrive,
   listGoogleDriveBackups,
   downloadAndRestoreGoogleDriveBackup,
-  sendBackupToTelegram,
-  testTelegramConnection,
-  sendBackupToDiscord,
-  testDiscordWebhook,
+  requestGoogleDriveOAuth,
+  revokeGoogleOAuth,
   executeCloudBackup,
 } from '../api/cloud-backup-api';
 import { exportDatabaseToJson } from '../api/sync-engine';
@@ -23,6 +21,7 @@ export const useCloudBackup = () => {
   const config = settings?.cloudBackupConfig;
 
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
 
   // 1. Google Drive Backups Query
   const googleDriveBackupsQuery = useQuery({
@@ -34,7 +33,74 @@ export const useCloudBackup = () => {
     enabled: Boolean(config?.googleDrive?.accessToken),
   });
 
-  // 2. Upload to Google Drive Mutation
+  // 2. Connect with Google Drive via standard OAuth popup
+  const connectGoogleDrive = async (clientId: string) => {
+    setIsConnectingGoogle(true);
+    try {
+      const authResult = await requestGoogleDriveOAuth(clientId);
+      const updatedConfig: CloudBackupConfig = {
+        autoBackupInterval: config?.autoBackupInterval || 'MANUAL_ONLY',
+        destinations: {
+          googleDrive: true,
+        },
+        googleDrive: {
+          clientId,
+          accessToken: authResult.accessToken,
+          connectedEmail: authResult.email,
+          connectedName: authResult.name,
+          connectedPicture: authResult.picture,
+          tokenExpiresAt: authResult.tokenExpiresAt,
+        },
+        lastBackupTimestamp: config?.lastBackupTimestamp,
+        lastBackupStatus: config?.lastBackupStatus,
+        lastBackupMessage: config?.lastBackupMessage,
+        ordersCountAtLastBackup: config?.ordersCountAtLastBackup,
+      };
+
+      await updateSettings({ cloudBackupConfig: updatedConfig });
+      queryClient.invalidateQueries({ queryKey: ['google-drive-backups'] });
+      sounds.playSuccess();
+      return authResult;
+    } catch (err: any) {
+      sounds.playAlert();
+      throw err;
+    } finally {
+      setIsConnectingGoogle(false);
+    }
+  };
+
+  // 3. Disconnect Google Drive
+  const disconnectGoogleDrive = async () => {
+    const currentToken = config?.googleDrive?.accessToken;
+    if (currentToken) {
+      await revokeGoogleOAuth(currentToken);
+    }
+
+    const updatedConfig: CloudBackupConfig = {
+      autoBackupInterval: config?.autoBackupInterval || 'MANUAL_ONLY',
+      destinations: {
+        googleDrive: false,
+      },
+      googleDrive: {
+        clientId: config?.googleDrive?.clientId || '',
+        accessToken: undefined,
+        connectedEmail: undefined,
+        connectedName: undefined,
+        connectedPicture: undefined,
+        tokenExpiresAt: undefined,
+      },
+      lastBackupTimestamp: config?.lastBackupTimestamp,
+      lastBackupStatus: config?.lastBackupStatus,
+      lastBackupMessage: config?.lastBackupMessage,
+      ordersCountAtLastBackup: config?.ordersCountAtLastBackup,
+    };
+
+    await updateSettings({ cloudBackupConfig: updatedConfig });
+    queryClient.invalidateQueries({ queryKey: ['google-drive-backups'] });
+    sounds.playAlert();
+  };
+
+  // 4. Upload to Google Drive Mutation
   const uploadGoogleDriveMutation = useMutation({
     mutationFn: async () => {
       if (!config?.googleDrive?.accessToken) {
@@ -49,7 +115,7 @@ export const useCloudBackup = () => {
     },
   });
 
-  // 3. Restore from Google Drive Mutation
+  // 5. Restore from Google Drive Mutation
   const restoreGoogleDriveMutation = useMutation({
     mutationFn: async (fileId: string) => {
       if (!config?.googleDrive?.accessToken) {
@@ -63,56 +129,14 @@ export const useCloudBackup = () => {
     },
   });
 
-  // 4. Test Telegram Connection Mutation
-  const testTelegramMutation = useMutation({
-    mutationFn: async ({ botToken, chatId }: { botToken: string; chatId: string }) => {
-      return testTelegramConnection(botToken, chatId);
-    },
-    onSuccess: () => {
-      sounds.playSuccess();
-    },
-  });
-
-  // 5. Send to Telegram Mutation
-  const sendTelegramMutation = useMutation({
-    mutationFn: async ({ botToken, chatId }: { botToken: string; chatId: string }) => {
-      const backup = await exportDatabaseToJson();
-      return sendBackupToTelegram(botToken, chatId, backup, storeName);
-    },
-    onSuccess: () => {
-      sounds.playSuccess();
-    },
-  });
-
-  // 6. Test Discord Webhook Mutation
-  const testDiscordMutation = useMutation({
-    mutationFn: async (webhookUrl: string) => {
-      return testDiscordWebhook(webhookUrl, storeName);
-    },
-    onSuccess: () => {
-      sounds.playSuccess();
-    },
-  });
-
-  // 7. Send to Discord Mutation
-  const sendDiscordMutation = useMutation({
-    mutationFn: async (webhookUrl: string) => {
-      const backup = await exportDatabaseToJson();
-      return sendBackupToDiscord(webhookUrl, backup, storeName);
-    },
-    onSuccess: () => {
-      sounds.playSuccess();
-    },
-  });
-
-  // 8. Update Cloud Backup Config
+  // 6. Update Cloud Backup Config
   const saveCloudBackupConfig = async (newConfig: CloudBackupConfig) => {
     await updateSettings({
       cloudBackupConfig: newConfig,
     });
   };
 
-  // 9. Execute Full Cloud Backup
+  // 7. Execute Full Cloud Backup
   const runCloudBackupNow = async () => {
     if (!config) return;
     setIsSyncing(true);
@@ -142,6 +166,9 @@ export const useCloudBackup = () => {
   return {
     config,
     isSyncing,
+    isConnectingGoogle,
+    connectGoogleDrive,
+    disconnectGoogleDrive,
     googleDriveBackups: googleDriveBackupsQuery.data || [],
     isLoadingGoogleDriveBackups: googleDriveBackupsQuery.isLoading,
     refetchGoogleDriveBackups: googleDriveBackupsQuery.refetch,
@@ -149,14 +176,6 @@ export const useCloudBackup = () => {
     isUploadingGoogleDrive: uploadGoogleDriveMutation.isPending,
     restoreGoogleDrive: restoreGoogleDriveMutation.mutateAsync,
     isRestoringGoogleDrive: restoreGoogleDriveMutation.isPending,
-    testTelegram: testTelegramMutation.mutateAsync,
-    isTestingTelegram: testTelegramMutation.isPending,
-    sendTelegram: sendTelegramMutation.mutateAsync,
-    isSendingTelegram: sendTelegramMutation.isPending,
-    testDiscord: testDiscordMutation.mutateAsync,
-    isTestingDiscord: testDiscordMutation.isPending,
-    sendDiscord: sendDiscordMutation.mutateAsync,
-    isSendingDiscord: sendDiscordMutation.isPending,
     saveCloudBackupConfig,
     runCloudBackupNow,
   };

@@ -1,6 +1,29 @@
 import { exportDatabaseToJson, importDatabaseFromJson, type DatabaseBackup } from './sync-engine';
 import type { CloudBackupConfig, GoogleDriveBackupFile } from '@/types/cloud-backup.types';
-import { formatCurrency } from '@/utils/format-currency';
+
+declare global {
+  interface Window {
+    google?: {
+      accounts?: {
+        oauth2?: {
+          initTokenClient: (config: {
+            client_id: string;
+            scope: string;
+            callback: (response: {
+              access_token?: string;
+              error?: string;
+              expires_in?: number;
+            }) => void;
+            error_callback?: (err: unknown) => void;
+          }) => {
+            requestAccessToken: (options?: { prompt?: string }) => void;
+          };
+          revoke: (accessToken: string, done: () => void) => void;
+        };
+      };
+    };
+  }
+}
 
 /**
  * Format a human-friendly timestamp for backup filenames
@@ -12,7 +35,148 @@ export const getBackupFilename = (storeName: string): string => {
 };
 
 // ============================================================================
-// 1. GOOGLE DRIVE REST API INTEGRATION
+// 1. GOOGLE IDENTITY SERVICES (GIS) OAUTH 2.0 INTEGRATION
+// ============================================================================
+
+/**
+ * Dynamically loads the official Google Identity Services script
+ */
+export const loadGoogleIdentityScript = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (typeof window !== 'undefined' && window.google?.accounts?.oauth2) {
+      resolve();
+      return;
+    }
+
+    const existingScript = document.getElementById('google-identity-services-script');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve());
+      existingScript.addEventListener('error', () =>
+        reject(new Error('Gagal memuat Google Identity Services dari Google.'))
+      );
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'google-identity-services-script';
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () =>
+      reject(new Error('Gagal mengunduh Google Identity Services dari Google.'));
+    document.head.appendChild(script);
+  });
+};
+
+/**
+ * Opens standard Google OAuth 2.0 Consent popup for conscious user authorization
+ */
+export const requestGoogleDriveOAuth = async (
+  clientId: string
+): Promise<{
+  accessToken: string;
+  tokenExpiresAt: number;
+  email?: string;
+  name?: string;
+  picture?: string;
+}> => {
+  if (!clientId?.trim()) {
+    throw new Error(
+      'Google Client ID belum dikonfigurasi. Masukkan Client ID Google Cloud Anda.'
+    );
+  }
+
+  await loadGoogleIdentityScript();
+
+  if (!window.google?.accounts?.oauth2) {
+    throw new Error('Google Identity Services tidak dapat diinisialisasi di peramban ini.');
+  }
+
+  return new Promise((resolve, reject) => {
+    try {
+      const client = window.google!.accounts!.oauth2!.initTokenClient({
+        client_id: clientId.trim(),
+        scope:
+          'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+        callback: async (response) => {
+          if (response.error || !response.access_token) {
+            reject(
+              new Error(
+                response.error === 'access_denied'
+                  ? 'Izin akses Google Drive ditolak oleh pengguna.'
+                  : response.error || 'Autentikasi Google dibatalkan.'
+              )
+            );
+            return;
+          }
+
+          const accessToken = response.access_token;
+          const expiresIn = response.expires_in || 3600;
+          const tokenExpiresAt = Date.now() + expiresIn * 1000;
+
+          // Fetch user profile info to display connected account
+          let email: string | undefined;
+          let name: string | undefined;
+          let picture: string | undefined;
+
+          try {
+            const userinfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            if (userinfoRes.ok) {
+              const profile = await userinfoRes.json();
+              email = profile.email;
+              name = profile.name;
+              picture = profile.picture;
+            }
+          } catch {
+            // Profile fetch optional
+          }
+
+          resolve({
+            accessToken,
+            tokenExpiresAt,
+            email,
+            name,
+            picture,
+          });
+        },
+        error_callback: () => {
+          reject(new Error('Gagal membuka jendela autentikasi Google. Pastikan popup tidak diblokir.'));
+        },
+      });
+
+      client.requestAccessToken({ prompt: 'consent' });
+    } catch (err: any) {
+      reject(new Error(err.message || 'Gagal memulai koneksi Google OAuth.'));
+    }
+  });
+};
+
+/**
+ * Revoke Google Access Token on Disconnect
+ */
+export const revokeGoogleOAuth = async (accessToken: string): Promise<void> => {
+  if (!accessToken) return;
+  try {
+    if (window.google?.accounts?.oauth2?.revoke) {
+      await new Promise<void>((resolve) => {
+        window.google!.accounts!.oauth2!.revoke(accessToken, () => resolve());
+      });
+    } else {
+      await fetch(`https://oauth2.googleapis.com/revoke?token=${accessToken}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+    }
+  } catch {
+    // Non-blocking revoke
+  }
+};
+
+// ============================================================================
+// 2. GOOGLE DRIVE REST API INTEGRATION
 // ============================================================================
 
 /**
@@ -115,203 +279,7 @@ export const downloadAndRestoreGoogleDriveBackup = async (
 };
 
 // ============================================================================
-// 2. TELEGRAM BOT API INTEGRATION
-// ============================================================================
-
-/**
- * Test Telegram Bot credentials with a ping message
- */
-export const testTelegramConnection = async (
-  botToken: string,
-  chatId: string
-): Promise<boolean> => {
-  const cleanToken = botToken.trim();
-  const cleanChatId = chatId.trim();
-
-  const url = `https://api.telegram.org/bot${cleanToken}/sendMessage`;
-  const text = `🔔 *Tookoo POS — Uji Koneksi Telegram Berhasil*\n\nBot Telegram berhasil terhubung dengan sistem kasir Anda. Pencadangan otomatis siap digunakan!`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: cleanChatId,
-      text,
-      parse_mode: 'Markdown',
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.description || 'Gagal mengirim pesan uji ke Telegram');
-  }
-
-  return true;
-};
-
-/**
- * Send full backup file (.json) as document attachment to Telegram
- */
-export const sendBackupToTelegram = async (
-  botToken: string,
-  chatId: string,
-  backup: DatabaseBackup,
-  storeName: string
-): Promise<boolean> => {
-  const cleanToken = botToken.trim();
-  const cleanChatId = chatId.trim();
-  const fileName = getBackupFilename(storeName);
-
-  const fileContent = JSON.stringify(backup, null, 2);
-  const blob = new Blob([fileContent], { type: 'application/json' });
-
-  const totalOmzet = backup.orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
-  const caption =
-    `📦 *Cadangan Data Tookoo POS*\n` +
-    `🏪 *Toko:* ${storeName}\n` +
-    `📅 *Waktu:* ${new Date().toLocaleString('id-ID')}\n` +
-    `📊 *Statistik:* ${backup.products.length} Produk, ${backup.orders.length} Transaksi\n` +
-    `💰 *Total Omzet Tercatat:* ${formatCurrency(totalOmzet, backup.settings?.currency)}\n\n` +
-    `_Simpan berkas JSON ini untuk memulihkan data kasir kapan saja._`;
-
-  const formData = new FormData();
-  formData.append('chat_id', cleanChatId);
-  formData.append('caption', caption);
-  formData.append('parse_mode', 'Markdown');
-  formData.append('document', blob, fileName);
-
-  const response = await fetch(`https://api.telegram.org/bot${cleanToken}/sendDocument`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.description || 'Gagal mengirim berkas backup ke Telegram');
-  }
-
-  return true;
-};
-
-// ============================================================================
-// 3. DISCORD WEBHOOK INTEGRATION
-// ============================================================================
-
-/**
- * Test Discord Webhook with an embed message
- */
-export const testDiscordWebhook = async (
-  webhookUrl: string,
-  storeName: string
-): Promise<boolean> => {
-  const cleanUrl = webhookUrl.trim();
-
-  const payload = {
-    username: 'Tookoo POS Backup Bot',
-    avatar_url: 'https://cdn-icons-png.flaticon.com/512/869/869636.png',
-    embeds: [
-      {
-        title: '✅ Uji Koneksi Webhook Discord Berhasil',
-        description: `Webhook Discord untuk **${storeName}** berhasil terhubung. Pencadangan otomatis siap berjalan!`,
-        color: 0x10b981, // Emerald Green
-        timestamp: new Date().toISOString(),
-        footer: {
-          text: 'Tookoo POS • 100% Offline P2P',
-        },
-      },
-    ],
-  };
-
-  const response = await fetch(cleanUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Gagal mengirim pesan uji ke Discord (${response.status})`);
-  }
-
-  return true;
-};
-
-/**
- * Send backup file (.json) as file attachment to Discord Webhook with rich embed
- */
-export const sendBackupToDiscord = async (
-  webhookUrl: string,
-  backup: DatabaseBackup,
-  storeName: string
-): Promise<boolean> => {
-  const cleanUrl = webhookUrl.trim();
-  const fileName = getBackupFilename(storeName);
-
-  const fileContent = JSON.stringify(backup, null, 2);
-  const blob = new Blob([fileContent], { type: 'application/json' });
-
-  const totalOmzet = backup.orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
-
-  const payload = {
-    username: 'Tookoo POS Backup Bot',
-    avatar_url: 'https://cdn-icons-png.flaticon.com/512/869/869636.png',
-    content: `📦 **Cadangan Baru Tookoo POS:** \`${fileName}\``,
-    embeds: [
-      {
-        title: `Laporan Cadangan Data Toko — ${storeName}`,
-        color: 0x3b82f6, // Blue
-        fields: [
-          {
-            name: '📦 Total Produk',
-            value: `${backup.products.length} Menu/Barang`,
-            inline: true,
-          },
-          {
-            name: '🧾 Total Transaksi',
-            value: `${backup.orders.length} Struk`,
-            inline: true,
-          },
-          {
-            name: '💰 Total Omzet',
-            value: formatCurrency(totalOmzet, backup.settings?.currency),
-            inline: true,
-          },
-          {
-            name: '🪑 Denah Meja',
-            value: `${backup.tables?.length || 0} Meja`,
-            inline: true,
-          },
-          {
-            name: '🏷️ Master Promo & Pajak',
-            value: `${(backup.masterDiscounts?.length || 0) + (backup.masterTaxes?.length || 0)} Aturan`,
-            inline: true,
-          },
-        ],
-        footer: {
-          text: 'Tookoo POS • Simpan lampiran file JSON untuk pemulihan data',
-        },
-        timestamp: new Date().toISOString(),
-      },
-    ],
-  };
-
-  const formData = new FormData();
-  formData.append('payload_json', JSON.stringify(payload));
-  formData.append('files[0]', blob, fileName);
-
-  const response = await fetch(cleanUrl, {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Gagal mengirim berkas backup ke Discord (${response.status})`);
-  }
-
-  return true;
-};
-
-// ============================================================================
-// 4. CLOUD BACKUP MULTI-DESTINATION RUNNER
+// 3. CLOUD BACKUP ORCHESTRATION & BACKGROUND AUTO-TRIGGER
 // ============================================================================
 
 export interface BackupExecutionResult {
@@ -322,7 +290,7 @@ export interface BackupExecutionResult {
 }
 
 /**
- * Execute cloud backup to all enabled destinations in parallel
+ * Execute cloud backup to Google Drive
  */
 export const executeCloudBackup = async (
   config: CloudBackupConfig,
@@ -332,62 +300,28 @@ export const executeCloudBackup = async (
   const destinationsSuccess: string[] = [];
   const destinationsFailed: string[] = [];
 
-  const promises: Promise<void>[] = [];
-
-  // 1. Google Drive
-  if (config.destinations.googleDrive && config.googleDrive?.accessToken) {
-    promises.push(
-      uploadBackupToGoogleDrive(config.googleDrive.accessToken, backup, storeName)
-        .then(() => {
-          destinationsSuccess.push('Google Drive');
-        })
-        .catch((err) => {
-          destinationsFailed.push(`Google Drive (${err.message})`);
-        })
-    );
+  if (config.googleDrive?.accessToken) {
+    try {
+      await uploadBackupToGoogleDrive(config.googleDrive.accessToken, backup, storeName);
+      destinationsSuccess.push('Google Drive');
+    } catch (err: any) {
+      destinationsFailed.push(`Google Drive (${err.message})`);
+    }
   }
 
-  // 2. Telegram Bot
-  if (config.destinations.telegram && config.telegram?.botToken && config.telegram?.chatId) {
-    promises.push(
-      sendBackupToTelegram(config.telegram.botToken, config.telegram.chatId, backup, storeName)
-        .then(() => {
-          destinationsSuccess.push('Telegram');
-        })
-        .catch((err) => {
-          destinationsFailed.push(`Telegram (${err.message})`);
-        })
-    );
-  }
-
-  // 3. Discord Webhook
-  if (config.destinations.discord && config.discord?.webhookUrl) {
-    promises.push(
-      sendBackupToDiscord(config.discord.webhookUrl, backup, storeName)
-        .then(() => {
-          destinationsSuccess.push('Discord');
-        })
-        .catch((err) => {
-          destinationsFailed.push(`Discord (${err.message})`);
-        })
-    );
-  }
-
-  if (promises.length === 0) {
+  if (destinationsSuccess.length === 0 && destinationsFailed.length === 0) {
     return {
       success: false,
-      message: 'Tidak ada tujuan cloud backup yang aktif atau terkonfigurasi.',
+      message: 'Akun Google Drive belum terhubung untuk pencadangan otomatis.',
       destinationsSuccess: [],
       destinationsFailed: [],
     };
   }
 
-  await Promise.all(promises);
-
   const isSuccess = destinationsSuccess.length > 0;
   const message = isSuccess
-    ? `Berhasil dicadangkan ke: ${destinationsSuccess.join(', ')}`
-    : `Gagal mencadangkan ke: ${destinationsFailed.join(', ')}`;
+    ? `Berhasil dicadangkan ke Google Drive.`
+    : `Gagal mencadangkan ke Google Drive: ${destinationsFailed.join(', ')}`;
 
   return {
     success: isSuccess,
@@ -407,6 +341,7 @@ export const checkAndTriggerAutoBackup = async (): Promise<void> => {
 
     const config = settings.cloudBackupConfig;
     if (config.autoBackupInterval === 'MANUAL_ONLY') return;
+    if (!config.googleDrive?.accessToken) return;
 
     const ordersCount = await import('@/lib/db').then((m) => m.db.orders.count());
     const lastCount = config.ordersCountAtLastBackup || 0;

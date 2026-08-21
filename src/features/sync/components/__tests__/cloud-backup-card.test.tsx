@@ -9,19 +9,19 @@ describe('CloudBackupCard', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Cadangan Awan & Pemulihan')
+        screen.getByText('Cadangan Awan & Pemulihan Google Drive')
       ).toBeInTheDocument();
+      expect(screen.getByText('Google Drive Cloud')).toBeInTheDocument();
       expect(screen.getByText('Jadwal Otomatis')).toBeInTheDocument();
-      expect(screen.getByText('Google Drive')).toBeInTheDocument();
     });
   });
 
-  it('renders auto-backup schedule options', async () => {
+  it('renders OAuth connect description and button', async () => {
     renderWithProviders(<CloudBackupCard />);
 
     await waitFor(() => {
-      expect(screen.getByText('Frekuensi Cadangan Otomatis')).toBeInTheDocument();
-      expect(screen.getByText('Target Otomatis Cloud')).toBeInTheDocument();
+      expect(screen.getByText(/Otorisasi Akun Google/i)).toBeInTheDocument();
+      expect(screen.getByText('Hubungkan Akun Google')).toBeInTheDocument();
     });
   });
 });
