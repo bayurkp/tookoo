@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import {
   Cloud,
-  Send,
   Upload,
   CheckCircle2,
   AlertCircle,
   Clock,
-  Settings,
   RefreshCw,
   Loader2,
   HardDrive,
-  MessageSquare,
-  Radio,
   ShieldCheck,
   RotateCcw,
+  Save,
 } from 'lucide-react';
 import {
   Card,
@@ -21,7 +18,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,21 +59,11 @@ export const CloudBackupCard: React.FC = () => {
     isUploadingGoogleDrive,
     restoreGoogleDrive,
     isRestoringGoogleDrive,
-    testTelegram,
-    isTestingTelegram,
-    sendTelegram,
-    isSendingTelegram,
-    testDiscord,
-    isTestingDiscord,
-    sendDiscord,
-    isSendingDiscord,
     saveCloudBackupConfig,
     runCloudBackupNow,
   } = useCloudBackup();
 
-  const [activeTab, setActiveTab] = useState<'schedule' | 'gdrive' | 'telegram' | 'discord'>(
-    'schedule'
-  );
+  const [activeTab, setActiveTab] = useState<'schedule' | 'gdrive'>('schedule');
 
   // Local Form state for Settings
   const [autoInterval, setAutoInterval] = useState<AutoBackupInterval>(
@@ -86,20 +72,9 @@ export const CloudBackupCard: React.FC = () => {
   const [destGoogleDrive, setDestGoogleDrive] = useState<boolean>(
     Boolean(config?.destinations?.googleDrive)
   );
-  const [destTelegram, setDestTelegram] = useState<boolean>(
-    Boolean(config?.destinations?.telegram)
-  );
-  const [destDiscord, setDestDiscord] = useState<boolean>(Boolean(config?.destinations?.discord));
 
   // Google Drive state
   const [gdriveToken, setGdriveToken] = useState(config?.googleDrive?.accessToken || '');
-
-  // Telegram state
-  const [tgToken, setTgToken] = useState(config?.telegram?.botToken || '');
-  const [tgChatId, setTgChatId] = useState(config?.telegram?.chatId || '');
-
-  // Discord state
-  const [discordWebhook, setDiscordWebhook] = useState(config?.discord?.webhookUrl || '');
 
   // Status feedback
   const [notification, setNotification] = useState<{
@@ -116,20 +91,9 @@ export const CloudBackupCard: React.FC = () => {
       autoBackupInterval: autoInterval,
       destinations: {
         googleDrive: destGoogleDrive,
-        telegram: destTelegram,
-        discord: destDiscord,
       },
       googleDrive: {
         accessToken: gdriveToken.trim() || undefined,
-      },
-      telegram: {
-        botToken: tgToken.trim() || undefined,
-        chatId: tgChatId.trim() || undefined,
-        enabled: destTelegram,
-      },
-      discord: {
-        webhookUrl: discordWebhook.trim() || undefined,
-        enabled: destDiscord,
       },
       lastBackupTimestamp: config?.lastBackupTimestamp,
       lastBackupStatus: config?.lastBackupStatus,
@@ -142,94 +106,6 @@ export const CloudBackupCard: React.FC = () => {
       type: 'SUCCESS',
       message: 'Pengaturan cadangan awan & jadwal berhasil disimpan.',
     });
-  };
-
-  const handleTestTelegram = async () => {
-    if (!tgToken.trim() || !tgChatId.trim()) {
-      setNotification({
-        type: 'ERROR',
-        message: 'Harap isi Bot Token dan Chat ID Telegram terlebih dahulu.',
-      });
-      return;
-    }
-    try {
-      await testTelegram({ botToken: tgToken.trim(), chatId: tgChatId.trim() });
-      setNotification({
-        type: 'SUCCESS',
-        message: 'Uji koneksi Telegram berhasil! Pesan konfirmasi telah dikirim.',
-      });
-    } catch (err: any) {
-      setNotification({
-        type: 'ERROR',
-        message: err.message || 'Gagal terhubung ke bot Telegram.',
-      });
-    }
-  };
-
-  const handleSendTelegramNow = async () => {
-    if (!tgToken.trim() || !tgChatId.trim()) {
-      setNotification({
-        type: 'ERROR',
-        message: 'Harap isi Bot Token dan Chat ID Telegram.',
-      });
-      return;
-    }
-    try {
-      await sendTelegram({ botToken: tgToken.trim(), chatId: tgChatId.trim() });
-      setNotification({
-        type: 'SUCCESS',
-        message: 'Berkas cadangan .json berhasil dikirim ke Telegram!',
-      });
-    } catch (err: any) {
-      setNotification({
-        type: 'ERROR',
-        message: err.message || 'Gagal mengirim berkas ke Telegram.',
-      });
-    }
-  };
-
-  const handleTestDiscord = async () => {
-    if (!discordWebhook.trim()) {
-      setNotification({
-        type: 'ERROR',
-        message: 'Harap isi URL Webhook Discord terlebih dahulu.',
-      });
-      return;
-    }
-    try {
-      await testDiscord(discordWebhook.trim());
-      setNotification({
-        type: 'SUCCESS',
-        message: 'Uji webhook Discord berhasil! Notifikasi telah muncul di channel.',
-      });
-    } catch (err: any) {
-      setNotification({
-        type: 'ERROR',
-        message: err.message || 'Gagal mengirim pesan uji ke Discord.',
-      });
-    }
-  };
-
-  const handleSendDiscordNow = async () => {
-    if (!discordWebhook.trim()) {
-      setNotification({
-        type: 'ERROR',
-        message: 'Harap isi URL Webhook Discord.',
-      });
-      return;
-    }
-    try {
-      await sendDiscord(discordWebhook.trim());
-      setNotification({
-        type: 'SUCCESS',
-        message: 'Berkas cadangan .json dan ringkasan data berhasil dikirim ke Discord!',
-      });
-    } catch (err: any) {
-      setNotification({
-        type: 'ERROR',
-        message: err.message || 'Gagal mengirim ke Discord.',
-      });
-    }
   };
 
   const handleUploadGDrive = async () => {
@@ -284,8 +160,7 @@ export const CloudBackupCard: React.FC = () => {
                 Cadangan Awan & Pemulihan
               </CardTitle>
               <CardDescription className="text-xs text-muted-foreground mt-0.5">
-                Simpan dan pulihkan data toko otomatis ke Google Drive, Bot Telegram, dan Discord
-                Channel.
+                Simpan dan pulihkan data toko secara aman ke Google Drive serta atur jadwal otomatis.
               </CardDescription>
             </div>
           </div>
@@ -293,7 +168,7 @@ export const CloudBackupCard: React.FC = () => {
           <Button
             size="sm"
             onClick={runCloudBackupNow}
-            disabled={isSyncing}
+            disabled={isSyncing || (!destGoogleDrive && !gdriveToken.trim())}
             className="gap-2 text-xs font-bold shrink-0 cursor-pointer shadow-xs"
           >
             {isSyncing ? (
@@ -304,7 +179,7 @@ export const CloudBackupCard: React.FC = () => {
             ) : (
               <>
                 <Upload className="h-3.5 w-3.5" />
-                <span>Cadangkan ke Semua Cloud</span>
+                <span>Cadangkan ke Google Drive</span>
               </>
             )}
           </Button>
@@ -354,14 +229,6 @@ export const CloudBackupCard: React.FC = () => {
               <HardDrive className="h-3.5 w-3.5 text-blue-500" />
               <span>Google Drive</span>
             </TabsTrigger>
-            <TabsTrigger value="telegram" className="gap-1.5 text-xs font-bold px-3 py-1">
-              <Send className="h-3.5 w-3.5 text-sky-500" />
-              <span>Telegram Bot</span>
-            </TabsTrigger>
-            <TabsTrigger value="discord" className="gap-1.5 text-xs font-bold px-3 py-1">
-              <MessageSquare className="h-3.5 w-3.5 text-indigo-500" />
-              <span>Discord Webhook</span>
-            </TabsTrigger>
           </TabsList>
 
           {/* TAB 1: JADWAL OTOMATIS */}
@@ -369,12 +236,14 @@ export const CloudBackupCard: React.FC = () => {
             <div className="p-4 bg-muted/20 border rounded-xl space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="cloud-auto-interval" className="text-xs font-bold">Frekuensi Cadangan Otomatis</FieldLabel>
+                  <FieldLabel htmlFor="cloud-auto-interval" className="text-xs font-bold">
+                    Frekuensi Cadangan Otomatis
+                  </FieldLabel>
                   <Select
                     value={autoInterval}
                     onValueChange={(val) => setAutoInterval(val as AutoBackupInterval)}
                   >
-                    <SelectTrigger id="cloud-auto-interval" className="h-9 text-xs font-medium">
+                    <SelectTrigger id="cloud-auto-interval" className="h-9 text-xs font-medium bg-background">
                       <SelectValue placeholder="Pilih Frekuensi" />
                     </SelectTrigger>
                     <SelectContent>
@@ -387,11 +256,14 @@ export const CloudBackupCard: React.FC = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                  <FieldDescription>
+                    Pencadangan akan otomatis berjalan di latar belakang saat kasir menyelesaikan penjualan.
+                  </FieldDescription>
                 </Field>
 
                 <div>
                   <FieldLabel className="text-xs font-bold block mb-2">
-                    Target Otomatis Cloud
+                    Target Cadangan Otomatis
                   </FieldLabel>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -401,29 +273,7 @@ export const CloudBackupCard: React.FC = () => {
                         onCheckedChange={(c) => setDestGoogleDrive(Boolean(c))}
                       />
                       <label htmlFor="dest-gdrive" className="text-xs font-medium cursor-pointer">
-                        Google Drive
-                      </label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="dest-telegram"
-                        checked={destTelegram}
-                        onCheckedChange={(c) => setDestTelegram(Boolean(c))}
-                      />
-                      <label htmlFor="dest-telegram" className="text-xs font-medium cursor-pointer">
-                        Telegram Bot
-                      </label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="dest-discord"
-                        checked={destDiscord}
-                        onCheckedChange={(c) => setDestDiscord(Boolean(c))}
-                      />
-                      <label htmlFor="dest-discord" className="text-xs font-medium cursor-pointer">
-                        Discord Webhook
+                        Google Drive Cloud
                       </label>
                     </div>
                   </div>
@@ -449,6 +299,18 @@ export const CloudBackupCard: React.FC = () => {
                   </Badge>
                 )}
               </div>
+
+              {/* Save Settings Button */}
+              <div className="pt-2 flex justify-end">
+                <Button
+                  size="sm"
+                  onClick={handleSaveSettings}
+                  className="gap-2 text-xs font-bold cursor-pointer"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Simpan Pengaturan Jadwal</span>
+                </Button>
+              </div>
             </div>
           </TabsContent>
 
@@ -465,11 +327,10 @@ export const CloudBackupCard: React.FC = () => {
                     value={gdriveToken}
                     onChange={(e) => setGdriveToken(e.target.value)}
                     placeholder="Masukkan Google OAuth 2.0 Bearer Access Token..."
-                    className="h-9 text-xs font-mono"
+                    className="h-9 text-xs font-mono bg-background"
                   />
                   <FieldDescription>
-                    Dapat diperoleh dari Google Cloud Console atau integrasi Google Identity
-                    Services.
+                    Dapat diperoleh dari Google Cloud Console atau integrasi Google Identity Services.
                   </FieldDescription>
                 </Field>
 
@@ -497,6 +358,16 @@ export const CloudBackupCard: React.FC = () => {
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     <span>Perbarui Daftar Cadangan</span>
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSaveSettings}
+                    className="h-8 text-xs font-bold gap-1.5 cursor-pointer ml-auto"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    <span>Simpan Token</span>
                   </Button>
                 </div>
               </div>
@@ -556,160 +427,30 @@ export const CloudBackupCard: React.FC = () => {
               )}
             </div>
           </TabsContent>
-
-          {/* TAB 3: TELEGRAM BOT */}
-          <TabsContent value="telegram" className="space-y-4 m-0">
-            <div className="p-4 bg-muted/20 border rounded-xl space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Field>
-                  <FieldLabel htmlFor="cloud-tg-token" className="text-xs font-bold">Telegram Bot Token *</FieldLabel>
-                  <Input
-                    id="cloud-tg-token"
-                    value={tgToken}
-                    onChange={(e) => setTgToken(e.target.value)}
-                    placeholder="Contoh: 123456789:ABCdefGhIJKlmNoPQR..."
-                    className="h-9 text-xs font-mono"
-                  />
-                  <FieldDescription>
-                    Dibuat via @BotFather di aplikasi Telegram.
-                  </FieldDescription>
-                </Field>
-
-                <Field>
-                  <FieldLabel htmlFor="cloud-tg-chat-id" className="text-xs font-bold">Chat ID / Channel ID *</FieldLabel>
-                  <Input
-                    id="cloud-tg-chat-id"
-                    value={tgChatId}
-                    onChange={(e) => setTgChatId(e.target.value)}
-                    placeholder="Contoh: 987654321 atau @nama_channel"
-                    className="h-9 text-xs font-mono"
-                  />
-                  <FieldDescription>
-                    ID obrolan pribadi atau grup/channel kasir Anda.
-                  </FieldDescription>
-                </Field>
-              </div>
-
-              <div className="flex flex-wrap gap-2 pt-2 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleTestTelegram}
-                  disabled={isTestingTelegram || !tgToken.trim() || !tgChatId.trim()}
-                  className="h-8 text-xs font-bold gap-1.5 cursor-pointer"
-                >
-                  {isTestingTelegram ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Radio className="h-3.5 w-3.5 text-sky-500" />
-                  )}
-                  <span>Uji Pesan Telegram</span>
-                </Button>
-
-                <Button
-                  size="sm"
-                  onClick={handleSendTelegramNow}
-                  disabled={isSendingTelegram || !tgToken.trim() || !tgChatId.trim()}
-                  className="h-8 text-xs font-bold gap-1.5 cursor-pointer bg-sky-600 hover:bg-sky-700 text-white"
-                >
-                  {isSendingTelegram ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Send className="h-3.5 w-3.5" />
-                  )}
-                  <span>Kirim Berkas Cadangan ke Telegram</span>
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* TAB 4: DISCORD WEBHOOK */}
-          <TabsContent value="discord" className="space-y-4 m-0">
-            <div className="p-4 bg-muted/20 border rounded-xl space-y-3">
-              <Field>
-                <FieldLabel htmlFor="cloud-discord-webhook" className="text-xs font-bold">Discord Channel Webhook URL *</FieldLabel>
-                <Input
-                  id="cloud-discord-webhook"
-                  value={discordWebhook}
-                  onChange={(e) => setDiscordWebhook(e.target.value)}
-                  placeholder="Contoh: https://discord.com/api/webhooks/1234567890/abcDEF..."
-                  className="h-9 text-xs font-mono"
-                />
-                <FieldDescription>
-                  Dibuat dari Server Discord → Edit Channel → Integrations → Webhooks.
-                </FieldDescription>
-              </Field>
-
-              <div className="flex flex-wrap gap-2 pt-2 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleTestDiscord}
-                  disabled={isTestingDiscord || !discordWebhook.trim()}
-                  className="h-8 text-xs font-bold gap-1.5 cursor-pointer"
-                >
-                  {isTestingDiscord ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Radio className="h-3.5 w-3.5 text-indigo-500" />
-                  )}
-                  <span>Uji Webhook Discord</span>
-                </Button>
-
-                <Button
-                  size="sm"
-                  onClick={handleSendDiscordNow}
-                  disabled={isSendingDiscord || !discordWebhook.trim()}
-                  className="h-8 text-xs font-bold gap-1.5 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
-                >
-                  {isSendingDiscord ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <MessageSquare className="h-3.5 w-3.5" />
-                  )}
-                  <span>Kirim Berkas Cadangan ke Discord</span>
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
         </Tabs>
       </CardContent>
 
-      <CardFooter className="p-5 pt-0 border-t flex justify-end">
-        <Button
-          size="sm"
-          onClick={handleSaveSettings}
-          className="text-xs font-bold gap-1.5 cursor-pointer"
-        >
-          <Settings className="h-3.5 w-3.5" />
-          <span>Simpan Konfigurasi Cloud</span>
-        </Button>
-      </CardFooter>
-
-      {/* Restore Confirmation Dialog */}
-      <Dialog
-        open={restoreFileId !== null}
-        onOpenChange={(open) => !open && setRestoreFileId(null)}
-      >
+      {/* Confirmation Dialog for Restoring from Cloud */}
+      <Dialog open={Boolean(restoreFileId)} onOpenChange={(open) => !open && setRestoreFileId(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold">
-              Pulihkan Data dari Google Drive?
+            <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
+              <RotateCcw className="h-4 w-4 text-emerald-600" />
+              <span>Konfirmasi Pemulihan Data</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Memulihkan data dari berkas{' '}
-              <strong className="text-foreground">{restoreFileName}</strong>. Data yang memiliki cap
-              waktu lebih baru akan diperbarui ke basis data toko Anda.
+            <DialogDescription className="text-xs text-muted-foreground leading-relaxed pt-1">
+              Apakah Anda yakin ingin memulihkan basis data dari berkas cadangan{' '}
+              <strong className="text-foreground">{restoreFileName}</strong>? Data di perangkat ini
+              akan disesuaikan dengan data cadangan tersebut.
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2 pt-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setRestoreFileId(null)}
               disabled={isRestoringGoogleDrive}
-              className="text-xs"
             >
               Batal
             </Button>
@@ -717,18 +458,15 @@ export const CloudBackupCard: React.FC = () => {
               size="sm"
               onClick={handleConfirmRestore}
               disabled={isRestoringGoogleDrive}
-              className="text-xs font-bold gap-1.5 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
             >
               {isRestoringGoogleDrive ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
                   <span>Memulihkan...</span>
                 </>
               ) : (
-                <>
-                  <RotateCcw className="h-3.5 w-3.5" />
-                  <span>Konfirmasi & Pulihkan</span>
-                </>
+                <span>Ya, Pulihkan Data</span>
               )}
             </Button>
           </DialogFooter>

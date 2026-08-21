@@ -604,7 +604,7 @@ export const SettingsPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-xs font-bold text-foreground">
-                        {t('settings.security.roleOwner', 'Pemilik Usaha (Owner)')}
+                        {t('settings.security.roleOwner', 'Pemilik Usaha')}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
                         {t(

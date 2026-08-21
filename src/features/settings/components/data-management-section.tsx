@@ -50,6 +50,8 @@ import {
 } from '../hooks/use-data-management';
 import { useQueryClient } from '@tanstack/react-query';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
+import { BackupExportCard } from '@/features/sync/components/backup-export-card';
+import { CloudBackupCard } from '@/features/sync/components/cloud-backup-card';
 import { sounds } from '@/utils/audio';
 import { loadProfessionalDemoData } from '../data/demo-data';
 
@@ -67,7 +69,7 @@ type ClearActionType =
 export const DataManagementSection: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { settings, exportBackup } = useP2pSync();
+  const { settings, exportBackup, importBackup } = useP2pSync();
   const { data: summary, isLoading: isSummaryLoading } = useDataSummary();
 
   const clearOrdersMutation = useClearOrders();
@@ -364,6 +366,12 @@ export const DataManagementSection: React.FC = () => {
           </Button>
         </div>
       )}
+
+      {/* Section: Cadangan & Pemulihan Basis Data (Lokal & Google Drive) */}
+      <div className="space-y-4">
+        <BackupExportCard onExport={exportBackup} onImport={importBackup} />
+        <CloudBackupCard />
+      </div>
 
       {/* Demo Data Quick Load Card */}
       <Card className="border border-primary/30 bg-primary/5 rounded-xl shadow-none">

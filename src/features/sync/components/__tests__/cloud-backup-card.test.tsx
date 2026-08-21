@@ -13,8 +13,6 @@ describe('CloudBackupCard', () => {
       ).toBeInTheDocument();
       expect(screen.getByText('Jadwal Otomatis')).toBeInTheDocument();
       expect(screen.getByText('Google Drive')).toBeInTheDocument();
-      expect(screen.getByText('Telegram Bot')).toBeInTheDocument();
-      expect(screen.getByText('Discord Webhook')).toBeInTheDocument();
     });
   });
 

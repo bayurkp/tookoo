@@ -7,8 +7,6 @@ import { ConnectStoreCard } from '@/features/sync/components/connect-store-card'
 import { QrScannerModal } from '@/features/sync/components/qr-scanner-modal';
 import { ConnectedPeersCard } from '@/features/sync/components/connected-peers-card';
 import { TerminalSecurityCard } from '@/features/sync/components/terminal-security-card';
-import { BackupExportCard } from '@/features/sync/components/backup-export-card';
-import { CloudBackupCard } from '@/features/sync/components/cloud-backup-card';
 import { PageHeader } from '@/components/page-header';
 import type { StorePairingPayload } from '@/types/sync.types';
 import type { UserRole } from '@/types/store.types';
@@ -30,8 +28,6 @@ export const SyncPage: React.FC = () => {
     syncAllDataNow,
     regeneratePassphrase,
     updateSettings,
-    exportBackup,
-    importBackup,
   } = useP2pSync();
 
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -119,12 +115,6 @@ export const SyncPage: React.FC = () => {
         onUpdateRole={handleUpdateRole}
         onUpdatePin={handleUpdatePin}
       />
-
-      {/* 5. Offline Backup & Restore */}
-      <BackupExportCard onExport={exportBackup} onImport={importBackup} />
-
-      {/* 6. Cloud Backup & Remote Recovery (Google Drive, Telegram, Discord, Auto Schedule) */}
-      <CloudBackupCard />
 
       {/* Scanner Modal for Camera */}
       <QrScannerModal
