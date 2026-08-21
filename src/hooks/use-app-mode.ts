@@ -3,6 +3,28 @@ import { db } from '@/lib/db';
 import type { AppMode } from '@/types/store.types';
 import { sounds } from '@/utils/audio';
 
+const APP_MODE_STORAGE_KEY = 'tookoo_last_app_mode';
+
+const getStoredAppMode = (): AppMode => {
+  try {
+    const stored = localStorage.getItem(APP_MODE_STORAGE_KEY);
+    if (stored === 'ADVANCED' || stored === 'SIMPLE') {
+      return stored;
+    }
+  } catch {
+    // Ignore localStorage access errors
+  }
+  return 'SIMPLE';
+};
+
+const storeAppMode = (mode: AppMode) => {
+  try {
+    localStorage.setItem(APP_MODE_STORAGE_KEY, mode);
+  } catch {
+    // Ignore localStorage access errors
+  }
+};
+
 export const useAppMode = () => {
   const queryClient = useQueryClient();
 
@@ -13,13 +35,14 @@ export const useAppMode = () => {
     },
   });
 
-  // Default to 'SIMPLE' mode if not specified
-  const appMode: AppMode = settings?.appMode || 'SIMPLE';
+  // Default to stored mode or 'SIMPLE' if not specified in database
+  const appMode: AppMode = settings?.appMode || getStoredAppMode();
   const isSimple = appMode === 'SIMPLE';
   const isAdvanced = appMode === 'ADVANCED';
 
   const setAppModeMutation = useMutation({
     mutationFn: async (newMode: AppMode) => {
+      storeAppMode(newMode);
       const currentSettings = await db.settings.toCollection().first();
       if (currentSettings) {
         await db.settings.update(currentSettings.id, {
@@ -41,7 +64,8 @@ export const useAppMode = () => {
       }
       return newMode;
     },
-    onSuccess: () => {
+    onSuccess: (newMode) => {
+      storeAppMode(newMode);
       queryClient.invalidateQueries({ queryKey: ['settings'] });
       sounds.playSuccess();
     },

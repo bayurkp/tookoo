@@ -60,4 +60,16 @@ describe('useAppMode', () => {
     const updated = await db.settings.get('settings-1');
     expect(updated?.appMode).toBe('ADVANCED');
   });
+
+  it('preserves mode from localStorage when settings table is cleared', async () => {
+    localStorage.setItem('tookoo_last_app_mode', 'ADVANCED');
+    await db.settings.clear();
+
+    const { result } = renderHook(() => useAppMode(), { wrapper: createWrapper() });
+
+    await act(async () => {});
+
+    expect(result.current.appMode).toBe('ADVANCED');
+    expect(result.current.isAdvanced).toBe(true);
+  });
 });

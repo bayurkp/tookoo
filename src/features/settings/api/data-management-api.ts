@@ -264,6 +264,16 @@ export const resetFullDatabase = async (options?: {
 
       const now = Date.now();
 
+      let currentAppMode: StoreSettings['appMode'] = 'SIMPLE';
+      try {
+        const stored = localStorage.getItem('tookoo_last_app_mode');
+        if (stored === 'ADVANCED' || stored === 'SIMPLE') {
+          currentAppMode = stored;
+        }
+      } catch {
+        // Ignore localStorage access errors
+      }
+
       // Create new initial settings
       const newSettings: StoreSettings = {
         id: crypto.randomUUID(),
@@ -271,6 +281,7 @@ export const resetFullDatabase = async (options?: {
         passphrase: generatePassphrase(),
         storeSecretKey: generateStoreSecretKey(),
         currency: DEFAULT_CURRENCY,
+        appMode: currentAppMode,
         soundEnabled: true,
         autoPrint: false,
         createdAt: now,

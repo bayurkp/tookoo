@@ -114,6 +114,16 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
 
   // 3. Settings
   const existingSettings = await db.settings.toCollection().first();
+  let preservedAppMode: StoreSettings['appMode'] = existingSettings?.appMode || 'ADVANCED';
+  try {
+    const stored = localStorage.getItem('tookoo_last_app_mode');
+    if (stored === 'ADVANCED' || stored === 'SIMPLE') {
+      preservedAppMode = stored;
+    }
+  } catch {
+    // Ignore localStorage access errors
+  }
+
   const demoSettings: StoreSettings = {
     id: existingSettings?.id || storeId,
     storeName: 'Kopi & Resto Nusantara',
@@ -124,7 +134,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
     activeStaffId: ownerStaffId,
     activeOutletId: hqOutletId,
     currency: 'IDR',
-    appMode: 'ADVANCED',
+    appMode: preservedAppMode,
     activeRole: 'OWNER',
     ownerPin: '1234',
     soundEnabled: true,
