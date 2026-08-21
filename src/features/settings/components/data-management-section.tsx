@@ -12,6 +12,8 @@ import {
   ShieldAlert,
   Loader2,
   RotateCcw,
+  Wallet,
+  Users,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -41,6 +43,8 @@ import {
   useClearProductsAndStock,
   useClearTables,
   useClearDiscountsAndTaxes,
+  useClearExpenses,
+  useClearCustomersAndSuppliers,
   useResetMasterDataToDefaults,
   useResetFullDatabase,
 } from '../hooks/use-data-management';
@@ -53,6 +57,8 @@ type ClearActionType =
   | 'CLEAR_ORDERS'
   | 'CLEAR_PRODUCTS'
   | 'CLEAR_TABLES'
+  | 'CLEAR_EXPENSES'
+  | 'CLEAR_CONTACTS'
   | 'CLEAR_PROMOS'
   | 'RESET_MASTER'
   | 'RESET_ALL'
@@ -67,6 +73,8 @@ export const DataManagementSection: React.FC = () => {
   const clearOrdersMutation = useClearOrders();
   const clearProductsMutation = useClearProductsAndStock();
   const clearTablesMutation = useClearTables();
+  const clearExpensesMutation = useClearExpenses();
+  const clearContactsMutation = useClearCustomersAndSuppliers();
   const clearPromosMutation = useClearDiscountsAndTaxes();
   const resetMasterMutation = useResetMasterDataToDefaults();
   const resetFullMutation = useResetFullDatabase();
@@ -106,6 +114,24 @@ export const DataManagementSection: React.FC = () => {
           requiredKeyword: 'HAPUS',
           badgeText: `${summary?.tablesCount ?? 0} Meja`,
           warning: 'Denah meja akan dihapus dari sistem kasir.',
+        };
+      case 'CLEAR_EXPENSES':
+        return {
+          title: 'Hapus Catatan Pengeluaran Kas',
+          description:
+            'Tindakan ini akan menghapus semua riwayat catatan biaya operasional dan kas keluar.',
+          requiredKeyword: 'HAPUS',
+          badgeText: `${summary?.expensesCount ?? 0} Pengeluaran`,
+          warning: 'Data pengeluaran kas yang dihapus tidak dapat dipulihkan.',
+        };
+      case 'CLEAR_CONTACTS':
+        return {
+          title: 'Hapus Data Pelanggan & Pemasok',
+          description:
+            'Tindakan ini akan mengosongkan seluruh buku kontak data pelanggan dan daftar vendor supplier.',
+          requiredKeyword: 'HAPUS',
+          badgeText: `${(summary?.customersCount ?? 0) + (summary?.suppliersCount ?? 0)} Kontak`,
+          warning: 'Daftar pelanggan loyalitas dan kontak vendor akan terhapus.',
         };
       case 'CLEAR_PROMOS':
         return {
@@ -185,6 +211,14 @@ export const DataManagementSection: React.FC = () => {
       } else if (activeAction === 'CLEAR_TABLES') {
         const res = await clearTablesMutation.mutateAsync();
         setSuccessMessage(`Berhasil mengosongkan ${res.deletedCount} meja.`);
+      } else if (activeAction === 'CLEAR_EXPENSES') {
+        const res = await clearExpensesMutation.mutateAsync();
+        setSuccessMessage(`Berhasil menghapus ${res.deletedCount} catatan pengeluaran kas.`);
+      } else if (activeAction === 'CLEAR_CONTACTS') {
+        const res = await clearContactsMutation.mutateAsync();
+        setSuccessMessage(
+          `Berhasil menghapus ${res.customersCount} pelanggan & ${res.suppliersCount} vendor.`
+        );
       } else if (activeAction === 'CLEAR_PROMOS') {
         const res = await clearPromosMutation.mutateAsync();
         setSuccessMessage(
@@ -192,13 +226,14 @@ export const DataManagementSection: React.FC = () => {
         );
       } else if (activeAction === 'RESET_MASTER') {
         await resetMasterMutation.mutateAsync();
-        setSuccessMessage('Berhasil mereset master data ke template default.');
+        setSuccessMessage('Berhasil mereset master data ke template standar.');
       } else if (activeAction === 'RESET_ALL') {
         await resetFullMutation.mutateAsync({
           newStoreName: 'Tookoo Store',
           reseedMasterDefaults: true,
         });
-        setSuccessMessage('Toko berhasil direset ke kondisi awal.');
+        await queryClient.invalidateQueries();
+        setSuccessMessage('Toko berhasil direset ke kondisi awal yang bersih.');
       } else if (activeAction === 'LOAD_DEMO') {
         await loadProfessionalDemoData();
         await queryClient.invalidateQueries();
@@ -253,7 +288,7 @@ export const DataManagementSection: React.FC = () => {
         </CardHeader>
 
         {/* Database Live Stats */}
-        <CardContent className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-muted/20">
+        <CardContent className="p-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 bg-muted/20">
           <div className="p-3 bg-card border rounded-lg">
             <span className="text-[11px] text-muted-foreground font-medium block">
               Total Transaksi
@@ -283,7 +318,27 @@ export const DataManagementSection: React.FC = () => {
 
           <div className="p-3 bg-card border rounded-lg">
             <span className="text-[11px] text-muted-foreground font-medium block">
-              Total Rekaman Data
+              Pengeluaran Kas
+            </span>
+            <span className="text-lg font-bold text-foreground font-mono">
+              {isSummaryLoading ? '...' : (summary?.expensesCount ?? 0)}
+            </span>
+          </div>
+
+          <div className="p-3 bg-card border rounded-lg">
+            <span className="text-[11px] text-muted-foreground font-medium block">
+              Pelanggan & Vendor
+            </span>
+            <span className="text-lg font-bold text-foreground font-mono">
+              {isSummaryLoading
+                ? '...'
+                : (summary?.customersCount ?? 0) + (summary?.suppliersCount ?? 0)}
+            </span>
+          </div>
+
+          <div className="p-3 bg-card border rounded-lg">
+            <span className="text-[11px] text-muted-foreground font-medium block">
+              Total Rekaman
             </span>
             <span className="text-lg font-bold text-primary font-mono">
               {isSummaryLoading ? '...' : (summary?.totalRecords ?? 0)}
@@ -358,7 +413,7 @@ export const DataManagementSection: React.FC = () => {
           <span>Pilihan Pembersihan Spesifik</span>
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* 1. Clear Orders */}
           <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
             <CardHeader className="p-4 pb-2">
@@ -475,7 +530,85 @@ export const DataManagementSection: React.FC = () => {
             </CardFooter>
           </Card>
 
-          {/* 4. Reset Master Data to Defaults */}
+          {/* 4. Clear Expenses */}
+          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
+            <CardHeader className="p-4 pb-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-7 w-7 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <Wallet className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xs font-bold">Pengeluaran Operasional</CardTitle>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Kosongkan catatan kas keluar
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-[10px] font-mono">
+                  {summary?.expensesCount ?? 0} Data
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Menghapus semua catatan belanja bahan baku, operasional, dan pengeluaran kas.
+              </p>
+            </CardContent>
+            <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleStartAction('CLEAR_EXPENSES')}
+                disabled={summary?.expensesCount === 0}
+                className="text-xs font-bold text-amber-600 hover:text-amber-700 hover:bg-amber-500/10 border-amber-500/30 cursor-pointer"
+              >
+                Hapus Pengeluaran
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* 5. Clear Contacts (Customers & Suppliers) */}
+          <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
+            <CardHeader className="p-4 pb-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-7 w-7 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <Users className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xs font-bold">Pelanggan & Vendor</CardTitle>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Kosongkan buku kontak CRM
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-[10px] font-mono">
+                  {(summary?.customersCount ?? 0) + (summary?.suppliersCount ?? 0)} Kontak
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Menghapus database pelanggan membership/loyalitas dan daftar pemasok supplier.
+              </p>
+            </CardContent>
+            <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleStartAction('CLEAR_CONTACTS')}
+                disabled={
+                  (summary?.customersCount ?? 0) + (summary?.suppliersCount ?? 0) === 0
+                }
+                className="text-xs font-bold text-amber-600 hover:text-amber-700 hover:bg-amber-500/10 border-amber-500/30 cursor-pointer"
+              >
+                Hapus Kontak
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* 6. Reset Master Data to Defaults */}
           <Card className="border bg-card rounded-xl shadow-none flex flex-col justify-between overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex items-start justify-between gap-2">
@@ -498,7 +631,7 @@ export const DataManagementSection: React.FC = () => {
             <CardContent className="p-4 pt-0">
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Mereset kategori, satuan produk, varian, modifier, diskon, dan pajak ke template
-                bawaan.
+                standar.
               </p>
             </CardContent>
             <CardFooter className="p-3 px-4 border-t bg-muted/20 flex items-center justify-end">
