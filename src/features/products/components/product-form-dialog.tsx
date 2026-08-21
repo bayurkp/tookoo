@@ -540,12 +540,12 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-2xl h-[85vh] max-h-[640px] min-h-[500px] flex flex-col p-0 gap-0 overflow-hidden">
           {/* Header with Simple vs Advance Mode Toggle */}
-          <DialogHeader className="p-4 px-6 border-b shrink-0 bg-card flex flex-row items-center justify-between space-y-0">
-            <div>
-              <DialogTitle className="text-base font-bold">
+          <DialogHeader className="p-4 pl-6 pr-14 border-b shrink-0 bg-card flex flex-row items-center justify-between gap-3 space-y-0">
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-base font-bold truncate">
                 {productToEdit ? 'Edit Produk Katalog' : 'Tambah Produk Baru'}
               </DialogTitle>
-              <DialogDescription className="text-xs">
+              <DialogDescription className="text-xs truncate">
                 {isAdvanceMode
                   ? 'Mode Lengkap: Atur identitas, harga modal HPP, varian multi-level, dan modifier.'
                   : 'Mode Sederhana: Buat produk cepat dalam hitungan detik.'}
@@ -553,7 +553,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             </div>
 
             {/* Mode Switcher Button */}
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0 mr-2">
               <Button
                 type="button"
                 variant={isAdvanceMode ? 'default' : 'outline'}
