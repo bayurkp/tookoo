@@ -122,10 +122,10 @@ export const ReportsPage: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="ALL">Semua Cabang (Konsolidasi)</SelectItem>
+                      <SelectItem value="ALL">Semua Cabang (Gabungan)</SelectItem>
                       {outlets.map((outlet) => (
                         <SelectItem key={outlet.id} value={outlet.id}>
-                          {outlet.name} {outlet.isHQ ? '(HQ)' : ''}
+                          {outlet.name} {outlet.isHQ ? '(Pusat)' : ''}
                         </SelectItem>
                       ))}
                     </SelectGroup>

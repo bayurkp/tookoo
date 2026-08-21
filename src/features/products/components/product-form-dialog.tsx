@@ -1712,7 +1712,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
               </Field>
 
               <Field>
-                <FieldLabel className="text-xs font-bold">Kategori Induk (Parent)</FieldLabel>
+                <FieldLabel className="text-xs font-bold">Kategori Induk</FieldLabel>
                 <Select
                   value={quickCategoryParentId}
                   onValueChange={(val) => setQuickCategoryParentId(val)}

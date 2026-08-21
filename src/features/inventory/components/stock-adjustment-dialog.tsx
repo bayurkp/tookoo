@@ -158,7 +158,7 @@ export const StockAdjustmentDialog: React.FC<StockAdjustmentDialogProps> = ({
     >
       <DialogContent className="sm:max-w-md h-[85vh] max-h-[640px] min-h-[480px] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-4 px-6 border-b shrink-0 bg-card">
-          <DialogTitle className="text-base font-bold">Penyesuaian Stok (Adjustment)</DialogTitle>
+          <DialogTitle className="text-base font-bold">Penyesuaian Stok</DialogTitle>
           <DialogDescription className="text-xs">
             Catat barang masuk (kulakan), barang rusak, atau koreksi hitung fisik toko.
           </DialogDescription>

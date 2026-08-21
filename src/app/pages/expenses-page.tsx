@@ -241,10 +241,10 @@ export const ExpensesPage: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="ALL">Semua Cabang (Konsolidasi)</SelectItem>
+                      <SelectItem value="ALL">Semua Cabang (Gabungan)</SelectItem>
                       {outlets.map((outlet) => (
                         <SelectItem key={outlet.id} value={outlet.id}>
-                          {outlet.name} {outlet.isHQ ? '(HQ)' : ''}
+                          {outlet.name} {outlet.isHQ ? '(Pusat)' : ''}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -400,7 +400,7 @@ export const ExpensesPage: React.FC = () => {
             }`}
           >
             <ShoppingBag className="h-3.5 w-3.5" />
-            <span>Pembelian Stok (PO)</span>
+            <span>Pembelian Stok</span>
           </button>
 
           <button

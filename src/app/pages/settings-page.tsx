@@ -269,7 +269,7 @@ export const SettingsPage: React.FC = () => {
                   >
                     <div>
                       <p className="text-xs font-bold text-foreground">Bahasa Indonesia</p>
-                      <p className="text-[11px] text-muted-foreground">Bawaan (Default)</p>
+                      <p className="text-[11px] text-muted-foreground">Bawaan</p>
                     </div>
                     {currentLang === 'id' && (
                       <div className="h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
@@ -289,7 +289,7 @@ export const SettingsPage: React.FC = () => {
                     }`}
                   >
                     <div>
-                      <p className="text-xs font-bold text-foreground">English (US)</p>
+                      <p className="text-xs font-bold text-foreground">English</p>
                       <p className="text-[11px] text-muted-foreground">International</p>
                     </div>
                     {currentLang === 'en' && (

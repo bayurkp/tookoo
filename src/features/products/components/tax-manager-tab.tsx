@@ -205,7 +205,7 @@ export const TaxManagerTab: React.FC = () => {
                       {tax.isDefault && (
                         <span className="text-[10px] font-semibold text-primary mt-0.5 inline-flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3" />
-                          <span>Otomatis di Kasir (Default)</span>
+                          <span>Otomatis Aktif di Kasir</span>
                         </span>
                       )}
                     </div>

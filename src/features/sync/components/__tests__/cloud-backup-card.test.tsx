@@ -9,7 +9,7 @@ describe('CloudBackupCard', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Cadangan Awan & Pemulihan (Cloud Backup & Recovery)')
+        screen.getByText('Cadangan Awan & Pemulihan')
       ).toBeInTheDocument();
       expect(screen.getByText('Jadwal Otomatis')).toBeInTheDocument();
       expect(screen.getByText('Google Drive')).toBeInTheDocument();

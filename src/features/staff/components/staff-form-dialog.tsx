@@ -137,9 +137,9 @@ export const StaffFormDialog: React.FC<StaffFormDialogProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="CASHIER">Kasir (Hanya Transaksi & Penjualan)</SelectItem>
-                    <SelectItem value="MANAGER">Manajer (Kasir + Stok & Diskon)</SelectItem>
-                    <SelectItem value="OWNER">Owner (Akses Penuh Semua Modul)</SelectItem>
+                    <SelectItem value="CASHIER">Kasir (Penjualan)</SelectItem>
+                    <SelectItem value="MANAGER">Manajer (Stok & Penjualan)</SelectItem>
+                    <SelectItem value="OWNER">Pemilik (Akses Penuh)</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

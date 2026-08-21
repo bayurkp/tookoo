@@ -210,40 +210,40 @@ export const ReceiptSettingsSection: React.FC<ReceiptSettingsSectionProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="58mm">58 mm (Standar / Bluetooth POS)</SelectItem>
-                        <SelectItem value="80mm">80 mm (Desktop / POS Besar)</SelectItem>
+                        <SelectItem value="58mm">58 mm (Standar POS)</SelectItem>
+                        <SelectItem value="80mm">80 mm (POS Besar)</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </Field>
 
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Jenis Font (Typography) *</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">Jenis Font *</FieldLabel>
                   <Select value={fontFamily} onValueChange={(val) => setFontFamily(val as any)}>
                     <SelectTrigger className="w-full h-9 text-xs">
                       <SelectValue placeholder="Pilih Font" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="monospace">Monospace (Thermal Dot-Matrix)</SelectItem>
-                        <SelectItem value="sans-serif">Clean Sans-Serif (Modern)</SelectItem>
-                        <SelectItem value="serif">Serif (Formal / Klasik)</SelectItem>
+                        <SelectItem value="monospace">Monospace (Thermal)</SelectItem>
+                        <SelectItem value="sans-serif">Clean Sans-Serif</SelectItem>
+                        <SelectItem value="serif">Serif (Klasik)</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </Field>
 
                 <Field>
-                  <FieldLabel className="text-xs font-bold">Ukuran Huruf (Font Size) *</FieldLabel>
+                  <FieldLabel className="text-xs font-bold">Ukuran Huruf *</FieldLabel>
                   <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
                     <SelectTrigger className="w-full h-9 text-xs">
                       <SelectValue placeholder="Pilih Ukuran Huruf" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="small">Kecil (Compact / Hemat Kertas)</SelectItem>
-                        <SelectItem value="normal">Normal (Standar Kasir)</SelectItem>
-                        <SelectItem value="large">Besar (Jelas & Mudah Dibaca)</SelectItem>
+                        <SelectItem value="small">Kecil (Hemat Kertas)</SelectItem>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="large">Besar (Mudah Dibaca)</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -796,7 +796,7 @@ export const ReceiptSettingsSection: React.FC<ReceiptSettingsSectionProps> = ({
                 </div>
                 {showModifiers && (
                   <div className="text-[10px] opacity-70 pl-2">
-                    <p>• Suhu: Dingin (Iced)</p>
+                    <p>• Suhu: Dingin</p>
                     <p>• +Ekstra Boba Brown Sugar (+Rp3.000)</p>
                   </div>
                 )}
@@ -850,7 +850,7 @@ export const ReceiptSettingsSection: React.FC<ReceiptSettingsSectionProps> = ({
                 <div className="pt-1 text-[10px] opacity-80 space-y-0.5 border-t border-dashed border-zinc-200 dark:border-zinc-700">
                   <div className="flex justify-between">
                     <span>Metode Bayar:</span>
-                    <span className="font-semibold">TUNAI (CASH)</span>
+                    <span className="font-semibold">TUNAI</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Uang Diterima:</span>

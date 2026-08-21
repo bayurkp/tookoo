@@ -132,7 +132,7 @@ export const ConnectedPeersCard: React.FC<ConnectedPeersCardProps> = ({
             {peers.length === 0 ? (
               <div className="p-6 rounded-xl bg-muted/30 border border-dashed text-center flex flex-col items-center justify-center space-y-2">
                 <Wifi className="h-8 w-8 text-muted-foreground/40" />
-                <p className="text-xs font-medium text-foreground">Mode 1 Kasir (Mandiri)</p>
+                <p className="text-xs font-medium text-foreground">Mode Kasir Mandiri</p>
                 <p className="text-[11px] text-muted-foreground max-w-xs">
                   Belum ada terminal kasir lain yang terhubung. Sambungkan HP atau tablet kasir lain
                   dengan memindai kode QR atau memasukkan 12 kata kunci.

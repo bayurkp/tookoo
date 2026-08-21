@@ -143,7 +143,7 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
             <Field>
               <FieldLabel htmlFor="supplier-contact-person" className="text-xs font-semibold flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5 text-muted-foreground" />
-                <span>Nama Kontak / Sales (PIC)</span>
+                <span>Nama Kontak / Sales</span>
               </FieldLabel>
               <Input id="supplier-contact-person" placeholder="misal: Hendra (Sales)" {...register('contactPerson')} className="h-9 text-xs" />
             </Field>

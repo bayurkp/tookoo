@@ -129,7 +129,7 @@ export const OutletFormDialog: React.FC<OutletFormDialogProps> = ({
             {/* Flag Cabang Utama (HQ) */}
             <div className="flex items-center justify-between p-3 rounded-xl border bg-muted/40 text-xs">
               <div className="space-y-0.5">
-                <p className="font-bold text-foreground">Jadikan Cabang Utama (HQ / Pusat)</p>
+                <p className="font-bold text-foreground">Jadikan Cabang Utama (Pusat)</p>
                 <p className="text-[11px] text-muted-foreground">
                   Pusat operasional utama bisnis tokomu
                 </p>

@@ -21,9 +21,9 @@ export interface StoreTable {
 }
 
 export const DEFAULT_STORE_ZONES = [
-  'Area Utama (Indoor)',
-  'Area Outdoor (Smoking)',
+  'Area Indoor',
+  'Area Outdoor',
   'Lantai 2',
-  'VIP Room',
-  'Area Bar / Counter',
+  'Ruang VIP',
+  'Area Bar / Kasir',
 ];

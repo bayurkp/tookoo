@@ -197,7 +197,7 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
                   <SelectContent>
                     <SelectGroup>
                       <SelectItem value="RECTANGLE">Persegi Panjang</SelectItem>
-                      <SelectItem value="SQUARE">Persegi (Kotak)</SelectItem>
+                      <SelectItem value="SQUARE">Persegi</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -214,9 +214,9 @@ export const TableEditDialog: React.FC<TableEditDialogProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="AVAILABLE">Kosong (Tersedia)</SelectItem>
-                    <SelectItem value="OCCUPIED">Terisi / Ada Pesanan Aktif</SelectItem>
-                    <SelectItem value="RESERVED">Booking / Reservasi</SelectItem>
+                    <SelectItem value="AVAILABLE">Kosong</SelectItem>
+                    <SelectItem value="OCCUPIED">Terisi</SelectItem>
+                    <SelectItem value="RESERVED">Reservasi</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

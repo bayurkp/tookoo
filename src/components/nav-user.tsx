@@ -239,7 +239,7 @@ export function NavUser({
                 >
                   <div className="flex items-center gap-2">
                     <Shield className="size-3.5" />
-                    <span>{t('auth.roles.owner', 'Pemilik (Owner)')}</span>
+                    <span>{t('auth.roles.owner', 'Pemilik Toko')}</span>
                   </div>
                   {currentRole === 'OWNER' && <Check className="size-3.5 text-primary" />}
                 </DropdownMenuItem>

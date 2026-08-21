@@ -363,7 +363,7 @@ export const CategoryManagerTab: React.FC<CategoryManagerTabProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="NONE">-- Kategori Utama (Tanpa Induk) --</SelectItem>
+                      <SelectItem value="NONE">-- Kategori Utama --</SelectItem>
                       {parentCategories
                         .filter((p) => !editingCategory || p.id !== editingCategory.id)
                         .map((p) => (

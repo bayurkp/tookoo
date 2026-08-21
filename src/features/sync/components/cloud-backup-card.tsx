@@ -281,7 +281,7 @@ export const CloudBackupCard: React.FC = () => {
             </div>
             <div>
               <CardTitle className="text-base font-bold text-foreground">
-                Cadangan Awan & Pemulihan (Cloud Backup & Recovery)
+                Cadangan Awan & Pemulihan
               </CardTitle>
               <CardDescription className="text-xs text-muted-foreground mt-0.5">
                 Simpan dan pulihkan data toko otomatis ke Google Drive, Bot Telegram, dan Discord
@@ -383,7 +383,7 @@ export const CloudBackupCard: React.FC = () => {
                         <SelectItem value="EVERY_5_ORDERS">Setiap 5 Transaksi Selesai</SelectItem>
                         <SelectItem value="EVERY_10_ORDERS">Setiap 10 Transaksi Selesai</SelectItem>
                         <SelectItem value="EVERY_25_ORDERS">Setiap 25 Transaksi Selesai</SelectItem>
-                        <SelectItem value="DAILY">Setiap Hari (Harian / Tutup Kasir)</SelectItem>
+                        <SelectItem value="DAILY">Setiap Hari (Tutup Kasir)</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>

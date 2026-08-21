@@ -58,7 +58,7 @@ export const OutletSwitcher: React.FC = () => {
             <span className="truncate">{activeOutlet?.name || 'Pilih Cabang...'}</span>
             {activeOutlet?.isHQ && (
               <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded shrink-0">
-                HQ
+                Pusat
               </span>
             )}
           </div>
@@ -74,7 +74,7 @@ export const OutletSwitcher: React.FC = () => {
                 <span className="truncate">{item.name}</span>
                 {item.isHQ && (
                   <span className="text-[9px] font-bold text-primary px-1 py-0 bg-primary/10 rounded">
-                    HQ
+                    Pusat
                   </span>
                 )}
               </ComboboxItem>
