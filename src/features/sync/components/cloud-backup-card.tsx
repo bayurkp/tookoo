@@ -680,9 +680,9 @@ export const CloudBackupCard: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <p className="font-bold text-xs">2. Aktifkan Google Drive API</p>
+                <p className="font-bold text-xs">2. Aktifkan Layanan Google Drive API</p>
                 <p className="text-muted-foreground text-[11px]">
-                  Buka menu <strong>APIs & Services &gt; Library</strong>, cari <strong>Google Drive API</strong>, lalu klik <strong>Enable</strong>.
+                  Buka menu <strong>APIs & Services &gt; Library</strong>, cari <strong>Google Drive API</strong>, lalu klik <strong>Enable</strong> (cukup aktifkan layanannya saja, <em>tidak perlu membuat API Key</em>).
                 </p>
               </div>
 
