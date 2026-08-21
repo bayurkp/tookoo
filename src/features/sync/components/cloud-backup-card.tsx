@@ -15,7 +15,7 @@ import {
   Settings2,
   UserCheck,
   HelpCircle,
-  ExternalLink,
+  Lock,
 } from 'lucide-react';
 import {
   Card,
@@ -75,7 +75,7 @@ export const CloudBackupCard: React.FC = () => {
   const defaultClientId =
     config?.googleDrive?.clientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
   const [clientId, setClientId] = useState<string>(defaultClientId);
-  const [showClientIdConfig, setShowClientIdConfig] = useState<boolean>(!defaultClientId);
+  const [showClientIdConfig, setShowClientIdConfig] = useState<boolean>(false);
 
   // Auto interval state
   const [autoInterval, setAutoInterval] = useState<AutoBackupInterval>(
@@ -88,8 +88,8 @@ export const CloudBackupCard: React.FC = () => {
     message: string;
   } | null>(null);
 
-  // Setup Guide Modal
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  // Setup / Help Guide Modal
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // Restore confirmation modal
   const [restoreFileId, setRestoreFileId] = useState<string | null>(null);
@@ -100,21 +100,22 @@ export const CloudBackupCard: React.FC = () => {
   const connectedName = config?.googleDrive?.connectedName;
 
   const handleConnectOAuth = async () => {
-    if (!clientId.trim()) {
+    const targetClientId = clientId.trim() || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    if (!targetClientId) {
       setNotification({
         type: 'ERROR',
         message:
-          'Harap masukkan Google Client ID terlebih dahulu sebelum menghubungkan akun Google.',
+          'Google Client ID belum diatur. Buka opsi pengaturan lanjutan untuk memasukkan Client ID.',
       });
       setShowClientIdConfig(true);
       return;
     }
 
     try {
-      const res = await connectGoogleDrive(clientId.trim());
+      const res = await connectGoogleDrive(targetClientId);
       setNotification({
         type: 'SUCCESS',
-        message: `Berhasil terhubung ke akun Google: ${res.email || 'Akun Google'}`,
+        message: `Akun Google berhasil terhubung: ${res.email || 'Akun Google'}`,
       });
     } catch (err: any) {
       setNotification({
@@ -151,7 +152,7 @@ export const CloudBackupCard: React.FC = () => {
     await saveCloudBackupConfig(updated);
     setNotification({
       type: 'SUCCESS',
-      message: 'Jadwal cadangan otomatis berhasil diperbarui.',
+      message: 'Jadwal cadangan otomatis berhasil disimpan.',
     });
   };
 
@@ -183,7 +184,7 @@ export const CloudBackupCard: React.FC = () => {
       const res = await restoreGoogleDrive(restoreFileId);
       setNotification({
         type: 'SUCCESS',
-        message: `Pemulihan sukses! ${res.productsCount} produk dan ${res.ordersCount} transaksi berhasil dipulihkan.`,
+        message: `Pemulihan selesai. ${res.productsCount} produk dan ${res.ordersCount} transaksi berhasil dipulihkan.`,
       });
       setRestoreFileId(null);
     } catch (err: any) {
@@ -207,31 +208,43 @@ export const CloudBackupCard: React.FC = () => {
                 Cadangan Awan & Pemulihan Google Drive
               </CardTitle>
               <CardDescription className="text-xs text-muted-foreground mt-0.5">
-                Simpan salinan data toko ke akun Google Drive Anda secara sadar dan terjadwal otomatis.
+                Simpan salinan data toko ke akun Google Drive Anda secara aman dan terjadwal otomatis.
               </CardDescription>
             </div>
           </div>
 
-          {isDriveConnected && (
+          <div className="flex items-center gap-2">
             <Button
+              variant="outline"
               size="sm"
-              onClick={handleUploadNow}
-              disabled={isUploadingGoogleDrive || isSyncing}
-              className="gap-2 text-xs font-bold shrink-0 cursor-pointer shadow-xs bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => setIsHelpOpen(true)}
+              className="gap-1.5 text-xs font-semibold shrink-0 cursor-pointer"
             >
-              {isUploadingGoogleDrive || isSyncing ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>Mencadangkan...</span>
-                </>
-              ) : (
-                <>
-                  <Upload className="h-3.5 w-3.5" />
-                  <span>Cadangkan Sekarang</span>
-                </>
-              )}
+              <HelpCircle className="h-3.5 w-3.5" />
+              <span>Bantuan & Keamanan</span>
             </Button>
-          )}
+
+            {isDriveConnected && (
+              <Button
+                size="sm"
+                onClick={handleUploadNow}
+                disabled={isUploadingGoogleDrive || isSyncing}
+                className="gap-2 text-xs font-bold shrink-0 cursor-pointer shadow-xs bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isUploadingGoogleDrive || isSyncing ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Mencadangkan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>Cadangkan Sekarang</span>
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
 
@@ -280,7 +293,7 @@ export const CloudBackupCard: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* TAB 1: GOOGLE DRIVE (OAUTH 2.0) */}
+          {/* TAB 1: GOOGLE DRIVE */}
           <TabsContent value="gdrive" className="space-y-4 m-0">
             <div className="p-4 bg-muted/20 border rounded-xl space-y-4">
               {/* CONNECTED STATE */}
@@ -297,7 +310,7 @@ export const CloudBackupCard: React.FC = () => {
                             {connectedName || 'Akun Google Terhubung'}
                           </span>
                           <Badge variant="default" className="text-[10px] bg-emerald-600 text-white font-bold">
-                            OAuth Terverifikasi
+                            Terhubung
                           </Badge>
                         </div>
                         <span className="text-[11px] text-muted-foreground font-mono block">
@@ -404,11 +417,11 @@ export const CloudBackupCard: React.FC = () => {
                     <div className="space-y-1 max-w-lg">
                       <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
                         <HardDrive className="h-4 w-4 text-blue-500" />
-                        <span>Otorisasi Akun Google (OAuth 2.0)</span>
+                        <span>Hubungkan Google Drive Toko</span>
                       </h4>
                       <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        Klik tombol untuk login dan memberikan izin akses Google Drive secara sadar. Tookoo
-                        hanya akan mengakses dan menyimpan berkas cadangan yang dibuat oleh aplikasi ini.
+                        Simpan seluruh katalog produk dan riwayat penjualan secara berkala ke Google Drive
+                        pribadi Anda agar data selalu aman saat ganti perangkat kasir.
                       </p>
                     </div>
 
@@ -421,7 +434,7 @@ export const CloudBackupCard: React.FC = () => {
                       {isConnectingGoogle ? (
                         <>
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          <span>Membuka Google OAuth...</span>
+                          <span>Menghubungkan Akun Google...</span>
                         </>
                       ) : (
                         <>
@@ -449,7 +462,7 @@ export const CloudBackupCard: React.FC = () => {
                     </Button>
                   </div>
 
-                  {/* Client ID Setting Toggle */}
+                  {/* Optional Client ID Setting Toggle */}
                   <div className="pt-1">
                     <button
                       type="button"
@@ -459,8 +472,8 @@ export const CloudBackupCard: React.FC = () => {
                       <Settings2 className="h-3 w-3" />
                       <span>
                         {showClientIdConfig
-                          ? 'Sembunyikan Pengaturan Google Client ID'
-                          : 'Ubah Google OAuth Client ID'}
+                          ? 'Sembunyikan Pengaturan Client ID'
+                          : 'Pengaturan Client ID Khusus (Opsional)'}
                       </span>
                     </button>
 
@@ -468,32 +481,19 @@ export const CloudBackupCard: React.FC = () => {
                       <div className="mt-2 p-3 bg-card border rounded-lg space-y-2 animate-in fade-in">
                         <Field>
                           <FieldLabel htmlFor="google-client-id-input" className="text-xs font-bold">
-                            Google Cloud OAuth Client ID
+                            Google Client ID Khusus
                           </FieldLabel>
                           <Input
                             id="google-client-id-input"
                             value={clientId}
                             onChange={(e) => setClientId(e.target.value)}
-                            placeholder="Contoh: 1234567890-abcdefg.apps.googleusercontent.com"
+                            placeholder="Masukkan Client ID Google kustom Anda jika ada..."
                             className="h-8 text-xs font-mono bg-background"
                           />
                           <FieldDescription>
-                            Dibuat melalui Google Cloud Console (APIs & Services &gt; Credentials &gt; OAuth 2.0 Client IDs).
+                            Opsional. Biarkan kosong jika toko Anda menggunakan konfigurasi bawaan aplikasi.
                           </FieldDescription>
                         </Field>
-
-                        <div className="pt-1">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setIsGuideOpen(true)}
-                            className="h-7 text-xs font-semibold gap-1.5 cursor-pointer text-primary border-primary/30 hover:bg-primary/5"
-                          >
-                            <HelpCircle className="h-3.5 w-3.5" />
-                            <span>Panduan Setup Google Cloud & Keamanan</span>
-                          </Button>
-                        </div>
                       </div>
                     )}
                   </div>
@@ -634,104 +634,56 @@ export const CloudBackupCard: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Google Cloud Setup & Security Guide Dialog */}
-      <Dialog open={isGuideOpen} onOpenChange={setIsGuideOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+      {/* User Information & Data Privacy Dialog */}
+      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <HardDrive className="h-4 w-4 text-blue-500" />
-              <span>Panduan Setup Google Cloud OAuth 2.0</span>
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              <span>Keamanan & Cadangan Google Drive</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground pt-1">
-              Cara membuat Google Client ID gratis dan aman untuk hosting publik (GitHub Pages).
+              Informasi perlindungan data dan cara kerja pencadangan toko.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 text-xs text-foreground/90 py-2 leading-relaxed">
-            {/* Security Explanation */}
-            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg space-y-1 text-blue-900 dark:text-blue-200">
-              <div className="font-bold flex items-center gap-1.5 text-xs">
-                <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span>Apakah Client ID aman dipublikasikan ke GitHub Pages?</span>
+          <div className="space-y-3.5 text-xs text-foreground/90 py-2 leading-relaxed">
+            <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl space-y-1">
+              <div className="font-bold flex items-center gap-1.5 text-xs text-primary">
+                <Lock className="h-3.5 w-3.5" />
+                <span>Privasi Data 100% Milik Anda</span>
               </div>
-              <p className="text-[11px] leading-normal">
-                <strong>Ya, 100% Aman!</strong> Client ID adalah pengenal publik (*Public Identifier*). Google
-                memverifikasi keamanan melalui <em>Authorized JavaScript Origins</em>. Hanya domain web yang
-                terdaftar di akun Google Cloud Anda yang diizinkan melakukan otorisasi login.
+              <p className="text-[11px] text-muted-foreground leading-normal">
+                Aplikasi Tookoo hanya memiliki izin untuk menyimpan dan membaca berkas cadangan yang dibuat oleh toko Anda sendiri. Aplikasi tidak dapat melihat foto, dokumen, atau berkas pribadi lainnya di Google Drive Anda.
               </p>
             </div>
 
-            {/* Steps */}
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <p className="font-bold text-xs">1. Buka Google Cloud Console & Buat Project</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Buka{' '}
-                  <a
-                    href="https://console.cloud.google.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-primary underline font-medium inline-flex items-center gap-0.5"
-                  >
-                    console.cloud.google.com <ExternalLink className="h-2.5 w-2.5" />
-                  </a>{' '}
-                  dan buat project baru bernama <strong>Tookoo POS</strong>.
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="font-bold text-xs">2. Aktifkan Layanan Google Drive API</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Buka menu <strong>APIs & Services &gt; Library</strong>, cari <strong>Google Drive API</strong>, lalu klik <strong>Enable</strong> (cukup aktifkan layanannya saja, <em>tidak perlu membuat API Key</em>).
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <p className="font-bold text-xs">3. Atur OAuth Consent Screen</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Buka <strong>APIs & Services &gt; OAuth consent screen</strong>:
-                </p>
-                <ul className="list-disc list-inside text-[11px] text-muted-foreground pl-2 space-y-0.5">
-                  <li>Pilih <strong>External</strong></li>
-                  <li>Isi Nama Aplikasi (Tookoo POS) dan Email Dukungan</li>
-                  <li>Tambahkan Scope: <code className="bg-muted px-1 py-0.5 rounded text-[10px]">https://www.googleapis.com/auth/drive.file</code></li>
-                  <li>Pada Test Users, tambahkan email Google Anda</li>
-                </ul>
-              </div>
-
-              <div className="space-y-1">
-                <p className="font-bold text-xs">4. Buat OAuth 2.0 Client ID (Web Application)</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Buka <strong>Credentials &gt; Create Credentials &gt; OAuth client ID</strong>:
-                </p>
-                <ul className="list-disc list-inside text-[11px] text-muted-foreground pl-2 space-y-1">
-                  <li>Application type: <strong>Web application</strong></li>
-                  <li>
-                    Tambahkan <strong>Authorized JavaScript origins</strong>:
-                    <div className="mt-1 space-y-1 font-mono text-[10px] bg-muted p-2 rounded">
-                      <div>http://localhost:5173</div>
-                      <div>https://[username-anda].github.io</div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-1">
-                <p className="font-bold text-xs">5. Salin Client ID ke Tookoo</p>
-                <p className="text-muted-foreground text-[11px]">
-                  Salin Client ID (contoh: <code className="bg-muted px-1 py-0.5 rounded text-[10px]">123456789-abcdef.apps.googleusercontent.com</code>) dan tempelkan ke kolom form di atas atau masukkan ke berkas <code className="bg-muted px-1 py-0.5 rounded text-[10px]">.env</code> (<code className="bg-muted px-1 py-0.5 rounded text-[10px]">VITE_GOOGLE_CLIENT_ID</code>).
-                </p>
-              </div>
+            <div className="space-y-2">
+              <h5 className="font-bold text-xs">Cara Kerja Pencadangan:</h5>
+              <ul className="space-y-1.5 text-[11px] text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-foreground">1.</span>
+                  <span>Klik <strong>Hubungkan Akun Google</strong> dan pilih email yang ingin digunakan.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-foreground">2.</span>
+                  <span>Data toko Anda (produk, pesanan, dan pengaturan) akan otomatis tersimpan sebagai berkas cadangan aman di akun Drive Anda.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-foreground">3.</span>
+                  <span>Jika Anda berganti HP atau perangkat kasir, cukup hubungkan kembali akun Google Anda dan klik <strong>Pulihkan Data</strong>.</span>
+                </li>
+              </ul>
             </div>
           </div>
 
           <DialogFooter className="pt-2">
             <Button
               size="sm"
-              onClick={() => setIsGuideOpen(false)}
-              className="w-full sm:w-auto font-bold"
+              onClick={() => setIsHelpOpen(false)}
+              className="w-full font-bold cursor-pointer"
             >
-              Saya Mengerti
+              Mengerti
             </Button>
           </DialogFooter>
         </DialogContent>

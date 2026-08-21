@@ -20,7 +20,7 @@ describe('CloudBackupCard', () => {
     renderWithProviders(<CloudBackupCard />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Otorisasi Akun Google/i)).toBeInTheDocument();
+      expect(screen.getByText('Hubungkan Google Drive Toko')).toBeInTheDocument();
       expect(screen.getByText('Hubungkan Akun Google')).toBeInTheDocument();
     });
   });
