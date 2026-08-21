@@ -5,218 +5,222 @@
 <h1 align="center">Tookoo</h1>
 
 <p align="center">
-  <strong>Aplikasi Kasir Cerdas — Gratis, Offline, Tanpa Server</strong><br/>
-  <em>Local-First P2P Point of Sale untuk UMKM Indonesia</em>
+  <strong>Smart POS App — Free, Offline, No Server Required</strong><br/>
+  <em>Local-First P2P Point of Sale for Small Businesses</em>
 </p>
 
 <p align="center">
-  <a href="#fitur-utama">Fitur</a> •
+  <a href="#key-features">Features</a> •
   <a href="#demo">Demo</a> •
-  <a href="#mulai-cepat">Mulai Cepat</a> •
-  <a href="#deploy-gratis">Deploy Gratis</a> •
-  <a href="#arsitektur">Arsitektur</a> •
-  <a href="#lisensi">Lisensi</a>
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#free-deployment">Deploy Free</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+<p align="center">
+  🇮🇩 <a href="README_id.md">Baca dalam Bahasa Indonesia</a>
 </p>
 
 ---
 
-## Mengapa Tookoo?
+## Why Tookoo?
 
-Sebagian besar aplikasi kasir (POS) membebankan biaya langganan bulanan dan bergantung pada server cloud — ketika internet mati, kasir lumpuh. **Tookoo menghilangkan kedua masalah itu sekaligus.**
+Most POS apps charge monthly subscription fees and depend on cloud servers — when the internet goes down, your cashier stops working. **Tookoo eliminates both problems entirely.**
 
-| | POS Konvensional | Tookoo |
+| | Traditional POS | Tookoo |
 |:--|:--|:--|
-| **Biaya Operasional** | Rp 100rb–500rb / bulan | **Rp 0 — Gratis selamanya** |
-| **Saat Internet Mati** | ❌ Tidak bisa transaksi | ✅ Tetap berjalan 100% |
-| **Data Bisnis** | Disimpan di server vendor | 🔒 100% di perangkat Anda |
-| **Instalasi** | Download APK / installer | 🌐 Buka browser, langsung pakai |
+| **Operating Cost** | $10–50 / month | **$0 — Free forever** |
+| **When Internet Is Down** | ❌ Cannot process transactions | ✅ Runs 100% normally |
+| **Business Data** | Stored on vendor servers | 🔒 100% on your devices |
+| **Installation** | Download APK / installer | 🌐 Open browser, ready to use |
 
 ---
 
-## Fitur Utama
+## Key Features
 
-### 🏪 Terminal Kasir
-- Katalog produk responsif dengan pencarian instan dan filter kategori.
-- Keranjang belanja reaktif — tambah, kurangi, hapus item dengan kalkulasi otomatis.
-- Modal pembayaran: **Tunai** (hitung kembalian otomatis), **QRIS**, dan **Transfer Bank**.
-- Dukungan **variant & modifier** per produk (ukuran, level es, topping, dll).
-- **Pesanan tertunda** — simpan pesanan sementara dan lanjutkan nanti.
+### 🏪 Cashier Terminal
+- Responsive product catalog with instant search and category filtering.
+- Reactive shopping cart — add, remove, adjust quantities with automatic calculations.
+- Payment modal: **Cash** (automatic change calculator), **QRIS**, and **Bank Transfer**.
+- **Variant & modifier** support per product (size, ice level, toppings, etc.).
+- **Pending orders** — save orders temporarily and resume later.
 
-### 📦 Manajemen Produk & Stok
-- Tambah, edit, dan hapus produk dari katalog.
-- Pelacakan stok real-time — otomatis berkurang setiap transaksi.
-- Organisasi produk berdasarkan kategori.
+### 📦 Product & Inventory Management
+- Add, edit, and delete products from the catalog.
+- Real-time stock tracking — automatically decremented on each transaction.
+- Product organization by category.
 
-### 📊 Riwayat & Laporan Penjualan
-- Ringkasan harian: Pendapatan, Jumlah Transaksi, Rata-rata Nilai Pesanan.
-- Daftar riwayat struk dengan filter tanggal.
-- Detail struk lengkap (item, waktu, metode bayar, kasir).
+### 📊 Sales History & Reports
+- Daily summary: Revenue, Order Count, Average Order Value.
+- Receipt history list with date filters.
+- Detailed receipt view (line items, timestamps, payment method, cashier name).
 
-### 🍽️ Denah Meja (Mode Restoran)
-- Tata letak meja visual untuk kafe dan restoran.
-- Status meja real-time — kosong, terisi, reservasi.
+### 🍽️ Table Layout (Restaurant Mode)
+- Visual table layout for cafés and restaurants.
+- Real-time table status — vacant, occupied, reserved.
 
-### 🔄 Sinkronisasi P2P Tanpa Server
-- Hubungkan beberapa terminal kasir langsung via **Wi-Fi lokal** — tanpa internet.
-- Pairing instan dengan **scan QR Code** atau **12 kata sandi (BIP-39)**.
-- Resolusi konflik otomatis dengan algoritma **Last-Write-Wins (LWW)**.
+### 🔄 Serverless P2P Sync
+- Connect multiple cashier terminals directly over **local Wi-Fi** — no internet required.
+- Instant pairing via **QR Code scan** or **12-word mnemonic passphrase (BIP-39)**.
+- Automatic conflict resolution using **Last-Write-Wins (LWW)** algorithm.
 
-### ☁️ Backup Google Drive (Opsional)
-- Cadangkan data toko ke Google Drive pribadi Anda.
-- Pulihkan data kapan saja di perangkat baru.
+### ☁️ Google Drive Backup (Optional)
+- Back up store data to your personal Google Drive.
+- Restore data anytime on a new device.
 
 ### 📱 Progressive Web App (PWA)
-- Pasang di layar utama HP/tablet seperti aplikasi native.
-- Berjalan 100% offline berkat Service Worker caching.
-- Responsif — optimal di layar 5" hingga monitor 32".
+- Install on your home screen like a native app.
+- Runs 100% offline thanks to Service Worker caching.
+- Responsive — optimized from 5" phones to 32" monitors.
 
-### 🌏 Dwibahasa
-- Antarmuka tersedia dalam **Bahasa Indonesia** (default) dan **English**.
+### 🌏 Bilingual
+- Interface available in **Bahasa Indonesia** (default) and **English**.
 
 ---
 
 ## Demo
 
-> 🚧 Demo langsung segera tersedia di **[tookoo.pages.dev](https://tookoo.pages.dev)**
+> 🚧 Live demo coming soon at **[tookoo.pages.dev](https://tookoo.pages.dev)**
 
 ---
 
-## Mulai Cepat
+## Quick Start
 
-### Prasyarat
+### Prerequisites
 
-- [Node.js](https://nodejs.org/) versi **18** atau lebih baru
+- [Node.js](https://nodejs.org/) version **18** or later
 - [Git](https://git-scm.com/)
 
-### Langkah Instalasi
+### Installation
 
 ```bash
-# 1. Clone repositori
+# 1. Clone the repository
 git clone https://github.com/bayurkp/tookoo.git
 cd tookoo
 
-# 2. Install dependensi
+# 2. Install dependencies
 npm install
 
-# 3. (Opsional) Salin file environment
+# 3. (Optional) Copy environment file
 cp .env.example .env
 
-# 4. Jalankan server development
+# 4. Start the development server
 npm run dev
 ```
 
-Aplikasi berjalan di **http://localhost:5173** — buka di browser Anda.
+The app runs at **http://localhost:5173** — open it in your browser.
 
-### Perintah yang Tersedia
+### Available Commands
 
-| Perintah | Fungsi |
+| Command | Description |
 |:--|:--|
-| `npm run dev` | Jalankan server development dengan hot-reload |
-| `npm run build` | Build bundle production ke folder `dist/` |
-| `npm run preview` | Preview build production secara lokal |
-| `npm run typecheck` | Periksa error TypeScript |
-| `npm run lint` | Jalankan linter (OxLint) |
-| `npm run format` | Format kode dengan Prettier |
-| `npm run test` | Jalankan unit test (Vitest) |
-| `npm run test:e2e` | Jalankan end-to-end test (Playwright) |
+| `npm run dev` | Start development server with hot-reload |
+| `npm run build` | Build production bundle to `dist/` |
+| `npm run preview` | Preview production build locally |
+| `npm run typecheck` | Check for TypeScript errors |
+| `npm run lint` | Run linter (OxLint) |
+| `npm run format` | Format code with Prettier |
+| `npm run test` | Run unit tests (Vitest) |
+| `npm run test:e2e` | Run end-to-end tests (Playwright) |
 
 ---
 
-## Deploy Gratis
+## Free Deployment
 
-Tookoo adalah aplikasi **statis (Static Site)** — tidak memerlukan server backend. Anda bisa meng-host-nya **100% gratis** di beberapa platform. Panduan ini menggunakan **Cloudflare Pages** yang menyediakan bandwidth tak terbatas dan CDN global.
+Tookoo is a **static site** — it requires no backend server. You can host it **100% free** on several platforms. This guide uses **Cloudflare Pages**, which offers unlimited bandwidth and a global CDN.
 
-### Opsi A: Deploy via Dashboard Cloudflare (Tanpa Terminal)
+### Option A: Deploy via Cloudflare Dashboard (No Terminal Required)
 
-Cocok untuk pengguna awam yang tidak terbiasa dengan command line.
+Best for non-technical users who are not familiar with the command line.
 
-#### Langkah 1 — Buat Akun
+#### Step 1 — Create an Account
 
-1. Buka [cloudflare.com](https://www.cloudflare.com/) dan klik **Sign Up** (gratis).
-2. Verifikasi email Anda.
+1. Go to [cloudflare.com](https://www.cloudflare.com/) and click **Sign Up** (free).
+2. Verify your email.
 
-#### Langkah 2 — Fork Repository
+#### Step 2 — Fork the Repository
 
-1. Buka [github.com/bayurkp/tookoo](https://github.com/bayurkp/tookoo).
-2. Klik tombol **Fork** di pojok kanan atas untuk menyalin repository ke akun GitHub Anda.
+1. Go to [github.com/bayurkp/tookoo](https://github.com/bayurkp/tookoo).
+2. Click the **Fork** button in the top-right corner to copy the repository to your GitHub account.
 
-#### Langkah 3 — Buat Project Cloudflare Pages
+#### Step 3 — Create a Cloudflare Pages Project
 
-1. Login ke [Cloudflare Dashboard](https://dash.cloudflare.com/).
-2. Di sidebar kiri, pilih **Workers & Pages**.
-3. Klik **Create** → pilih tab **Pages** → **Connect to Git**.
-4. Hubungkan akun GitHub Anda dan pilih repository **tookoo** yang sudah di-fork.
-5. Atur konfigurasi build:
+1. Log in to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. In the left sidebar, select **Workers & Pages**.
+3. Click **Create** → select the **Pages** tab → **Connect to Git**.
+4. Connect your GitHub account and select the **tookoo** repository you forked.
+5. Configure the build settings:
 
-   | Pengaturan | Nilai |
+   | Setting | Value |
    |:--|:--|
    | **Framework preset** | `None` |
    | **Build command** | `npm run build` |
    | **Build output directory** | `dist` |
-   | **Node.js version** | `18` (atau lebih baru) |
+   | **Node.js version** | `18` (or later) |
 
-6. Klik **Save and Deploy**.
+6. Click **Save and Deploy**.
 
-#### Langkah 4 — Selesai! 🎉
+#### Step 4 — Done! 🎉
 
-Dalam 1–2 menit, Tookoo Anda aktif di:
+Within 1–2 minutes, your Tookoo instance will be live at:
 
 ```
-https://<nama-project>.pages.dev
+https://<your-project-name>.pages.dev
 ```
 
-Setiap kali Anda push perubahan ke GitHub, Cloudflare otomatis membangun dan men-deploy versi terbaru.
+Every time you push changes to GitHub, Cloudflare will automatically build and deploy the latest version.
 
 ---
 
-### Opsi B: Deploy via Terminal (Wrangler CLI)
+### Option B: Deploy via Terminal (Wrangler CLI)
 
-Cocok untuk developer yang terbiasa dengan command line.
+For developers comfortable with the command line.
 
 ```bash
-# 1. Login ke Cloudflare
+# 1. Log in to Cloudflare
 npx wrangler pages login
 
-# 2. Build aplikasi
+# 2. Build the application
 npm run build
 
-# 3. Deploy ke Cloudflare Pages
+# 3. Deploy to Cloudflare Pages
 npx wrangler pages deploy dist --project-name=tookoo
 ```
 
 ---
 
-### Opsi C: Platform Alternatif
+### Option C: Alternative Platforms
 
-Tookoo juga bisa di-deploy gratis ke platform lain:
+Tookoo can also be deployed for free on other platforms:
 
 <details>
 <summary><strong>Vercel</strong></summary>
 
-1. Buka [vercel.com](https://vercel.com/) dan login dengan GitHub.
-2. Klik **New Project** → Import repository **tookoo**.
+1. Go to [vercel.com](https://vercel.com/) and log in with GitHub.
+2. Click **New Project** → Import the **tookoo** repository.
 3. Framework Preset: `Vite`.
-4. Klik **Deploy**.
+4. Click **Deploy**.
 
 </details>
 
 <details>
 <summary><strong>Netlify</strong></summary>
 
-1. Buka [netlify.com](https://www.netlify.com/) dan login dengan GitHub.
-2. Klik **Add new site** → **Import an existing project**.
-3. Pilih repository **tookoo**.
+1. Go to [netlify.com](https://www.netlify.com/) and log in with GitHub.
+2. Click **Add new site** → **Import an existing project**.
+3. Select the **tookoo** repository.
 4. Build command: `npm run build`, Publish directory: `dist`.
-5. Klik **Deploy site**.
+5. Click **Deploy site**.
 
 </details>
 
 <details>
 <summary><strong>GitHub Pages</strong></summary>
 
-1. Di repository GitHub, buka **Settings** → **Pages**.
+1. In your GitHub repository, go to **Settings** → **Pages**.
 2. Source: **GitHub Actions**.
-3. Buat workflow file `.github/workflows/deploy.yml`:
+3. Create a workflow file `.github/workflows/deploy.yml`:
 
 ```yaml
 name: Deploy to GitHub Pages
@@ -246,47 +250,47 @@ jobs:
 
 ---
 
-### Menggunakan Domain Kustom (Opsional)
+### Using a Custom Domain (Optional)
 
-Jika Anda memiliki domain sendiri (misal: `kasir.tokosaya.com`):
+If you own a domain (e.g., `pos.mystore.com`):
 
-1. Di Cloudflare Pages → project Anda → **Custom domains**.
-2. Klik **Set up a custom domain**.
-3. Masukkan domain Anda dan ikuti instruksi DNS.
+1. In Cloudflare Pages → your project → **Custom domains**.
+2. Click **Set up a custom domain**.
+3. Enter your domain and follow the DNS instructions.
 
 ---
 
-## Arsitektur
+## Architecture
 
 ### Tech Stack
 
-| Lapisan | Teknologi |
+| Layer | Technology |
 |:--|:--|
 | **Framework** | React 19, TypeScript (Strict Mode) |
 | **Build Tool** | Vite |
-| **Arsitektur** | Bulletproof React — Feature-Based Modular |
+| **Architecture** | Bulletproof React — Feature-Based Modular |
 | **State Management** | Zustand (UI State) + TanStack Query v5 (DB Cache) |
-| **Database Lokal** | Dexie.js (IndexedDB) |
+| **Local Database** | Dexie.js (IndexedDB) |
 | **Styling** | Tailwind CSS + shadcn/ui + Lucide Icons |
 | **P2P Networking** | WebRTC DataChannel (LAN + Google STUN) |
-| **Form & Validasi** | React Hook Form + Zod |
+| **Forms & Validation** | React Hook Form + Zod |
 | **Routing** | React Router v7 (Lazy-loaded) |
 | **PWA** | vite-plugin-pwa (Service Worker) |
 | **Testing** | Vitest + React Testing Library + Playwright |
 
-### Alur Data
+### Data Flow
 
 ```
-Interaksi Pengguna (UI)
-  ↓ memicu aksi       →  Zustand Store / TanStack Mutation
-  ↓ memanggil API      →  Dexie.js Repository (Mutasi DB Lokal)
-  ↓ menyiarkan event   →  WebRTC P2P DataChannel (ke terminal lain)
-  ↑ memutasi IndexedDB →  Dexie reactive write (0ms latensi)
-  ↑ invalidasi query   →  TanStack Query refetch dari Dexie
-  ↑ UI ter-render ulang →  Komponen update tanpa delay
+User Interaction (UI)
+  ↓ triggers action    →  Zustand Store / TanStack Mutation
+  ↓ calls API layer    →  Dexie.js Repository (Local DB Mutation)
+  ↓ broadcasts event   →  WebRTC P2P DataChannel (to connected peers)
+  ↑ mutates IndexedDB  →  Dexie reactive write (0ms latency)
+  ↑ invalidates query  →  TanStack Query refetch from Dexie
+  ↑ UI re-renders      →  Component updates with zero lag
 ```
 
-### Struktur Proyek
+### Project Structure
 
 ```
 src/
@@ -294,11 +298,11 @@ src/
 ├── components/       # Shared UI components (shadcn/ui model)
 ├── config/           # Environment & global config
 ├── features/         # Feature modules (cashier, products, orders, sync)
-│   ├── cashier/      #   Terminal kasir & transaksi
-│   ├── products/     #   Katalog & manajemen stok
-│   ├── orders/       #   Riwayat penjualan & struk
-│   ├── settings/     #   Pengaturan toko
-│   └── sync/         #   P2P pairing & sinkronisasi
+│   ├── cashier/      #   Cashier terminal & transactions
+│   ├── products/     #   Product catalog & inventory
+│   ├── orders/       #   Sales history & receipts
+│   ├── settings/     #   Store settings
+│   └── sync/         #   P2P pairing & synchronization
 ├── hooks/            # Shared React hooks
 ├── lib/              # Configured libraries (db, query-client, webrtc)
 ├── locales/          # i18n dictionaries (id, en)
@@ -307,9 +311,9 @@ src/
 └── utils/            # Pure utility functions
 ```
 
-### Model Data
+### Data Models
 
-Semua entitas menggunakan **UUID v4** (tanpa auto-increment untuk menghindari konflik ID antar perangkat) dan menyertakan 3 audit timestamp:
+All entities use **UUID v4** (no auto-increment to avoid ID collisions across devices) and include 3 audit timestamps:
 
 ```typescript
 interface Product {
@@ -319,9 +323,9 @@ interface Product {
   price: number;
   stock: number;
   imageUrl?: string;
-  createdAt: number;   // Timestamp ms — waktu dibuat
-  updatedAt: number;   // Timestamp ms — waktu terakhir diubah
-  deletedAt: number | null; // null = aktif, timestamp = soft-deleted
+  createdAt: number;   // Timestamp ms — creation time
+  updatedAt: number;   // Timestamp ms — last modification time
+  deletedAt: number | null; // null = active, timestamp = soft-deleted
 }
 
 interface Order {
@@ -345,27 +349,27 @@ interface Order {
 
 ---
 
-## Variabel Environment
+## Environment Variables
 
-| Variabel | Wajib | Keterangan |
+| Variable | Required | Description |
 |:--|:--|:--|
-| `VITE_GOOGLE_CLIENT_ID` | Tidak | Google OAuth Client ID untuk fitur backup Google Drive |
+| `VITE_GOOGLE_CLIENT_ID` | No | Google OAuth Client ID for Google Drive backup feature |
 
-Salin `.env.example` ke `.env` dan isi sesuai kebutuhan.
+Copy `.env.example` to `.env` and fill in as needed.
 
 ---
 
-## Kontribusi
+## Contributing
 
-Kontribusi sangat diterima! Silakan buka **Issue** atau kirim **Pull Request**.
+Contributions are welcome! Feel free to open an **Issue** or submit a **Pull Request**.
 
-1. Fork repository ini.
-2. Buat branch fitur: `git checkout -b feat/fitur-baru`.
-3. Commit perubahan: `git commit -m "feat: tambah fitur baru"`.
-4. Push ke branch: `git push origin feat/fitur-baru`.
-5. Buka Pull Request.
+1. Fork this repository.
+2. Create a feature branch: `git checkout -b feat/new-feature`.
+3. Commit your changes: `git commit -m "feat: add new feature"`.
+4. Push to your branch: `git push origin feat/new-feature`.
+5. Open a Pull Request.
 
-Pastikan kode Anda lolos pengecekan sebelum PR:
+Make sure your code passes all checks before submitting a PR:
 
 ```bash
 npm run typecheck && npm run lint && npm run format:check
@@ -373,13 +377,13 @@ npm run typecheck && npm run lint && npm run format:check
 
 ---
 
-## Lisensi
+## License
 
-Dibuat dengan ❤️ untuk UMKM Indonesia.
+Made with ❤️ for Indonesian small businesses.
 
 ---
 
 <p align="center">
-  <strong>Tookoo</strong> — <em>Tuku di Toko</em><br/>
-  Kasir Cerdas, Cepat, dan Mandiri.
+  <strong>Tookoo</strong> — <em>"Tuku di Toko"</em><br/>
+  Smart, Fast, and Self-Sovereign POS.
 </p>
