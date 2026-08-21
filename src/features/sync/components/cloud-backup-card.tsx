@@ -14,6 +14,8 @@ import {
   LogOut,
   Settings2,
   UserCheck,
+  HelpCircle,
+  ExternalLink,
 } from 'lucide-react';
 import {
   Card,
@@ -85,6 +87,9 @@ export const CloudBackupCard: React.FC = () => {
     type: 'SUCCESS' | 'ERROR';
     message: string;
   } | null>(null);
+
+  // Setup Guide Modal
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   // Restore confirmation modal
   const [restoreFileId, setRestoreFileId] = useState<string | null>(null);
@@ -476,6 +481,19 @@ export const CloudBackupCard: React.FC = () => {
                             Dibuat melalui Google Cloud Console (APIs & Services &gt; Credentials &gt; OAuth 2.0 Client IDs).
                           </FieldDescription>
                         </Field>
+
+                        <div className="pt-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsGuideOpen(true)}
+                            className="h-7 text-xs font-semibold gap-1.5 cursor-pointer text-primary border-primary/30 hover:bg-primary/5"
+                          >
+                            <HelpCircle className="h-3.5 w-3.5" />
+                            <span>Panduan Setup Google Cloud & Keamanan</span>
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -611,6 +629,109 @@ export const CloudBackupCard: React.FC = () => {
               ) : (
                 <span>Ya, Pulihkan Data</span>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Google Cloud Setup & Security Guide Dialog */}
+      <Dialog open={isGuideOpen} onOpenChange={setIsGuideOpen}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
+              <HardDrive className="h-4 w-4 text-blue-500" />
+              <span>Panduan Setup Google Cloud OAuth 2.0</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground pt-1">
+              Cara membuat Google Client ID gratis dan aman untuk hosting publik (GitHub Pages).
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 text-xs text-foreground/90 py-2 leading-relaxed">
+            {/* Security Explanation */}
+            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg space-y-1 text-blue-900 dark:text-blue-200">
+              <div className="font-bold flex items-center gap-1.5 text-xs">
+                <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span>Apakah Client ID aman dipublikasikan ke GitHub Pages?</span>
+              </div>
+              <p className="text-[11px] leading-normal">
+                <strong>Ya, 100% Aman!</strong> Client ID adalah pengenal publik (*Public Identifier*). Google
+                memverifikasi keamanan melalui <em>Authorized JavaScript Origins</em>. Hanya domain web yang
+                terdaftar di akun Google Cloud Anda yang diizinkan melakukan otorisasi login.
+              </p>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <p className="font-bold text-xs">1. Buka Google Cloud Console & Buat Project</p>
+                <p className="text-muted-foreground text-[11px]">
+                  Buka{' '}
+                  <a
+                    href="https://console.cloud.google.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary underline font-medium inline-flex items-center gap-0.5"
+                  >
+                    console.cloud.google.com <ExternalLink className="h-2.5 w-2.5" />
+                  </a>{' '}
+                  dan buat project baru bernama <strong>Tookoo POS</strong>.
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-bold text-xs">2. Aktifkan Google Drive API</p>
+                <p className="text-muted-foreground text-[11px]">
+                  Buka menu <strong>APIs & Services &gt; Library</strong>, cari <strong>Google Drive API</strong>, lalu klik <strong>Enable</strong>.
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-bold text-xs">3. Atur OAuth Consent Screen</p>
+                <p className="text-muted-foreground text-[11px]">
+                  Buka <strong>APIs & Services &gt; OAuth consent screen</strong>:
+                </p>
+                <ul className="list-disc list-inside text-[11px] text-muted-foreground pl-2 space-y-0.5">
+                  <li>Pilih <strong>External</strong></li>
+                  <li>Isi Nama Aplikasi (Tookoo POS) dan Email Dukungan</li>
+                  <li>Tambahkan Scope: <code className="bg-muted px-1 py-0.5 rounded text-[10px]">https://www.googleapis.com/auth/drive.file</code></li>
+                  <li>Pada Test Users, tambahkan email Google Anda</li>
+                </ul>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-bold text-xs">4. Buat OAuth 2.0 Client ID (Web Application)</p>
+                <p className="text-muted-foreground text-[11px]">
+                  Buka <strong>Credentials &gt; Create Credentials &gt; OAuth client ID</strong>:
+                </p>
+                <ul className="list-disc list-inside text-[11px] text-muted-foreground pl-2 space-y-1">
+                  <li>Application type: <strong>Web application</strong></li>
+                  <li>
+                    Tambahkan <strong>Authorized JavaScript origins</strong>:
+                    <div className="mt-1 space-y-1 font-mono text-[10px] bg-muted p-2 rounded">
+                      <div>http://localhost:5173</div>
+                      <div>https://[username-anda].github.io</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-bold text-xs">5. Salin Client ID ke Tookoo</p>
+                <p className="text-muted-foreground text-[11px]">
+                  Salin Client ID (contoh: <code className="bg-muted px-1 py-0.5 rounded text-[10px]">123456789-abcdef.apps.googleusercontent.com</code>) dan tempelkan ke kolom form di atas atau masukkan ke berkas <code className="bg-muted px-1 py-0.5 rounded text-[10px]">.env</code> (<code className="bg-muted px-1 py-0.5 rounded text-[10px]">VITE_GOOGLE_CLIENT_ID</code>).
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="pt-2">
+            <Button
+              size="sm"
+              onClick={() => setIsGuideOpen(false)}
+              className="w-full sm:w-auto font-bold"
+            >
+              Saya Mengerti
             </Button>
           </DialogFooter>
         </DialogContent>
