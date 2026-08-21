@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Banknote, QrCode, Building, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Banknote, QrCode, Building, CheckCircle2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -157,29 +157,34 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] h-[85vh] max-h-[600px] min-h-[480px] flex flex-col p-0 gap-0 overflow-x-hidden overflow-y-hidden">
-        <DialogHeader className="p-4 px-6 border-b shrink-0 bg-card">
-          <DialogTitle>{t('cashier.payment.title', 'Pembayaran')}</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="w-[94vw] sm:max-w-[440px] p-0 overflow-hidden max-h-[90vh] flex flex-col rounded-2xl bg-card border border-border shadow-2xl">
+        <DialogHeader className="p-4 sm:p-5 pb-3 pr-10 border-b bg-card shrink-0 text-left">
+          <DialogTitle className="text-base font-bold text-foreground">
+            {t('cashier.payment.title', 'Pembayaran')}
+          </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground mt-0.5">
             {t(
               'cashier.payment.description',
-              'Pilih metode pembayaran dan konfirmasi nominal transaksi.'
+              'Pilih metode pembayaran dan masukkan nominal uang pelanggan.'
             )}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 p-6 space-y-4">
-          {/* Total Highlight */}
-          <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-3 overflow-hidden">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground font-medium truncate">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs">
+          {/* Total Tagihan Box */}
+          <div className="p-3.5 sm:p-4 rounded-xl bg-muted/40 border border-border flex items-center justify-between gap-3">
+            <div>
+              <span className="text-xs text-muted-foreground font-medium block">
                 {t('cashier.payment.totalBill', 'Total Tagihan')}
-              </p>
-              <p className="text-xl sm:text-2xl font-black text-primary tracking-tight truncate font-mono" title={formatCurrency(total, settings?.currency)}>
+              </span>
+              <span
+                className="text-xl sm:text-2xl font-black text-primary font-mono tracking-tight block mt-0.5"
+                title={formatCurrency(total, settings?.currency)}
+              >
                 {formatCurrency(total, settings?.currency)}
-              </p>
+              </span>
             </div>
-            <Badge variant="outline" className="bg-background text-xs shrink-0 whitespace-nowrap">
+            <Badge variant="secondary" className="text-xs font-semibold px-2 py-0.5 shrink-0">
               {t('cashier.payment.itemTypes', { count: itemCount })}
             </Badge>
           </div>
@@ -192,16 +197,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               setErrorMessage(null);
             }}
           >
-            <TabsList className="grid grid-cols-3 w-full">
-              <TabsTrigger value="CASH" className="gap-1.5">
+            <TabsList className="grid grid-cols-3 w-full h-10 p-1 bg-muted rounded-lg">
+              <TabsTrigger value="CASH" className="gap-1.5 text-xs font-semibold h-8">
                 <Banknote className="h-4 w-4" />
                 <span>{t('cashier.payment.cash', 'Tunai')}</span>
               </TabsTrigger>
-              <TabsTrigger value="QRIS" className="gap-1.5">
+              <TabsTrigger value="QRIS" className="gap-1.5 text-xs font-semibold h-8">
                 <QrCode className="h-4 w-4" />
                 <span>{t('cashier.payment.qris', 'QRIS')}</span>
               </TabsTrigger>
-              <TabsTrigger value="TRANSFER" className="gap-1.5">
+              <TabsTrigger value="TRANSFER" className="gap-1.5 text-xs font-semibold h-8">
                 <Building className="h-4 w-4" />
                 <span>{t('cashier.payment.transfer', 'Transfer')}</span>
               </TabsTrigger>
@@ -213,7 +218,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 data-invalid={Boolean(errorMessage || (cashTendered > 0 && cashTendered < total))}
               >
                 <FieldLabel htmlFor="cashTendered">
-                  {t('cashier.payment.amountReceivedLabel', 'Uang Diterima *')}
+                  {t('cashier.payment.amountReceivedLabel', 'Uang Diterima (Rp) *')}
                 </FieldLabel>
                 <CurrencyInput
                   id="cashTendered"
@@ -223,13 +228,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     setCashTendered(val);
                     setErrorMessage(null);
                   }}
-                  className="text-lg font-bold"
+                  className="text-base font-bold h-10"
                   placeholder="0"
                 />
               </Field>
 
               {/* Quick Cash Buttons */}
-              <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+              <div className="grid grid-cols-3 gap-1.5 pt-0.5">
                 {quickCashOptions.map((opt) => (
                   <Button
                     key={opt.label}
@@ -237,7 +242,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setCashTendered(opt.value)}
-                    className="text-xs h-7 px-2 font-mono truncate max-w-[180px]"
+                    className="text-xs h-8 px-2 font-mono font-medium truncate cursor-pointer rounded-lg hover:bg-muted"
                   >
                     {opt.label === 'Uang Pas'
                       ? t('cashier.payment.exactAmount', 'Uang Pas')
@@ -247,12 +252,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
 
               {/* Change Due Box */}
-              <div className="p-3 rounded-lg bg-muted/50 border flex items-center justify-between gap-2 overflow-hidden">
+              <div className="p-3 rounded-lg bg-muted/40 border border-border flex items-center justify-between gap-2">
                 <span className="text-xs font-medium text-muted-foreground shrink-0">
                   {t('cashier.payment.changeDueLabel', 'Uang Kembalian:')}
                 </span>
                 <span
-                  className={`text-base sm:text-lg font-bold font-mono truncate text-right max-w-[200px] ${
+                  className={`text-base font-bold font-mono truncate text-right ${
                     isCashInsufficient
                       ? 'text-destructive'
                       : 'text-emerald-600 dark:text-emerald-400'
@@ -267,12 +272,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
             {/* QRIS Tab Content */}
             <TabsContent value="QRIS" className="pt-2">
-              <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
-                <QrCode className="h-12 w-12 text-primary" />
+              <div className="p-6 rounded-xl border border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
+                <QrCode className="h-10 w-10 text-primary" />
                 <p className="font-semibold text-sm">
                   {t('cashier.payment.qrisTitle', 'Scan QRIS Dinamis Toko')}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground max-w-[280px]">
                   {t('cashier.payment.qrisDesc', {
                     amount: formatCurrency(total, settings?.currency),
                     defaultValue: `Pastikan pelanggan telah memindai QRIS dan saldo terpotong sebesar ${formatCurrency(total, settings?.currency)}.`,
@@ -290,12 +295,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
             {/* Transfer Tab Content */}
             <TabsContent value="TRANSFER" className="pt-2">
-              <div className="p-6 rounded-xl border-2 border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
-                <Building className="h-12 w-12 text-primary" />
+              <div className="p-6 rounded-xl border border-dashed border-primary/40 bg-card flex flex-col items-center justify-center text-center space-y-2">
+                <Building className="h-10 w-10 text-primary" />
                 <p className="font-semibold text-sm">
                   {t('cashier.payment.transferTitle', 'Transfer Bank Manual')}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground max-w-[280px]">
                   {t('cashier.payment.transferDesc', {
                     amount: formatCurrency(total, settings?.currency),
                     defaultValue: `Verifikasi mutasi rekening masuk sebesar ${formatCurrency(total, settings?.currency)} sebelum menyelesaikan transaksi.`,
@@ -306,34 +311,35 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           </Tabs>
 
           {errorMessage && (
-            <p className="text-xs text-destructive bg-destructive/10 p-2 rounded-md font-medium">
+            <p className="text-xs text-destructive bg-destructive/10 p-2.5 rounded-lg font-medium">
               {errorMessage}
             </p>
           )}
         </div>
 
-        <DialogFooter className="p-4 px-6 border-t shrink-0 bg-muted/20">
+        {/* Standard shadcn DialogFooter */}
+        <DialogFooter className="p-3.5 sm:p-4 border-t bg-muted/20 flex flex-row items-center justify-end gap-2 shrink-0 sm:justify-end">
           <Button
             type="button"
             variant="outline"
+            size="default"
             onClick={() => onOpenChange(false)}
             disabled={checkoutMutation.isPending}
+            className="w-1/3 h-10 text-xs font-semibold cursor-pointer rounded-lg"
           >
             {t('common.actions.cancel', 'Batal')}
           </Button>
           <Button
             type="button"
+            size="default"
             onClick={handleProcessPayment}
             disabled={checkoutMutation.isPending || isCashInsufficient}
-            className="gap-2 font-bold"
+            className="flex-1 h-10 text-xs font-bold gap-1.5 shadow-sm cursor-pointer rounded-lg"
           >
             {checkoutMutation.isPending ? (
               t('cashier.payment.processing', 'Memproses Transaksi...')
             ) : (
-              <>
-                <span>{t('cashier.payment.confirm', 'Konfirmasi Pembayaran')}</span>
-                <ArrowRight className="h-4 w-4" />
-              </>
+              <span>{t('cashier.payment.confirm', 'Konfirmasi Pembayaran')}</span>
             )}
           </Button>
         </DialogFooter>

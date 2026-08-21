@@ -101,13 +101,13 @@ export const CustomerSelectorCombobox: React.FC<CustomerSelectorComboboxProps> =
         <Button
           variant="outline"
           size="sm"
-          className="w-full h-8 px-2.5 text-xs border-dashed justify-between font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+          className="w-full h-8 px-3 text-xs justify-between font-medium text-muted-foreground hover:text-foreground cursor-pointer rounded-lg border-border"
         >
-          <div className="flex items-center gap-1.5 truncate">
+          <div className="flex items-center gap-2 truncate">
             <Users className="h-3.5 w-3.5 text-primary shrink-0" />
             <span className="truncate">Pilih Pelanggan / Tamu</span>
           </div>
-          <span className="text-[10px] text-muted-foreground/70 shrink-0">+ Tambah</span>
+          <span className="text-[11px] font-semibold text-primary shrink-0">+ Tamu</span>
         </Button>
       </PopoverTrigger>
 

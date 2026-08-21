@@ -71,7 +71,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
     {
       id: ownerStaffId,
       storeId,
-      name: 'Budi Pratama',
+      name: 'Bayu Pratama',
       role: 'OWNER',
       pin: '1234',
       hasAllOutlets: true,
@@ -130,7 +130,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
     storeAddress: 'Jl. Senopati Raya No. 45, Kebayoran Baru, Jakarta Selatan',
     receiptFooter:
       'Terima kasih atas kunjungan Anda!\nFollow IG: @kopi.resto.nusantara\nPassword WiFi: nusantara2026',
-    defaultCashier: 'Budi Pratama',
+    defaultCashier: 'Bayu Pratama',
     activeStaffId: ownerStaffId,
     activeOutletId: hqOutletId,
     currency: 'IDR',
@@ -934,7 +934,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
       paymentMethod: 'QRIS',
       amountPaid: 74800,
       changeDue: 0,
-      cashierName: 'Budi Pratama',
+      cashierName: 'Bayu Pratama',
       outletId: hqOutletId,
       customerName: 'Dewi Lestari',
       tableNumber: 'Meja 01',
@@ -1036,7 +1036,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
       paymentMethod: 'QRIS',
       amountPaid: 44000,
       changeDue: 0,
-      cashierName: 'Budi Pratama',
+      cashierName: 'Bayu Pratama',
       outletId: hqOutletId,
       customerName: 'Maya Anggraini',
       tableNumber: 'Meja 03',
@@ -1071,7 +1071,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
       paymentMethod: 'QRIS',
       amountPaid: 150000,
       changeDue: 0,
-      cashierName: 'Budi Pratama',
+      cashierName: 'Bayu Pratama',
       outletId: hqOutletId,
       customerName: 'Dewi Lestari',
       tableNumber: 'VIP 01',
@@ -1180,7 +1180,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
       paymentMethod: 'QRIS',
       amountPaid: 182000,
       changeDue: 0,
-      cashierName: 'Budi Pratama',
+      cashierName: 'Bayu Pratama',
       outletId: hqOutletId,
       customerName: 'Maya Anggraini',
       tableNumber: 'Meja 04',
@@ -1195,7 +1195,7 @@ export async function loadProfessionalDemoData(options?: { resetFirst?: boolean 
     {
       id: generateUUID(),
       adjustmentNumber: 'ADJ-2026-08-01',
-      adjustedBy: 'Budi Pratama',
+      adjustedBy: 'Bayu Pratama',
       notes: 'Stok Opname Awal Bulan Agustus 2026',
       items: [
         {

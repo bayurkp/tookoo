@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { Search, PackageOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { CashierProductCard } from './cashier-product-card';
 import { VariantModifierModal } from './variant-modifier-modal';
 import { useCartStore } from '../stores/cart-store';
@@ -104,35 +103,43 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
     <div className="space-y-4 flex flex-col h-full">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
         <Input
-          placeholder={t('cashier.searchPlaceholder', 'Cari nama atau barcode produk...')}
+          placeholder={t('cashier.searchPlaceholder', 'Cari produk / barcode...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleSearchKeyDown}
-          className="pl-9 bg-card"
+          className="pl-8 h-8.5 text-xs bg-card"
         />
       </div>
 
       {/* Category Pills */}
       {categories.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <Badge
-            variant={selectedCategory === 'ALL' ? 'default' : 'outline'}
-            className="cursor-pointer px-3 py-1 text-xs"
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none py-0.5">
+          <button
+            type="button"
+            className={`cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 whitespace-nowrap transition-all duration-150 ${
+              selectedCategory === 'ALL'
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/40'
+            }`}
             onClick={() => setSelectedCategory('ALL')}
           >
             {t('cashier.allCategories', 'Semua')} ({products.length})
-          </Badge>
+          </button>
           {categories.map((cat) => (
-            <Badge
+            <button
               key={cat}
-              variant={selectedCategory === cat ? 'default' : 'outline'}
-              className="cursor-pointer px-3 py-1 text-xs"
+              type="button"
+              className={`cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 whitespace-nowrap transition-all duration-150 ${
+                selectedCategory === cat
+                  ? 'bg-primary text-primary-foreground shadow-xs'
+                  : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/40'
+              }`}
               onClick={() => setSelectedCategory(cat)}
             >
               {cat}
-            </Badge>
+            </button>
           ))}
         </div>
       )}
@@ -140,13 +147,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
       {/* Grid Display */}
       <div className="flex-1 overflow-y-auto pr-1">
         {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3 pb-20 lg:pb-8">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-44 rounded-xl bg-muted/40 animate-pulse" />
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed rounded-xl border-border bg-card">
+          <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed rounded-xl border-border bg-card mb-20 lg:mb-0">
             <PackageOpen className="h-10 w-10 text-muted-foreground/50 mb-3" />
             <p className="text-sm text-muted-foreground">
               {searchQuery || selectedCategory !== 'ALL'
@@ -155,7 +162,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading = 
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3 pb-20 lg:pb-8">
             {filteredProducts.map((product) => (
               <CashierProductCard
                 key={product.id}

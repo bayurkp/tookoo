@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Zap, Rocket, CheckCircle2, ChevronDown, Info, ShieldCheck } from 'lucide-react';
+import { Store, Layers, CheckCircle2, ChevronDown, Info, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -79,7 +79,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
               <div className="h-9 w-9 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                <Zap className="h-5 w-5 fill-amber-500/30" />
+                <Store className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">Mode Sederhana</h3>
@@ -117,7 +117,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
               isSimple && 'bg-amber-500 hover:bg-amber-600 text-white'
             )}
           >
-            <Zap className="h-3.5 w-3.5" />
+            <Store className="h-3.5 w-3.5" />
             <span>{isSimple ? 'Mode Sederhana Sedang Aktif' : 'Pilih Mode Sederhana'}</span>
           </Button>
         </div>
@@ -144,7 +144,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
               <div className="h-9 w-9 rounded-lg bg-primary/20 text-primary flex items-center justify-center shrink-0">
-                <Rocket className="h-5 w-5" />
+                <Layers className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">Mode Lanjutan</h3>
@@ -179,7 +179,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
             disabled={isUpdating}
             className="w-full text-xs font-bold gap-1.5 cursor-pointer mt-2"
           >
-            <Rocket className="h-3.5 w-3.5" />
+            <Layers className="h-3.5 w-3.5" />
             <span>{isAdvanced ? 'Mode Lanjutan Sedang Aktif' : 'Pilih Mode Lanjutan'}</span>
           </Button>
         </div>
@@ -205,7 +205,7 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 : 'bg-primary/15 text-primary'
             )}
           >
-            {isSimple ? <Zap className="h-3.5 w-3.5" /> : <Rocket className="h-3.5 w-3.5" />}
+            {isSimple ? <Store className="h-3.5 w-3.5" /> : <Layers className="h-3.5 w-3.5" />}
           </div>
           <div className="min-w-0">
             <span className="text-[11px] font-bold text-foreground truncate block">
@@ -231,12 +231,12 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
               <DialogTitle className="text-base font-bold flex items-center gap-2">
                 {selectedTargetMode === 'ADVANCED' ? (
                   <>
-                    <Rocket className="h-5 w-5 text-primary" />
+                    <Layers className="h-5 w-5 text-primary" />
                     <span>Beralih ke Mode Lanjutan?</span>
                   </>
                 ) : (
                   <>
-                    <Zap className="h-5 w-5 text-amber-500" />
+                    <Store className="h-5 w-5 text-amber-500" />
                     <span>Beralih ke Mode Sederhana?</span>
                   </>
                 )}
@@ -275,9 +275,9 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 )}
               >
                 {selectedTargetMode === 'SIMPLE' ? (
-                  <Zap className="h-3.5 w-3.5" />
+                  <Store className="h-3.5 w-3.5" />
                 ) : (
-                  <Rocket className="h-3.5 w-3.5" />
+                  <Layers className="h-3.5 w-3.5" />
                 )}
                 <span>
                   Ganti ke {selectedTargetMode === 'SIMPLE' ? 'Mode Sederhana' : 'Mode Lanjutan'}
@@ -307,9 +307,9 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
             )}
           >
             {isSimple ? (
-              <Zap className="h-3.5 w-3.5 fill-amber-500/30 shrink-0" />
+              <Store className="h-3.5 w-3.5 shrink-0" />
             ) : (
-              <Rocket className="h-3.5 w-3.5 shrink-0" />
+              <Layers className="h-3.5 w-3.5 shrink-0" />
             )}
             <span className="hidden sm:inline">
               {isSimple ? 'Mode Sederhana' : 'Mode Lanjutan'}
@@ -318,22 +318,24 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-56 p-1.5">
-          <DropdownMenuLabel className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-2 py-1">
+        <DropdownMenuContent align="end" className="w-60 p-2 space-y-1.5">
+          <DropdownMenuLabel className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-2 py-0.5">
             Pilih Mode Aplikasi
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-1" />
 
           {/* Option: Mode Sederhana */}
           <DropdownMenuItem
             onClick={() => handleSelectMode('SIMPLE')}
             className={cn(
-              'flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer',
-              isSimple && 'bg-amber-500/10 font-bold text-amber-700 dark:text-amber-300'
+              'flex items-center justify-between p-2.5 rounded-xl text-xs cursor-pointer transition-colors',
+              isSimple
+                ? 'bg-amber-500/15 font-bold text-amber-700 dark:text-amber-300 border border-amber-500/30'
+                : 'hover:bg-muted/70 text-foreground border border-transparent'
             )}
           >
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-amber-500" />
+            <div className="flex items-center gap-2.5">
+              <Store className="h-4 w-4 text-amber-500 shrink-0" />
               <div>
                 <span className="block font-bold">Mode Sederhana</span>
                 <span className="text-[10px] text-muted-foreground font-normal">
@@ -341,19 +343,21 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 </span>
               </div>
             </div>
-            {isSimple && <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" />}
+            {isSimple && <CheckCircle2 className="h-4 w-4 text-amber-500 shrink-0" />}
           </DropdownMenuItem>
 
           {/* Option: Mode Lanjutan */}
           <DropdownMenuItem
             onClick={() => handleSelectMode('ADVANCED')}
             className={cn(
-              'flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer',
-              isAdvanced && 'bg-primary/10 font-bold text-primary'
+              'flex items-center justify-between p-2.5 rounded-xl text-xs cursor-pointer transition-colors',
+              isAdvanced
+                ? 'bg-primary/15 font-bold text-primary border border-primary/30'
+                : 'hover:bg-muted/70 text-foreground border border-transparent'
             )}
           >
-            <div className="flex items-center gap-2">
-              <Rocket className="h-4 w-4 text-primary" />
+            <div className="flex items-center gap-2.5">
+              <Layers className="h-4 w-4 text-primary shrink-0" />
               <div>
                 <span className="block font-bold">Mode Lanjutan</span>
                 <span className="text-[10px] text-muted-foreground font-normal">
@@ -361,14 +365,14 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
                 </span>
               </div>
             </div>
-            {isAdvanced && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+            {isAdvanced && <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />}
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-1" />
 
           <DropdownMenuItem
             onClick={() => handleOpenGuide(isSimple ? 'ADVANCED' : 'SIMPLE')}
-            className="gap-2 text-[11px] text-muted-foreground cursor-pointer px-2 py-1.5"
+            className="gap-2 text-[11px] text-muted-foreground hover:text-foreground cursor-pointer px-2 py-1.5 rounded-lg"
           >
             <Info className="h-3.5 w-3.5" />
             <span>Lihat Panduan Perbedaan Mode</span>
@@ -383,12 +387,12 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
             <DialogTitle className="text-base font-bold flex items-center gap-2">
               {selectedTargetMode === 'ADVANCED' ? (
                 <>
-                  <Rocket className="h-5 w-5 text-primary" />
+                  <Layers className="h-5 w-5 text-primary" />
                   <span>Beralih ke Mode Lanjutan?</span>
                 </>
               ) : (
                 <>
-                  <Zap className="h-5 w-5 text-amber-500" />
+                  <Store className="h-5 w-5 text-amber-500" />
                   <span>Beralih ke Mode Sederhana?</span>
                 </>
               )}
@@ -427,9 +431,9 @@ export const AppModeSwitcher: React.FC<AppModeSwitcherProps> = ({
               )}
             >
               {selectedTargetMode === 'SIMPLE' ? (
-                <Zap className="h-3.5 w-3.5" />
+                <Store className="h-3.5 w-3.5" />
               ) : (
-                <Rocket className="h-3.5 w-3.5" />
+                <Layers className="h-3.5 w-3.5" />
               )}
               <span>
                 Ganti ke {selectedTargetMode === 'SIMPLE' ? 'Mode Sederhana' : 'Mode Lanjutan'}

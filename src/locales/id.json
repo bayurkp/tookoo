@@ -74,15 +74,18 @@
     }
   },
   "status": {
-    "p2pConnected": "Tersambung ({{count}} Kasir)",
-    "localMode": "Kasir Siap",
-    "offline": "Mode Offline"
+    "p2pConnected": "Terhubung ({{count}} Kasir)",
+    "connected": "Terhubung",
+    "disconnected": "Terputus",
+    "localMode": "Terhubung",
+    "offline": "Terputus"
   },
   "cashier": {
     "title": "Terminal Kasir",
     "subtitle": "Pilih menu untuk menambahkan ke keranjang belanja pelanggan.",
-    "searchPlaceholder": "Cari nama atau barcode produk...",
+    "searchPlaceholder": "Cari produk / barcode...",
     "allCategories": "Semua",
+    "processOrder": "Proses Pesanan",
     "newTransaction": "Transaksi Baru",
     "cart": {
       "title": "Keranjang Belanja",

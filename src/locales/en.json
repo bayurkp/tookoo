@@ -75,14 +75,17 @@
   },
   "status": {
     "p2pConnected": "Connected ({{count}} Devices)",
-    "localMode": "Terminal Ready (Local)",
-    "offline": "Offline Mode (Data Safe on Device)"
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "localMode": "Connected",
+    "offline": "Disconnected"
   },
   "cashier": {
     "title": "Cashier Terminal",
     "subtitle": "Select items to add them to customer shopping cart.",
     "searchPlaceholder": "Search product name or barcode...",
     "allCategories": "All",
+    "processOrder": "Process Order",
     "newTransaction": "New Transaction",
     "cart": {
       "title": "Shopping Cart",

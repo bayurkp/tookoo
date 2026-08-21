@@ -72,27 +72,30 @@ export const PendingOrdersSheet: React.FC<PendingOrdersSheetProps> = ({
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 gap-0">
-          <SheetHeader className="p-5 pb-3 border-b bg-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                  <BookmarkCheck className="h-4 w-4" />
-                </div>
-                <div>
-                  <SheetTitle className="text-base font-bold">
-                    {t('cashier.pendingOrders.title', 'Pesanan Tertunda (Open Bills)')}
-                  </SheetTitle>
-                  <SheetDescription className="text-xs">
-                    {t(
-                      'cashier.pendingOrders.desc',
-                      'Daftar pesanan meja / dine-in yang belum dilunasi.'
-                    )}
-                  </SheetDescription>
-                </div>
+          <SheetHeader className="p-4 border-b bg-card text-left pr-12">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <BookmarkCheck className="h-4 w-4" />
               </div>
-              <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-xs font-bold px-2 py-0.5">
-                {pendingOrders.length} Pesanan
-              </Badge>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <SheetTitle className="text-sm sm:text-base font-bold truncate">
+                    {t('cashier.pendingOrders.title', 'Pesanan Tertunda')}
+                  </SheetTitle>
+                  <Badge
+                    variant="outline"
+                    className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-[11px] font-bold px-1.5 py-0 h-5 shrink-0"
+                  >
+                    {pendingOrders.length}
+                  </Badge>
+                </div>
+                <SheetDescription className="text-xs text-muted-foreground truncate">
+                  {t(
+                    'cashier.pendingOrders.desc',
+                    'Daftar tagihan / open bills yang belum dilunasi.'
+                  )}
+                </SheetDescription>
+              </div>
             </div>
           </SheetHeader>
 

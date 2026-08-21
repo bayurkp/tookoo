@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShoppingCart, BookmarkCheck } from 'lucide-react';
+import { BookmarkCheck, ShoppingCart } from 'lucide-react';
 import { useProducts } from '@/features/products/hooks/use-products';
 import { useOrders, useUpsertOrder } from '@/features/orders/hooks/use-orders';
 import { useAppMode } from '@/hooks/use-app-mode';
@@ -36,13 +36,25 @@ export const CashierPage: React.FC = () => {
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
 
-  const getItemCount = useCartStore((state) => state.getItemCount);
-  const getTotal = useCartStore((state) => state.getTotal);
+  // Reactive state subscriptions to cart items & discount
+  const items = useCartStore((state) => state.items);
+  const discount = useCartStore((state) => state.discount);
   const clearCart = useCartStore((state) => state.clearCart);
   const addItem = useCartStore((state) => state.addItem);
 
-  const itemCount = getItemCount();
-  const cartTotal = getTotal();
+  const itemCount = useMemo(
+    () => items.reduce((sum, item) => sum + item.quantity, 0),
+    [items]
+  );
+  const cartTotal = useMemo(() => {
+    const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    if (!discount) return subtotal;
+    if (discount.type === 'PERCENTAGE') {
+      const disc = Math.round((subtotal * discount.value) / 100);
+      return Math.max(0, subtotal - disc);
+    }
+    return Math.max(0, subtotal - discount.value);
+  }, [items, discount]);
 
   const pendingOrders = orders.filter((o) => o.status === 'PENDING' && o.deletedAt === null);
 
@@ -94,35 +106,37 @@ export const CashierPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col space-y-4 relative">
+    <div className="h-full flex-1 flex flex-col min-h-0 space-y-4 relative">
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
+      <div className="flex items-center justify-between gap-2 shrink-0">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg sm:text-2xl font-bold tracking-tight truncate">
             {t('cashier.title', 'Terminal Kasir')}
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs sm:text-sm truncate">
             {isSimple
-              ? t('cashier.simpleSubtitle', 'Klik produk untuk menambahkan ke keranjang belanja.')
+              ? t('cashier.simpleSubtitle', 'Klik produk untuk menambahkan ke pesanan.')
               : t(
                   'cashier.subtitle',
-                  'Pilih menu untuk menambahkan ke keranjang belanja pelanggan.'
+                  'Pilih menu untuk menambahkan ke keranjang belanja.'
                 )}
           </p>
         </div>
 
-        {/* Pending Orders (Open Bills) Quick Button */}
+        {/* Action Button: Pending Orders */}
         {(isAdvanced || pendingOrders.length > 0) && (
           <Button
             type="button"
             variant="outline"
+            size="sm"
             onClick={() => setIsPendingOrdersOpen(true)}
-            className="gap-2 border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold text-xs h-9 cursor-pointer"
+            className="gap-1.5 border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold text-xs h-8 px-2.5 cursor-pointer shrink-0"
           >
-            <BookmarkCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            <span>{t('cashier.pendingOrders.button', 'Pesanan Tertunda')}</span>
+            <BookmarkCheck className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+            <span className="hidden sm:inline">{t('cashier.pendingOrders.button', 'Pesanan Tertunda')}</span>
+            <span className="sm:hidden">Tertunda</span>
             {pendingOrders.length > 0 && (
-              <Badge className="bg-amber-600 text-white font-extrabold text-[11px] px-1.5 py-0 h-5">
+              <Badge className="bg-amber-600 text-white font-extrabold text-[10px] px-1 py-0 h-4">
                 {pendingOrders.length}
               </Badge>
             )}
@@ -131,7 +145,7 @@ export const CashierPage: React.FC = () => {
       </div>
 
       {/* Main Cashier Work Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 flex-1 min-h-0 overflow-hidden">
         {/* Left: Product Catalog Grid */}
         <div className="lg:col-span-7 xl:col-span-8 h-full flex flex-col overflow-hidden">
           <ProductGrid products={products} isLoading={isLoading} />
@@ -148,51 +162,49 @@ export const CashierPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Floating Cart Button for Mobile Screens (lg:hidden) */}
-      {itemCount > 0 && (
-        <div className="fixed bottom-20 right-4 z-40 lg:hidden">
-          <Button
-            onClick={() => setIsMobileCartOpen(true)}
-            size="lg"
-            className="h-14 px-5 rounded-full border-2 border-background gap-3 font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            <div className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <Badge
-                variant="destructive"
-                className="absolute -top-2.5 -right-3 h-5 min-w-[20px] px-1 text-[10px] font-extrabold flex items-center justify-center rounded-full"
-              >
-                {itemCount}
-              </Badge>
-            </div>
-            <span>{t('cashier.cart.title', 'Keranjang')}</span>
-            <span>•</span>
-            <span>{formatCurrency(cartTotal)}</span>
-          </Button>
-        </div>
-      )}
+      {/* Floating Bottom Cart Bar (Full Width of Terminal Kasir Section) */}
+      <div className="absolute bottom-0 inset-x-0 z-30 lg:hidden pointer-events-none pb-0.5 sm:pb-1">
+        <Button
+          onClick={() => setIsMobileCartOpen(true)}
+          size="default"
+          className="pointer-events-auto w-full h-11 px-4 rounded-xl shadow-lg bg-primary hover:bg-primary/95 text-primary-foreground flex items-center justify-between cursor-pointer border border-primary-foreground/15 active:scale-[0.98] transition-all"
+        >
+          {/* Left: Cart Icon & Count Badge */}
+          <div className="flex items-center gap-2.5">
+            <ShoppingCart className="h-4 w-4 shrink-0" />
+            <span className="h-5.5 min-w-[22px] px-1.5 rounded-full bg-primary-foreground/20 text-primary-foreground flex items-center justify-center font-mono font-semibold text-xs">
+              {itemCount}
+            </span>
+          </div>
+
+          {/* Right: Price */}
+          <span className="font-mono font-bold text-xs sm:text-sm tracking-tight">
+            {formatCurrency(cartTotal)}
+          </span>
+        </Button>
+      </div>
 
       {/* Mobile Cart Sheet Drawer */}
       <Sheet open={isMobileCartOpen} onOpenChange={setIsMobileCartOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col h-full">
-          <SheetHeader className="p-4 border-b">
-            <SheetTitle className="text-base font-bold flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              <span>{t('cashier.cart.title', 'Keranjang Belanja')}</span>
-            </SheetTitle>
-            <SheetDescription className="text-xs text-muted-foreground">
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-md p-0 flex flex-col h-full bg-card border-l border-border [&>button]:hidden"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>{t('cashier.cart.title', 'Keranjang Belanja')}</SheetTitle>
+            <SheetDescription>
               {t('cashier.cart.itemCount', { count: itemCount })}
             </SheetDescription>
           </SheetHeader>
-          <div className="flex-1 overflow-hidden p-2">
-            <CartPanel
-              onProceedToPayment={() => {
-                setIsMobileCartOpen(false);
-                setPendingOrderToPay(null);
-                setIsPaymentModalOpen(true);
-              }}
-            />
-          </div>
+          <CartPanel
+            className="border-0 rounded-none h-full"
+            onClose={() => setIsMobileCartOpen(false)}
+            onProceedToPayment={() => {
+              setIsMobileCartOpen(false);
+              setPendingOrderToPay(null);
+              setIsPaymentModalOpen(true);
+            }}
+          />
         </SheetContent>
       </Sheet>
 

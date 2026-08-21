@@ -36,14 +36,22 @@ import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
 import { useAppMode } from '@/hooks/use-app-mode';
 import { getCurrencyConfig } from '@/utils/currency-config';
 import { formatCurrency } from '@/utils/format-currency';
+import { cn } from '@/lib/cn';
 import type { MasterDiscount } from '@/types/master-data.types';
 
 interface CartPanelProps {
   onProceedToPayment: () => void;
   onHoldSuccess?: (orderNumber: string) => void;
+  className?: string;
+  onClose?: () => void;
 }
 
-export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHoldSuccess }) => {
+export const CartPanel: React.FC<CartPanelProps> = ({
+  onProceedToPayment,
+  onHoldSuccess,
+  className,
+  onClose,
+}) => {
   const { t } = useTranslation();
   const { isAdvanced } = useAppMode();
   const { settings } = useP2pSync();
@@ -161,9 +169,9 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   };
 
   return (
-    <Card className="flex flex-col h-full border-border/80 shadow-none">
+    <Card className={cn('flex flex-col h-full border-border/80 shadow-none bg-card', className)}>
       {/* Header */}
-      <CardHeader className="p-3.5 pb-2.5 border-b flex flex-row items-center justify-between gap-2 space-y-0 overflow-hidden">
+      <CardHeader className="p-3.5 pb-2.5 border-b flex flex-row items-center justify-between gap-2 space-y-0 overflow-hidden shrink-0">
         <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
           <ShoppingCart className="h-4 w-4 text-primary shrink-0" />
           <CardTitle className="text-sm font-bold truncate whitespace-nowrap shrink-0">
@@ -180,42 +188,61 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
           )}
         </div>
 
-        {items.length > 0 && (
-          <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive shrink-0 whitespace-nowrap cursor-pointer"
-              >
-                <Trash2 className="h-3.5 w-3.5 mr-1" />
-                {t('cashier.cart.clear', 'Kosongkan')}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Kosongkan Keranjang?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Semua item dan pesanan di keranjang saat ini akan dihapus.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setIsClearDialogOpen(false)}>
-                  Batal
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    clearCart();
-                    setIsClearDialogOpen(false);
-                  }}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
+        <div className="flex items-center gap-1 shrink-0">
+          {items.length > 0 && (
+            <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive shrink-0 whitespace-nowrap cursor-pointer"
                 >
-                  Ya, Kosongkan
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+                  <Trash2 className="h-3.5 w-3.5 mr-1" />
+                  {t('cashier.cart.clear', 'Kosongkan')}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="w-[92vw] sm:max-w-md p-5 rounded-2xl">
+                <AlertDialogHeader className="text-left space-y-1">
+                  <AlertDialogTitle className="text-base font-bold">
+                    Kosongkan Keranjang?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-xs text-muted-foreground">
+                    Semua item dan pesanan di keranjang saat ini akan dihapus.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex flex-row items-center justify-end gap-2 pt-2 sm:justify-end">
+                  <AlertDialogCancel
+                    onClick={() => setIsClearDialogOpen(false)}
+                    className="w-1/3 h-10 text-xs font-semibold cursor-pointer rounded-lg mt-0"
+                  >
+                    Batal
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      clearCart();
+                      setIsClearDialogOpen(false);
+                    }}
+                    className="flex-1 h-10 text-xs font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer rounded-lg"
+                  >
+                    Ya, Kosongkan
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
+              title="Tutup Keranjang"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
 
       {/* Cart Items List */}
@@ -277,56 +304,41 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                       </span>
 
                       <div className="flex items-center gap-1 shrink-0">
-                        {/* Stepper with editable numeric input */}
-                        <div className="flex items-center border rounded-md bg-background shadow-2xs">
+                        {/* Stepper with standard shadcn buttons */}
+                        <div className="flex items-center h-7 rounded-md border border-input bg-card shadow-2xs">
                           <Button
                             type="button"
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             aria-label="Kurangi kuantitas"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="h-6 w-6 p-0 hover:bg-muted cursor-pointer shrink-0"
+                            className="h-6 w-6 p-0 hover:bg-muted cursor-pointer shrink-0 rounded-sm"
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
 
-                          <input
-                            type="number"
-                            min="1"
-                            max={maxStock}
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              if (!isNaN(val)) {
-                                updateQuantity(item.id, val);
-                              }
-                            }}
-                            onBlur={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              if (isNaN(val) || val < 1) {
-                                updateQuantity(item.id, 1);
-                              }
-                            }}
-                            className="w-9 h-6 text-center font-mono font-bold text-xs bg-transparent border-x focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          />
+                          <span className="w-7 text-center font-mono font-bold text-xs">
+                            {item.quantity}
+                          </span>
 
                           <Button
                             type="button"
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             aria-label="Tambah kuantitas"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             disabled={item.quantity >= maxStock}
-                            className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40 shrink-0"
+                            className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40 shrink-0 rounded-sm"
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
                         </div>
 
                         <Button
+                          type="button"
                           variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer shrink-0 ml-0.5"
+                          size="icon"
+                          className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer shrink-0 rounded-md"
                           onClick={() => removeItem(item.id)}
                           title="Hapus item"
                         >
@@ -373,7 +385,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
         {items.length > 0 && (
           <div className="w-full space-y-2">
             {discount ? (
-              <div className="flex items-center justify-between h-8 px-2.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-xs w-full">
+              <div className="flex items-center justify-between h-8 px-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs w-full">
                 <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium min-w-0">
                   <Tag className="h-3.5 w-3.5 shrink-0" />
                   <span className="truncate font-semibold max-w-[180px]">
@@ -535,16 +547,17 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
               </div>
             ) : (
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setShowDiscountInput(true)}
-                className="w-full h-8 px-2.5 text-xs border-dashed justify-between font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                className="w-full h-8 px-3 text-xs justify-between font-medium text-muted-foreground hover:text-foreground cursor-pointer rounded-lg border-border"
               >
-                <div className="flex items-center gap-1.5 truncate">
+                <div className="flex items-center gap-2 truncate">
                   <Tag className="h-3.5 w-3.5 text-primary shrink-0" />
                   <span className="truncate">{t('cashier.cart.addDiscount', 'Tambah Diskon / Promo')}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground/70 shrink-0">+ Diskon</span>
+                <span className="text-[11px] font-semibold text-primary shrink-0">+ Diskon</span>
               </Button>
             )}
           </div>
@@ -580,18 +593,21 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
             <Button
               type="button"
               variant="outline"
+              size="default"
               disabled={items.length === 0}
               onClick={() => setIsHoldDialogOpen(true)}
-              className="h-11 px-3 border-amber-500/40 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-xs gap-1.5 cursor-pointer shrink-0"
+              className="h-10 px-3.5 rounded-lg border-border hover:bg-muted text-foreground font-semibold text-xs gap-1.5 cursor-pointer shrink-0 shadow-2xs"
               title="Simpan pesanan untuk dibayar nanti"
             >
-              <BookmarkPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Tunda Bayar</span>
+              <BookmarkPlus className="h-4 w-4 text-amber-500" />
+              <span>Tunda</span>
             </Button>
           )}
 
           <Button
-            className="flex-1 h-11 text-sm font-bold gap-2 cursor-pointer shadow-sm"
+            type="button"
+            size="default"
+            className="flex-1 h-10 rounded-lg text-xs sm:text-sm font-bold gap-2 cursor-pointer shadow-sm"
             disabled={items.length === 0}
             onClick={onProceedToPayment}
           >

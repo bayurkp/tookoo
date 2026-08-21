@@ -145,15 +145,15 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden h-[85vh] max-h-[640px] min-h-[460px] flex flex-col">
+      <DialogContent className="w-[94vw] max-w-[460px] p-0 overflow-hidden max-h-[85vh] min-h-[420px] flex flex-col rounded-2xl bg-card border border-border shadow-2xl">
         {/* Header with Product Preview */}
-        <DialogHeader className="p-4 pb-3 border-b bg-muted/20 shrink-0">
+        <DialogHeader className="p-4 pb-3 pr-10 border-b bg-muted/20 shrink-0 text-left">
           <div className="flex items-start gap-3">
             {product.imageUrl ? (
               <img
                 src={product.imageUrl}
                 alt={product.name}
-                className="h-16 w-16 rounded-xl object-cover border shrink-0"
+                className="h-16 w-16 rounded-xl object-cover border border-border shrink-0"
               />
             ) : (
               <div className="h-16 w-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xl shrink-0">
@@ -162,7 +162,9 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <DialogTitle className="text-base font-bold truncate">{product.name}</DialogTitle>
+                <DialogTitle className="text-sm sm:text-base font-bold truncate text-foreground">
+                  {product.name}
+                </DialogTitle>
                 <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                   {product.category}
                 </Badge>
@@ -172,7 +174,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                   {product.description}
                 </DialogDescription>
               )}
-              <p className="text-sm font-extrabold text-primary mt-1">
+              <p className="text-sm font-extrabold text-primary font-mono mt-1">
                 {formatCurrency(unitPrice)}
               </p>
             </div>
@@ -205,7 +207,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                       onClick={() => setSelectedVariant(variant)}
                       className={`p-2.5 rounded-xl border text-left flex flex-col justify-between gap-1 transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-primary bg-primary/5 text-primary font-bold shadow-xs'
+                          ? 'border-primary bg-primary/5 text-primary font-bold shadow-2xs'
                           : isOutOfStock
                             ? 'border-border/50 opacity-40 bg-muted cursor-not-allowed'
                             : 'border-border hover:bg-muted/40 text-foreground'
@@ -216,7 +218,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                         {isSelected && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
                       </div>
                       <div className="flex items-center justify-between w-full text-[11px]">
-                        <span className="font-semibold">{formatCurrency(variant.price)}</span>
+                        <span className="font-semibold font-mono">{formatCurrency(variant.price)}</span>
                         <span className="text-muted-foreground text-[10px]">
                           {isOutOfStock ? 'Habis' : `Stok: ${variant.stock}`}
                         </span>
@@ -231,7 +233,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
           {/* 2. Modifiers / Toppings Groups */}
           {hasModifiers &&
             product.modifierGroups!.map((group) => (
-              <div key={group.id} className="space-y-2 pt-2 border-t">
+              <div key={group.id} className="space-y-2 pt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-foreground text-xs">{group.name}</span>
@@ -263,15 +265,17 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                       <div
                         key={option.id}
                         onClick={() => handleToggleModifier(group, option)}
-                        className={`flex items-center justify-between p-2.5 rounded-lg border transition-all cursor-pointer ${
+                        className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${
                           isSelected
-                            ? 'border-primary bg-primary/5 text-primary font-bold'
+                            ? 'border-primary bg-primary/5 text-primary font-semibold'
                             : 'border-border hover:bg-muted/40 text-foreground'
                         }`}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                           <div
-                            className={`h-4 w-4 rounded-${group.maxSelect === 1 ? 'full' : 'md'} border flex items-center justify-center ${
+                            className={`h-4 w-4 ${
+                              group.maxSelect === 1 ? 'rounded-full' : 'rounded-md'
+                            } border flex items-center justify-center ${
                               isSelected
                                 ? 'bg-primary border-primary text-primary-foreground'
                                 : 'border-muted-foreground/40'
@@ -282,7 +286,7 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
                           <span className="text-xs">{option.name}</span>
                         </div>
 
-                        <span className="text-xs font-semibold text-muted-foreground">
+                        <span className="text-xs font-semibold font-mono text-muted-foreground">
                           {option.price > 0 ? `+${formatCurrency(option.price)}` : 'Gratis'}
                         </span>
                       </div>
@@ -294,41 +298,47 @@ export const VariantModifierModal: React.FC<VariantModifierModalProps> = ({
         </div>
 
         {/* Modal Footer with Quantity Controls & Add Button */}
-        <DialogFooter className="p-4 pt-3 border-t bg-muted/20 flex flex-row items-center justify-between gap-3 shrink-0 sm:justify-between">
+        <DialogFooter className="p-3.5 sm:p-4 border-t bg-muted/20 flex flex-row items-center justify-between gap-2.5 shrink-0 sm:justify-between">
           {/* Quantity Controls */}
-          <div className="flex items-center gap-2 bg-card rounded-lg p-1 border shadow-xs">
+          <div className="flex items-center h-10 bg-card rounded-md border border-input px-1 shadow-2xs">
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
-              className="h-7 w-7 p-0 cursor-pointer"
+              className="h-8 w-8 cursor-pointer rounded-sm hover:bg-muted"
             >
-              <Minus className="h-3.5 w-3.5" />
+              <Minus className="h-4 w-4" />
             </Button>
-            <span className="text-xs font-bold w-6 text-center">{quantity}</span>
+            <span className="text-xs font-bold font-mono w-7 text-center">{quantity}</span>
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => setQuantity((q) => Math.min(currentMaxStock, q + 1))}
               disabled={quantity >= currentMaxStock}
-              className="h-7 w-7 p-0 cursor-pointer"
+              className="h-8 w-8 cursor-pointer rounded-sm hover:bg-muted"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Add to Cart Button */}
           <Button
             type="button"
+            size="default"
             onClick={handleConfirmAdd}
             disabled={currentMaxStock <= 0}
-            className="flex-1 h-10 text-xs font-bold gap-2 cursor-pointer"
+            className="flex-1 h-10 px-4 text-xs font-bold gap-2 cursor-pointer flex items-center justify-between shadow-sm active:scale-[0.98] transition-all"
           >
-            <ShoppingCart className="h-4 w-4" />
-            <span>Tambah ke Keranjang • {formatCurrency(totalPrice)}</span>
+            <div className="flex items-center gap-2 truncate">
+              <ShoppingCart className="h-4 w-4 shrink-0" />
+              <span className="truncate">Tambah</span>
+            </div>
+            <span className="font-mono font-bold text-xs tracking-tight shrink-0">
+              {formatCurrency(totalPrice)}
+            </span>
           </Button>
         </DialogFooter>
       </DialogContent>
