@@ -7,22 +7,14 @@ import {
   Tag,
   Percent,
   BookmarkPlus,
-  User,
-  Users,
   X,
+  AlertCircle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -35,9 +27,9 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import { HoldOrderDialog } from './hold-order-dialog';
+import { CustomerSelectorCombobox } from './customer-selector-combobox';
 import { useCartStore } from '../stores/cart-store';
 import { useMasterDiscounts } from '@/features/products/hooks/use-master-data';
-import { useCustomers } from '@/features/customers/hooks/use-customers';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useP2pSync } from '@/features/sync/hooks/use-p2p-sync';
@@ -45,8 +37,6 @@ import { useAppMode } from '@/hooks/use-app-mode';
 import { getCurrencyConfig } from '@/utils/currency-config';
 import { formatCurrency } from '@/utils/format-currency';
 import type { MasterDiscount } from '@/types/master-data.types';
-import type { Customer } from '@/types/customer.types';
-import { CUSTOMER_TIER_META } from '@/types/customer.types';
 
 interface CartPanelProps {
   onProceedToPayment: () => void;
@@ -61,9 +51,14 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
 
   const items = useCartStore((state) => state.items);
   const discount = useCartStore((state) => state.discount);
+  const customer = useCartStore((state) => state.customer);
+  const customerName = useCartStore((state) => state.customerName);
+
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const setDiscount = useCartStore((state) => state.setDiscount);
+  const setCustomer = useCartStore((state) => state.setCustomer);
+  const setCustomerName = useCartStore((state) => state.setCustomerName);
   const clearCart = useCartStore((state) => state.clearCart);
 
   const getSubtotal = useCartStore((state) => state.getSubtotal);
@@ -72,12 +67,11 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
   const getItemCount = useCartStore((state) => state.getItemCount);
 
   const { data: masterDiscounts = [] } = useMasterDiscounts();
-  const { data: customers = [] } = useCustomers();
 
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [discountValue, setDiscountValue] = useState('');
   const [discountType, setDiscountType] = useState<'PERCENTAGE' | 'FIXED'>('PERCENTAGE');
+  const [discountError, setDiscountError] = useState<string | null>(null);
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
   const [isHoldDialogOpen, setIsHoldDialogOpen] = useState(false);
 
@@ -114,21 +108,56 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
       maxDiscountAmount: d.maxDiscountAmount,
     });
     setShowDiscountInput(false);
+    setDiscountError(null);
   };
 
   const handleApplyDiscount = () => {
-    const val = Number(discountValue);
-    if (val > 0) {
-      setDiscount({ type: discountType, value: val });
-    } else {
+    setDiscountError(null);
+    let val = Number(discountValue);
+
+    if (isNaN(val) || val <= 0) {
       setDiscount(null);
+      setShowDiscountInput(false);
+      return;
     }
+
+    if (discountType === 'PERCENTAGE') {
+      if (val > 100) {
+        setDiscountError('Diskon persentase maksimal 100%.');
+        val = 100;
+        setDiscountValue('100');
+        return;
+      }
+      val = Math.min(100, Math.max(0, val));
+      setDiscount({
+        type: 'PERCENTAGE',
+        value: val,
+        name: `Diskon ${val}%`,
+      });
+    } else {
+      if (val > subtotal) {
+        setDiscountError(`Nominal diskon tidak boleh melebihi subtotal (${formatCurrency(subtotal, settings?.currency)}).`);
+        val = subtotal;
+        setDiscountValue(String(subtotal));
+        return;
+      }
+      val = Math.min(subtotal, Math.max(0, val));
+      setDiscount({
+        type: 'FIXED',
+        value: val,
+        name: `Diskon ${formatCurrency(val, settings?.currency)}`,
+      });
+    }
+
     setShowDiscountInput(false);
+    setDiscountValue('');
+    setDiscountError(null);
   };
 
   const handleRemoveDiscount = () => {
     setDiscount(null);
     setDiscountValue('');
+    setDiscountError(null);
   };
 
   return (
@@ -141,7 +170,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
             {t('cashier.cart.title', 'Keranjang Belanja')}
           </CardTitle>
           {itemCount > 0 && (
-            <Badge variant="secondary" className="text-xs px-2 py-0">
+            <Badge variant="secondary" className="text-xs px-2 py-0 font-bold font-mono">
               {t('cashier.cart.itemCount', { count: itemCount })}
             </Badge>
           )}
@@ -204,7 +233,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
               </p>
             </div>
           ) : (
-            <div className="space-y-3 pr-2">
+            <div className="space-y-2.5 pr-1">
               {items.map((item) => {
                 const maxStock = item.selectedVariant
                   ? item.selectedVariant.stock
@@ -212,43 +241,81 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                 return (
                   <div
                     key={item.id}
-                    className="flex items-start justify-between gap-2 p-2.5 rounded-lg border bg-card/60 text-xs"
+                    className="flex flex-col gap-1.5 p-2.5 rounded-lg border bg-card/60 text-xs hover:border-primary/30 transition-colors"
                   >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground truncate">{item.product.name}</p>
-                      {item.selectedVariant && (
-                        <p className="text-[11px] text-primary font-medium truncate">
-                          {item.selectedVariant.name}
+                    {/* Row 1: Item Name & Variant + Delete Icon */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground truncate leading-tight">
+                          {item.product.name}
                         </p>
-                      )}
-                      {item.selectedModifiers && item.selectedModifiers.length > 0 && (
-                        <p className="text-[10px] text-muted-foreground truncate">
-                          +{item.selectedModifiers.map((m) => m.name).join(', ')}
-                        </p>
-                      )}
-                      <p className="text-muted-foreground font-mono mt-0.5">
-                        {item.quantity} {item.selectedVariant ? 'unit' : item.product.unit || 'pcs'}{' '}
-                        @ {formatCurrency(item.unitPrice, settings?.currency)}
-                      </p>
+                        {item.selectedVariant && (
+                          <p className="text-[11px] text-primary font-medium truncate mt-0.5">
+                            {item.selectedVariant.name}
+                          </p>
+                        )}
+                        {item.selectedModifiers && item.selectedModifiers.length > 0 && (
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            +{item.selectedModifiers.map((m) => m.name).join(', ')}
+                          </p>
+                        )}
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer shrink-0"
+                        onClick={() => removeItem(item.id)}
+                        title="Hapus item"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <p className="font-bold text-foreground font-mono mr-1">
-                        {formatCurrency(item.unitPrice * item.quantity, settings?.currency)}
-                      </p>
+                    {/* Row 2: Unit Price Breakdown & Editable Stepper */}
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/40">
+                      <div className="min-w-0 flex items-baseline gap-1 truncate">
+                        <span className="text-[11px] text-muted-foreground font-mono truncate">
+                          @ {formatCurrency(item.unitPrice, settings?.currency)}
+                        </span>
+                        <span className="font-bold text-foreground font-mono text-xs shrink-0">
+                          = {formatCurrency(item.unitPrice * item.quantity, settings?.currency)}
+                        </span>
+                      </div>
 
-                      <div className="flex items-center border rounded-md bg-background">
+                      {/* Stepper with editable numeric input */}
+                      <div className="flex items-center border rounded-md bg-background shrink-0 shadow-2xs">
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
                           aria-label="Kurangi kuantitas"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer"
+                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer shrink-0"
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
-                        <span className="w-5 text-center font-bold text-xs">{item.quantity}</span>
+
+                        <input
+                          type="number"
+                          min="1"
+                          max={maxStock}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val)) {
+                              updateQuantity(item.id, val);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (isNaN(val) || val < 1) {
+                              updateQuantity(item.id, 1);
+                            }
+                          }}
+                          className="w-9 h-6 text-center font-mono font-bold text-xs bg-transparent border-x focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+
                         <Button
                           type="button"
                           variant="ghost"
@@ -256,20 +323,11 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                           aria-label="Tambah kuantitas"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           disabled={item.quantity >= maxStock}
-                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40"
+                          className="h-6 w-6 p-0 hover:bg-muted cursor-pointer disabled:opacity-40 shrink-0"
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
                       </div>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-transparent cursor-pointer"
-                        onClick={() => removeItem(item.id)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
                     </div>
                   </div>
                 );
@@ -281,124 +339,54 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
 
       {/* Cart Summary & Checkout Actions */}
       <CardFooter className="p-4 border-t flex flex-col gap-2.5 bg-muted/20">
-        {/* Customer / Member Selector */}
+        {/* Customer / Member / Guest Selector (Uniform h-8) */}
         {items.length > 0 && (
           <div className="w-full">
-            {selectedCustomer ? (
-              <div className="flex items-center justify-between p-2 rounded-lg bg-primary/10 border border-primary/20 text-xs">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-[10px] shrink-0">
-                    <User className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-foreground truncate leading-tight">
-                      {selectedCustomer.name}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <Badge
-                        variant={
-                          CUSTOMER_TIER_META[selectedCustomer.tier]?.badgeVariant || 'default'
-                        }
-                        className="text-[9px] px-1 py-0 h-3.5"
-                      >
-                        {CUSTOMER_TIER_META[selectedCustomer.tier]?.label || 'Member'}
-                      </Badge>
-                      <span className="text-[10px] text-muted-foreground">
-                        {selectedCustomer.points || 0} Pts
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1 shrink-0">
-                  {Boolean(
-                    selectedCustomer.discountPercentage &&
-                    selectedCustomer.discountPercentage > 0 &&
-                    !discount
-                  ) && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        setDiscount({
-                          name: `Diskon Member ${selectedCustomer.name}`,
-                          type: 'PERCENTAGE',
-                          value: selectedCustomer.discountPercentage || 0,
-                        })
-                      }
-                      className="h-6 px-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border-emerald-500/40"
-                    >
-                      <Percent className="h-2.5 w-2.5 mr-0.5" />
-                      Diskon {selectedCustomer.discountPercentage}%
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedCustomer(null)}
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-            ) : customers.length > 0 ? (
-              <Select
-                value=""
-                onValueChange={(val) => {
-                  const cust = customers.find((c) => c.id === val);
-                  if (cust) {
-                    setSelectedCustomer(cust);
-                    if (cust.discountPercentage && cust.discountPercentage > 0 && !discount) {
-                      setDiscount({
-                        name: `Diskon Member ${cust.name}`,
-                        type: 'PERCENTAGE',
-                        value: cust.discountPercentage,
-                      });
-                    }
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full h-7 text-xs border-dashed text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <Users className="h-3 w-3" />
-                    <span>Pilih Pelanggan / Member ({customers.length})</span>
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {customers.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name} ({c.phone}) - {CUSTOMER_TIER_META[c.tier]?.label || 'Member'}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            ) : null}
+            <CustomerSelectorCombobox
+              selectedCustomer={customer}
+              customerName={customerName}
+              onSelectCustomer={(cust) => {
+                setCustomer(cust);
+                if (cust?.discountPercentage && cust.discountPercentage > 0 && !discount) {
+                  setDiscount({
+                    name: `Diskon Member ${cust.name}`,
+                    type: 'PERCENTAGE',
+                    value: cust.discountPercentage,
+                  });
+                }
+              }}
+              onSetGuestName={(name) => setCustomerName(name)}
+              onClear={() => {
+                setCustomer(null);
+                setCustomerName(null);
+              }}
+            />
           </div>
         )}
 
-        {/* Discount Section */}
+        {/* Discount Section (Uniform h-8 & Strict Validation) */}
         {items.length > 0 && (
           <div className="w-full space-y-2">
             {discount ? (
-              <div className="flex items-center justify-between p-2 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-xs">
+              <div className="flex items-center justify-between h-8 px-2.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-xs w-full">
                 <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium min-w-0">
                   <Tag className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">
-                    {discount.name
-                      ? `${discount.name} (${discount.type === 'PERCENTAGE' ? `${discount.value}%` : formatCurrency(discount.value, settings?.currency)})`
-                      : `Diskon ${discount.type === 'PERCENTAGE' ? `${discount.value}%` : formatCurrency(discount.value, settings?.currency)}`}
+                  <span className="truncate font-semibold max-w-[180px]">
+                    {discount.name || 'Diskon'} (
+                    {discount.type === 'PERCENTAGE'
+                      ? `${discount.value}%`
+                      : formatCurrency(discount.value, settings?.currency)}
+                    )
                   </span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleRemoveDiscount}
-                  className="h-5 px-1.5 text-xs text-destructive hover:bg-transparent cursor-pointer shrink-0"
+                  className="h-5 w-5 p-0 text-muted-foreground hover:text-destructive hover:bg-transparent cursor-pointer shrink-0"
+                  title="Hapus diskon"
                 >
-                  {t('common.actions.delete', 'Hapus')}
+                  <X className="h-3.5 w-3.5" />
                 </Button>
               </div>
             ) : showDiscountInput ? (
@@ -433,65 +421,107 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
 
                 {/* Manual Custom Discount Input */}
                 <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-muted-foreground">
-                    Atau Masukkan Manual:
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <div className="flex rounded-md border overflow-hidden shrink-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-muted-foreground">
+                      Atau Masukkan Manual:
+                    </span>
+                    {discountType === 'FIXED' && (
+                      <span className="text-[10px] text-muted-foreground">
+                        Maks: {formatCurrency(subtotal, settings?.currency)}
+                      </span>
+                    )}
+                  </div>
+
+                  {discountError && (
+                    <div className="p-1.5 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-[11px] flex items-center gap-1 font-medium">
+                      <AlertCircle className="h-3 w-3 shrink-0" />
+                      <span>{discountError}</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1.5">
+                    {/* Unit Selector */}
+                    <div className="flex h-8 rounded-md border overflow-hidden shrink-0 bg-muted/40">
                       <button
                         type="button"
-                        onClick={() => setDiscountType('PERCENTAGE')}
-                        className={`px-2 py-1 text-xs ${
+                        onClick={() => {
+                          setDiscountType('PERCENTAGE');
+                          setDiscountValue('');
+                          setDiscountError(null);
+                        }}
+                        className={`px-2.5 h-full text-xs font-bold transition-colors cursor-pointer ${
                           discountType === 'PERCENTAGE'
-                            ? 'bg-primary text-primary-foreground font-bold'
-                            : 'bg-muted'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
-                        <Percent className="h-3 w-3" />
+                        <Percent className="h-3.5 w-3.5" />
                       </button>
                       <button
                         type="button"
-                        onClick={() => setDiscountType('FIXED')}
-                        className={`px-2 py-1 text-xs font-semibold ${
+                        onClick={() => {
+                          setDiscountType('FIXED');
+                          setDiscountValue('');
+                          setDiscountError(null);
+                        }}
+                        className={`px-2.5 h-full text-xs font-bold transition-colors cursor-pointer ${
                           discountType === 'FIXED'
-                            ? 'bg-primary text-primary-foreground font-bold'
-                            : 'bg-muted'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         {currencyConfig.symbol}
                       </button>
                     </div>
+
+                    {/* Value Input */}
                     {discountType === 'FIXED' ? (
                       <CurrencyInput
                         value={Number(discountValue) || 0}
                         currencyCode={settings?.currency}
-                        onValueChange={(val) => setDiscountValue(String(val))}
+                        onValueChange={(val) => {
+                          setDiscountValue(String(val));
+                          setDiscountError(null);
+                        }}
                         placeholder="0"
-                        className="h-7 text-xs flex-1"
+                        className="h-8 text-xs font-mono flex-1"
                       />
                     ) : (
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        placeholder="10%"
-                        value={discountValue}
-                        onChange={(e) => setDiscountValue(e.target.value)}
-                        className="h-7 text-xs flex-1"
-                      />
+                      <div className="relative flex-1">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          placeholder="10"
+                          value={discountValue}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setDiscountValue(val);
+                            setDiscountError(null);
+                          }}
+                          className="h-8 text-xs font-mono pr-7"
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-bold">
+                          %
+                        </span>
+                      </div>
                     )}
+
                     <Button
                       size="sm"
                       onClick={handleApplyDiscount}
-                      className="h-7 px-2.5 text-xs font-bold"
+                      className="h-8 px-2.5 text-xs font-bold cursor-pointer shrink-0"
                     >
                       {t('common.actions.apply', 'Pasang')}
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setShowDiscountInput(false)}
-                      className="h-7 px-1 text-xs"
+                      onClick={() => {
+                        setShowDiscountInput(false);
+                        setDiscountError(null);
+                      }}
+                      className="h-8 px-2 text-xs cursor-pointer shrink-0"
                     >
                       {t('common.actions.cancel', 'Batal')}
                     </Button>
@@ -503,17 +533,20 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
                 variant="outline"
                 size="sm"
                 onClick={() => setShowDiscountInput(true)}
-                className="w-full text-xs h-7 border-dashed gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                className="w-full h-8 px-2.5 text-xs border-dashed justify-between font-normal text-muted-foreground hover:text-foreground cursor-pointer"
               >
-                <Tag className="h-3 w-3" />
-                <span>{t('cashier.cart.addDiscount', 'Tambah Diskon / Promo')}</span>
+                <div className="flex items-center gap-1.5 truncate">
+                  <Tag className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <span className="truncate">{t('cashier.cart.addDiscount', 'Tambah Diskon / Promo')}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground/70 shrink-0">+ Diskon</span>
               </Button>
             )}
           </div>
         )}
 
         {/* Calculation Lines */}
-        <div className="w-full space-y-1 text-xs">
+        <div className="w-full space-y-1 text-xs pt-1 border-t">
           <div className="flex justify-between text-muted-foreground">
             <span>{t('cashier.cart.subtotal', 'Subtotal')}</span>
             <span className="font-mono">{formatCurrency(subtotal, settings?.currency)}</span>
@@ -521,15 +554,15 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
 
           {discountAmount > 0 && (
             <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
-              <span>{t('cashier.cart.discount', 'Potongan')}</span>
+              <span>{t('cashier.cart.discount', 'Potongan Diskon')}</span>
               <span className="font-mono">
                 -{formatCurrency(discountAmount, settings?.currency)}
               </span>
             </div>
           )}
 
-          <div className="flex justify-between text-base font-bold pt-2 border-t text-foreground">
-            <span>{t('cashier.cart.total', 'Total')}</span>
+          <div className="flex justify-between text-base font-bold pt-1.5 border-t text-foreground">
+            <span>{t('cashier.cart.total', 'Total Bayar')}</span>
             <span className="text-primary font-mono text-lg">
               {formatCurrency(total, settings?.currency)}
             </span>
@@ -537,7 +570,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
         </div>
 
         {/* Action Buttons: Hold Order & Pay Now */}
-        <div className="w-full flex items-center gap-2">
+        <div className="w-full flex items-center gap-2 pt-1">
           {isAdvanced && (
             <Button
               type="button"
@@ -558,7 +591,6 @@ export const CartPanel: React.FC<CartPanelProps> = ({ onProceedToPayment, onHold
             onClick={onProceedToPayment}
           >
             <span>{t('cashier.cart.pay', 'Bayar Sekarang')}</span>
-            <span className="font-mono">({formatCurrency(total, settings?.currency)})</span>
           </Button>
         </div>
       </CardFooter>

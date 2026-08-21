@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { CartState, CartDiscount, SelectedModifier } from '../types/cart.types';
 import type { Product, ProductVariantOption } from '@/types/product.types';
+import type { Customer } from '@/types/customer.types';
 
 const generateCartItemId = (
   productId: string,
@@ -31,6 +32,8 @@ const calculateUnitPrice = (
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   discount: null,
+  customer: null,
+  customerName: null,
 
   addItem: (
     product: Product,
@@ -110,8 +113,16 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ discount });
   },
 
+  setCustomer: (customer: Customer | null) => {
+    set({ customer, customerName: customer ? customer.name : null });
+  },
+
+  setCustomerName: (customerName: string | null) => {
+    set({ customer: null, customerName });
+  },
+
   clearCart: () => {
-    set({ items: [], discount: null });
+    set({ items: [], discount: null, customer: null, customerName: null });
   },
 
   getSubtotal: () => {

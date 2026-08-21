@@ -41,6 +41,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const { t } = useTranslation();
   const { settings } = useP2pSync();
   const items = useCartStore((state) => state.items);
+  const customer = useCartStore((state) => state.customer);
+  const customerName = useCartStore((state) => state.customerName);
   const getSubtotal = useCartStore((state) => state.getSubtotal);
   const getDiscountAmount = useCartStore((state) => state.getDiscountAmount);
   const getTotal = useCartStore((state) => state.getTotal);
@@ -140,6 +142,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           amountPaid: finalAmountPaid,
           changeDue: finalChangeDue,
           cashierName: 'Kasir',
+          customerName: customer?.name || customerName || undefined,
           status: 'PAID',
         });
       }

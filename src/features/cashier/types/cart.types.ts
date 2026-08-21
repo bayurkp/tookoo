@@ -1,5 +1,6 @@
 import type { Product, ProductVariantOption } from '@/types/product.types';
 import type { DiscountScope } from '@/types/master-data.types';
+import type { Customer } from '@/types/customer.types';
 
 export interface SelectedModifier {
   groupId: string;
@@ -40,6 +41,8 @@ export type PaymentMethod = 'CASH' | 'QRIS' | 'TRANSFER';
 export interface CartState {
   items: CartItem[];
   discount: CartDiscount | null;
+  customer: Customer | null;
+  customerName: string | null;
   addItem: (
     product: Product,
     quantity?: number,
@@ -49,6 +52,8 @@ export interface CartState {
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   setDiscount: (discount: CartDiscount | null) => void;
+  setCustomer: (customer: Customer | null) => void;
+  setCustomerName: (name: string | null) => void;
   clearCart: () => void;
   getSubtotal: () => number;
   getDiscountAmount: () => number;
