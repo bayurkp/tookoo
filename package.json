@@ -15,7 +15,9 @@
     "test:e2e": "playwright test",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=tookoo",
-    "deploy:login": "wrangler login"
+    "deploy:login": "wrangler login",
+    "wrangler:deploy": "npm run build && wrangler pages deploy dist --project-name=tookoo",
+    "wrangler:login": "wrangler login"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
